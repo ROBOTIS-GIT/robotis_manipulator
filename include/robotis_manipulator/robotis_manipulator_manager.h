@@ -14,80 +14,22 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Hye-Jong KIM, Darby Lim */
+/* Authors: Darby Lim, Hye-Jong KIM */
 
-#ifndef RMMANAGER_H_
-#define RMMANAGER_H_
+#ifndef RMAPI_H_
+#define RMAPI_H_
 
-#include <unistd.h>
 
 #include <eigen3/Eigen/Eigen>
-#include <map>
+
 #include <vector>
+#include <map>
 
+#include "robotis_manipulator_common.h"
+#include "robotis_manipulator_manager.h"
+#include "robotis_manipulator_math.h"
 
-using namespace Eigen;
-
-typedef int8_t Name;
-
-typedef struct
-{
-  Vector3f position;
-  Matrix3f orientation;
-} Pose;
-
-typedef struct
-{
-  VectorXf velocity;
-  VectorXf acceleration;
-} State;
-
-typedef struct
-{
-  int8_t id;
-  Vector3f axis;
-  double coefficient; //actuator angle to joint angle
-  double angle;
-  double velocity;
-  double acceleration;
-} Joint;
-
-typedef struct
-{
-  int8_t id;
-  bool on_off;
-  double coefficient; //actuator value to tool value
-  double value;       //m or rad
-} Tool;
-
-typedef struct
-{
-  double mass;
-  Matrix3f inertia_tensor;
-  Vector3f center_of_mass;
-} Inertia;
-
-typedef struct
-{
-  Name name;
-  Name child;
-  Pose pose;
-  State origin;
-} World;
-
-typedef struct
-{
-  Name parent;
-  std::vector<Name> child;
-  Pose relative_to_parent;
-  Pose pose_to_world;
-  State origin;
-  Joint joint;
-  Tool tool;
-  Inertia inertia;
-} Component;
-
-namespace RM_MANAGER
+namespace ROBOTIS_MANIPULATOR
 {
 class Manipulator
 {
@@ -238,7 +180,53 @@ public:
   std::vector<double> getAllJointAngle();
   std::vector<double> getAllActiveJointAngle();
   std::vector<uint8_t> getAllActiveJointID();
-};
-} // namespace RM_MANAGER
 
-#endif // RMMANAGER_HPP_
+};
+
+class Kinematics : public Manipulator
+{
+public:
+  Kinematics(){};
+  virtual ~Kinematics(){};
+
+  virtual MatrixXf jacobian(Manipulator *manipulator, Name tool_name) = 0;
+  virtual void forward(Manipulator *manipulator) = 0;
+  virtual void forward(Manipulator *manipulator, Name component_name) = 0;
+  virtual std::vector<double> inverse(Manipulator *manipulator, Name tool_name, Pose target_pose) = 0;
+};
+
+class Actuator
+{
+public:
+  Actuator(){};
+  virtual ~Actuator(){};
+
+  virtual void initActuator(const void *arg) = 0;
+  virtual void setActuatorControlMode() = 0;
+
+  virtual void Enable() = 0;
+  virtual void Disable() = 0;
+
+  virtual bool sendAllActuatorAngle(std::vector<double> radian_vector) = 0;
+  virtual bool sendMultipleActuatorAngle(std::vector<uint8_t> id, std::vector<double> radian_vector) = 0;
+  virtual bool sendActuatorAngle(uint8_t actuator_id, double radian) = 0;
+  virtual bool sendActuatorSignal(uint8_t actuator_id, bool onoff) = 0;
+  virtual std::vector<double> receiveAllActuatorAngle(void) = 0;
+};
+
+class Drawing
+{
+public:
+  Drawing(){};
+  virtual ~Drawing(){};
+
+  virtual void initDraw(const void *arg) = 0;
+  virtual void setRadius(double radius) = 0;
+  virtual void setStartPose(Pose start_pose) = 0;
+  virtual void setEndPose(Pose end_pose) = 0;
+  virtual void setAngularStartPosition(double start_position) = 0;
+  virtual Pose getPose(double tick) = 0;
+};
+
+} // namespace OPEN_MANIPULATOR
+#endif

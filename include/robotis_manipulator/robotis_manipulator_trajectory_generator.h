@@ -27,7 +27,7 @@
 #include <math.h>
 #include <vector>
 
-#include "robotis_manipulator/RMAPI.h"
+#include "robotis_manipulator/robotis_manipulator_manager.h"
 
 #define PI 3.141592
 using namespace Eigen;
@@ -39,7 +39,7 @@ typedef struct
   double acceleration;
 } Trajectory;
 
-namespace RM_TRAJECTORY
+namespace ROBOTIS_MANIPULATOR
 {
 class MinimumJerk
 {

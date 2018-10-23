@@ -16,9 +16,9 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM */
 
-#include "robotis_manipulator/RMTrajectory.h"
+#include "robotis_manipulator/robotis_manipulator_trajectory_generator.h"
 
-using namespace RM_TRAJECTORY;
+using namespace ROBOTIS_MANIPULATOR;
 using namespace Eigen;
 
 MinimumJerk::MinimumJerk()

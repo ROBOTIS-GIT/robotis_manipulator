@@ -16,9 +16,9 @@
 
 /* Authors: Darby Limm, Hye-Jong KIM */
 
-#include "robotis_manipulator/OpenManipulator.h"
+#include "robotis_manipulator/robotis_manipulator.h"
 
-using namespace OPEN_MANIPULATOR;
+using namespace ROBOTIS_MANIPULATOR;
 using namespace Eigen;
 
 
@@ -26,43 +26,41 @@ using namespace Eigen;
 ////////////////////////////////Basic Function//////////////////////////////
 ////////////////////////////////////////////////////////////////////////////
 
-OpenManipulator::OpenManipulator() : move_time_(1.0f),
+RobotisManipulator::RobotisManipulator() : move_time_(1.0f),
                                      control_time_(ACTUATOR_CONTROL_TIME),
                                      moving_(false),
                                      platform_(true),
                                      processing_(false)
 {
-  manager_ = new Manager();
+//  manager_ = new Manager();
 
 
 }
 
-OpenManipulator::~OpenManipulator()
+RobotisManipulator::~RobotisManipulator()
 {
 }
 
-void OpenManipulator::initKinematics(Kinematics *kinematics)
+void RobotisManipulator::initKinematics(Kinematics *kinematics)
 {
-  kinematics_ = kinematics;
+  kinematics_= kinematics;
 }
 
-void OpenManipulator::initActuator(Actuator *actuator)
+void RobotisManipulator::addActuator(Name name, Actuator *actuator)
 {
-  actuator_ = actuator;
+  actuator_.insert(std::make_pair(name, actuator));
   platform_ = true;
 }
 
-void OpenManipulator::addDraw(Name name, Draw *draw)
+void RobotisManipulator::addDraw(Name name, Drawing *drawing)
 {
-  Draw *temp_draw = draw;
-
-  draw_.insert(std::make_pair(name, temp_draw));
+  drawing_.insert(std::make_pair(name, drawing));
 }
 
-void OpenManipulator::initTrajectory(std::vector<double> angle_vector)
+void RobotisManipulator::initTrajectory(std::vector<double> angle_vector)
 {
-  joint_trajectory_ = new RM_TRAJECTORY::JointTrajectory(manipulator_.getDOF());
-  task_trajectory_ = new RM_TRAJECTORY::TaskTrajectory();
+  joint_trajectory_ = new JointTrajectory(manipulator_.getDOF());
+  task_trajectory_ = new TaskTrajectory();
 
   previous_goal_.position = angle_vector;
   previous_goal_.velocity.resize(manipulator_.getDOF());
@@ -79,7 +77,7 @@ void OpenManipulator::initTrajectory(std::vector<double> angle_vector)
 
 }
 
-void OpenManipulator::addWorld(Name world_name,
+void RobotisManipulator::addWorld(Name world_name,
                                Name child_name,
                                Vector3f world_position,
                                Matrix3f world_orientation)
@@ -87,7 +85,7 @@ void OpenManipulator::addWorld(Name world_name,
   manipulator_.addWorld(world_name, child_name, world_position, world_orientation);
 }
 
-void OpenManipulator::addComponent(Name my_name,
+void RobotisManipulator::addComponent(Name my_name,
                                    Name parent_name,
                                    Name child_name,
                                    Vector3f relative_position,
@@ -102,7 +100,7 @@ void OpenManipulator::addComponent(Name my_name,
   manipulator_.addComponent(my_name, parent_name, child_name, relative_position, relative_orientation, axis_of_rotation, actuator_id, coefficient, mass, inertia_tensor, center_of_mass);
 }
 
-void OpenManipulator::addTool(Name my_name,
+void RobotisManipulator::addTool(Name my_name,
                               Name parent_name,
                               Vector3f relative_position,
                               Matrix3f relative_orientation,
@@ -115,350 +113,350 @@ void OpenManipulator::addTool(Name my_name,
   manipulator_.addTool(my_name, parent_name, relative_position, relative_orientation, tool_id, coefficient, mass, inertia_tensor, center_of_mass);
 }
 
-void OpenManipulator::addComponentChild(Name my_name, Name child_name)
+void RobotisManipulator::addComponentChild(Name my_name, Name child_name)
 {
   manipulator_.addComponentChild(my_name, child_name);
 }
 
-void OpenManipulator::checkManipulatorSetting()
+void RobotisManipulator::checkManipulatorSetting()
 {
   manipulator_.checkManipulatorSetting();
 }
 
-void OpenManipulator::setWorldPose(Pose world_pose)
+void RobotisManipulator::setWorldPose(Pose world_pose)
 {
   manipulator_.setWorldPose(world_pose);
 }
 
-void OpenManipulator::setWorldPosition(Vector3f world_position)
+void RobotisManipulator::setWorldPosition(Vector3f world_position)
 {
   manipulator_.setWorldPosition(world_position);
 }
 
-void OpenManipulator::setWorldOrientation(Matrix3f world_orientation)
+void RobotisManipulator::setWorldOrientation(Matrix3f world_orientation)
 {
   manipulator_.setWorldOrientation(world_orientation);
 }
 
-void OpenManipulator::setWorldState(State world_state)
+void RobotisManipulator::setWorldState(State world_state)
 {
   manipulator_.setWorldState(world_state);
 }
 
-void OpenManipulator::setWorldVelocity(VectorXf world_velocity)
+void RobotisManipulator::setWorldVelocity(VectorXf world_velocity)
 {
   manipulator_.setWorldVelocity(world_velocity);
 }
 
-void OpenManipulator::setWorldAcceleration(VectorXf world_acceleration)
+void RobotisManipulator::setWorldAcceleration(VectorXf world_acceleration)
 {
   manipulator_.setWorldAcceleration(world_acceleration);
 }
 
-void OpenManipulator::setComponent(Name name, Component component)
+void RobotisManipulator::setComponent(Name name, Component component)
 {
   manipulator_.setComponent(name, component);
 }
 
-void OpenManipulator::setComponentPoseToWorld(Name name, Pose pose_to_world)
+void RobotisManipulator::setComponentPoseToWorld(Name name, Pose pose_to_world)
 {
   manipulator_.setComponentPoseToWorld(name, pose_to_world);
 }
 
-void OpenManipulator::setComponentPositionToWorld(Name name, Vector3f position_to_world)
+void RobotisManipulator::setComponentPositionToWorld(Name name, Vector3f position_to_world)
 {
   manipulator_.setComponentPositionToWorld(name, position_to_world);
 }
 
-void OpenManipulator::setComponentOrientationToWorld(Name name, Matrix3f orientation_to_wolrd)
+void RobotisManipulator::setComponentOrientationToWorld(Name name, Matrix3f orientation_to_wolrd)
 {
   manipulator_.setComponentOrientationToWorld(name, orientation_to_wolrd);
 }
 
-void OpenManipulator::setComponentStateToWorld(Name name, State state_to_world)
+void RobotisManipulator::setComponentStateToWorld(Name name, State state_to_world)
 {
   manipulator_.setComponentStateToWorld(name, state_to_world);
 }
 
-void OpenManipulator::setComponentVelocityToWorld(Name name, VectorXf velocity)
+void RobotisManipulator::setComponentVelocityToWorld(Name name, VectorXf velocity)
 {
   manipulator_.setComponentVelocityToWorld(name, velocity);
 }
 
-void OpenManipulator::setComponentAccelerationToWorld(Name name, VectorXf accelaration)
+void RobotisManipulator::setComponentAccelerationToWorld(Name name, VectorXf accelaration)
 {
   manipulator_.setComponentAccelerationToWorld(name, accelaration);
 }
 
-void OpenManipulator::setComponentJointAngle(Name name, double angle)
+void RobotisManipulator::setComponentJointAngle(Name name, double angle)
 {
   manipulator_.setComponentJointAngle(name, angle);
 }
 
-void OpenManipulator::setComponentJointVelocity(Name name, double angular_velocity)
+void RobotisManipulator::setComponentJointVelocity(Name name, double angular_velocity)
 {
   manipulator_.setComponentJointVelocity(name, angular_velocity);
 }
 
-void OpenManipulator::setComponentJointAcceleration(Name name, double angular_acceleration)
+void RobotisManipulator::setComponentJointAcceleration(Name name, double angular_acceleration)
 {
   manipulator_.setComponentJointAcceleration(name, angular_acceleration);
 }
 
-void OpenManipulator::setComponentToolOnOff(Name name, bool on_off)
+void RobotisManipulator::setComponentToolOnOff(Name name, bool on_off)
 {
   manipulator_.setComponentToolOnOff(name, on_off);
 }
 
-void OpenManipulator::setComponentToolValue(Name name, double actuator_value)
+void RobotisManipulator::setComponentToolValue(Name name, double actuator_value)
 {
   manipulator_.setComponentToolValue(name, actuator_value);
 }
 
-void OpenManipulator::setAllActiveJointAngle(std::vector<double> angle_vector)
+void RobotisManipulator::setAllActiveJointAngle(std::vector<double> angle_vector)
 {
   manipulator_.setAllActiveJointAngle(angle_vector);
 }
 
-int8_t OpenManipulator::getDOF()
+int8_t RobotisManipulator::getDOF()
 {
   return manipulator_.getDOF();
 }
 
-int8_t OpenManipulator::getComponentSize()
+int8_t RobotisManipulator::getComponentSize()
 {
   return manipulator_.getComponentSize();
 }
 
-Name OpenManipulator::getWorldName()
+Name RobotisManipulator::getWorldName()
 {
   return manipulator_.getWorldName();
 }
 
-Name OpenManipulator::getWorldChildName()
+Name RobotisManipulator::getWorldChildName()
 {
   return manipulator_.getWorldChildName();
 }
 
-Pose OpenManipulator::getWorldPose()
+Pose RobotisManipulator::getWorldPose()
 {
   return manipulator_.getWorldPose();
 }
 
-Vector3f OpenManipulator::getWorldPosition()
+Vector3f RobotisManipulator::getWorldPosition()
 {
   return manipulator_.getWorldPosition();
 }
 
-Matrix3f OpenManipulator::getWorldOrientation()
+Matrix3f RobotisManipulator::getWorldOrientation()
 {
   return manipulator_.getWorldOrientation();
 }
 
-State OpenManipulator::getWorldState()
+State RobotisManipulator::getWorldState()
 {
   return manipulator_.getWorldState();
 }
 
-VectorXf OpenManipulator::getWorldVelocity()
+VectorXf RobotisManipulator::getWorldVelocity()
 {
   return manipulator_.getWorldVelocity();
 }
 
-VectorXf OpenManipulator::getWorldAcceleration()
+VectorXf RobotisManipulator::getWorldAcceleration()
 {
   return manipulator_.getWorldAcceleration();
 }
 
-std::map<Name, Component> OpenManipulator::getAllComponent()
+std::map<Name, Component> RobotisManipulator::getAllComponent()
 {
   return manipulator_.getAllComponent();
 }
 
-std::map<Name, Component>::iterator OpenManipulator::getIteratorBegin()
+std::map<Name, Component>::iterator RobotisManipulator::getIteratorBegin()
 {
   return manipulator_.getIteratorBegin();
 }
 
-std::map<Name, Component>::iterator OpenManipulator::getIteratorEnd()
+std::map<Name, Component>::iterator RobotisManipulator::getIteratorEnd()
 {
   return manipulator_.getIteratorEnd();
 }
 
-Component OpenManipulator::getComponent(Name name)
+Component RobotisManipulator::getComponent(Name name)
 {
   return manipulator_.getComponent(name);
 }
 
-Name OpenManipulator::getComponentParentName(Name name)
+Name RobotisManipulator::getComponentParentName(Name name)
 {
   return manipulator_.getComponentParentName(name);
 }
 
-std::vector<Name> OpenManipulator::getComponentChildName(Name name)
+std::vector<Name> RobotisManipulator::getComponentChildName(Name name)
 {
   return manipulator_.getComponentChildName(name);
 }
 
-Pose OpenManipulator::getComponentPoseToWorld(Name name)
+Pose RobotisManipulator::getComponentPoseToWorld(Name name)
 {
   return manipulator_.getComponentPoseToWorld(name);
 }
 
-Vector3f OpenManipulator::getComponentPositionToWorld(Name name)
+Vector3f RobotisManipulator::getComponentPositionToWorld(Name name)
 {
   return manipulator_.getComponentPositionToWorld(name);
 }
 
-Matrix3f OpenManipulator::getComponentOrientationToWorld(Name name)
+Matrix3f RobotisManipulator::getComponentOrientationToWorld(Name name)
 {
   return manipulator_.getComponentOrientationToWorld(name);
 }
 
-State OpenManipulator::getComponentStateToWorld(Name name)
+State RobotisManipulator::getComponentStateToWorld(Name name)
 {
   return manipulator_.getComponentStateToWorld(name);
 }
 
-VectorXf OpenManipulator::getComponentVelocityToWorld(Name name)
+VectorXf RobotisManipulator::getComponentVelocityToWorld(Name name)
 {
   return manipulator_.getComponentVelocityToWorld(name);
 }
 
-VectorXf OpenManipulator::getComponentAccelerationToWorld(Name name)
+VectorXf RobotisManipulator::getComponentAccelerationToWorld(Name name)
 {
   return manipulator_.getComponentAccelerationToWorld(name);
 }
 
-Pose OpenManipulator::getComponentRelativePoseToParent(Name name)
+Pose RobotisManipulator::getComponentRelativePoseToParent(Name name)
 {
   return manipulator_.getComponentRelativePoseToParent(name);
 }
 
-Vector3f OpenManipulator::getComponentRelativePositionToParent(Name name)
+Vector3f RobotisManipulator::getComponentRelativePositionToParent(Name name)
 {
   return manipulator_.getComponentRelativePositionToParent(name);
 }
 
-Matrix3f OpenManipulator::getComponentRelativeOrientationToParent(Name name)
+Matrix3f RobotisManipulator::getComponentRelativeOrientationToParent(Name name)
 {
   return manipulator_.getComponentRelativeOrientationToParent(name);
 }
 
-Joint OpenManipulator::getComponentJoint(Name name)
+Joint RobotisManipulator::getComponentJoint(Name name)
 {
   return manipulator_.getComponentJoint(name);
 }
 
-int8_t OpenManipulator::getComponentJointId(Name name)
+int8_t RobotisManipulator::getComponentJointId(Name name)
 {
   return manipulator_.getComponentJointId(name);
 }
 
-double OpenManipulator::getComponentJointCoefficient(Name name)
+double RobotisManipulator::getComponentJointCoefficient(Name name)
 {
   return manipulator_.getComponentJointCoefficient(name);
 }
 
-Vector3f OpenManipulator::getComponentJointAxis(Name name)
+Vector3f RobotisManipulator::getComponentJointAxis(Name name)
 {
   return manipulator_.getComponentJointAxis(name);
 }
 
-double OpenManipulator::getComponentJointAngle(Name name)
+double RobotisManipulator::getComponentJointAngle(Name name)
 {
   return manipulator_.getComponentJointAngle(name);
 }
 
-double OpenManipulator::getComponentJointVelocity(Name name)
+double RobotisManipulator::getComponentJointVelocity(Name name)
 {
   return manipulator_.getComponentJointVelocity(name);
 }
 
-double OpenManipulator::getComponentJointAcceleration(Name name)
+double RobotisManipulator::getComponentJointAcceleration(Name name)
 {
   return manipulator_.getComponentJointAcceleration(name);
 }
 
-Tool OpenManipulator::getComponentTool(Name name)
+Tool RobotisManipulator::getComponentTool(Name name)
 {
   return manipulator_.getComponentTool(name);
 }
 
-int8_t OpenManipulator::getComponentToolId(Name name)
+int8_t RobotisManipulator::getComponentToolId(Name name)
 {
   return manipulator_.getComponentToolId(name);
 }
 
-double OpenManipulator::getComponentToolCoefficient(Name name)
+double RobotisManipulator::getComponentToolCoefficient(Name name)
 {
   return manipulator_.getComponentToolCoefficient(name);
 }
 
-bool OpenManipulator::getComponentToolOnOff(Name name)
+bool RobotisManipulator::getComponentToolOnOff(Name name)
 {
   return manipulator_.getComponentToolOnOff(name);
 }
 
-double OpenManipulator::getComponentToolValue(Name name)
+double RobotisManipulator::getComponentToolValue(Name name)
 {
   return manipulator_.getComponentToolValue(name);
 }
 
-double OpenManipulator::getComponentMass(Name name)
+double RobotisManipulator::getComponentMass(Name name)
 {
   return manipulator_.getComponentMass(name);
 }
 
-Matrix3f OpenManipulator::getComponentInertiaTensor(Name name)
+Matrix3f RobotisManipulator::getComponentInertiaTensor(Name name)
 {
   return manipulator_.getComponentInertiaTensor(name);
 }
 
-Vector3f OpenManipulator::getComponentCenterOfMass(Name name)
+Vector3f RobotisManipulator::getComponentCenterOfMass(Name name)
 {
   return manipulator_.getComponentCenterOfMass(name);
 }
 
-std::vector<double> OpenManipulator::getAllJointAngle()
+std::vector<double> RobotisManipulator::getAllJointAngle()
 {
   return manipulator_.getAllJointAngle();
 }
 
-std::vector<double> OpenManipulator::getAllActiveJointAngle()
+std::vector<double> RobotisManipulator::getAllActiveJointAngle()
 {
   return manipulator_.getAllActiveJointAngle();
 }
 
-std::vector<uint8_t> OpenManipulator::getAllActiveJointID()
+std::vector<uint8_t> RobotisManipulator::getAllActiveJointID()
 {
   return manipulator_.getAllActiveJointID();
 }
 
 // KINEMATICS
 
-MatrixXf OpenManipulator::jacobian(Name tool_name)
+MatrixXf RobotisManipulator::jacobian(Name tool_name)
 {
   return kinematics_->jacobian(&manipulator_, tool_name);
 }
 
-void OpenManipulator::forward()
+void RobotisManipulator::forward()
 {
   return kinematics_->forward(&manipulator_);
 }
 
-void OpenManipulator::forward(Name first_component_name)
+void RobotisManipulator::forward(Name first_component_name)
 {
   return kinematics_->forward(&manipulator_, first_component_name);
 }
 
-std::vector<double> OpenManipulator::inverse(Name tool_name, Pose goal_pose)
+std::vector<double> RobotisManipulator::inverse(Name tool_name, Pose goal_pose)
 {
   return kinematics_->inverse(&manipulator_, tool_name, goal_pose);
 }
 
 // ACTUATOR
-std::vector<double> OpenManipulator::sendAllActuatorAngle(std::vector<double> radian_vector)
+std::vector<double> RobotisManipulator::sendAllActuatorAngle(std::vector<double> radian_vector)
 {
   std::vector<double> calc_angle;
   std::map<Name, Component>::iterator it;
@@ -475,7 +473,7 @@ std::vector<double> OpenManipulator::sendAllActuatorAngle(std::vector<double> ra
   return calc_angle;
 }
 
-std::vector<double> OpenManipulator::sendMultipleActuatorAngle(std::vector<uint8_t> active_joint_id, std::vector<double> radian_vector)
+std::vector<double> RobotisManipulator::sendMultipleActuatorAngle(std::vector<uint8_t> active_joint_id, std::vector<double> radian_vector)
 {
   std::vector<double> calc_angle;
   std::map<Name, Component>::iterator it;
@@ -494,7 +492,7 @@ std::vector<double> OpenManipulator::sendMultipleActuatorAngle(std::vector<uint8
   return calc_angle;
 }
 
-double OpenManipulator::sendActuatorAngle(uint8_t active_joint_id, double radian)
+double RobotisManipulator::sendActuatorAngle(uint8_t active_joint_id, double radian)
 {
   double calc_angle;
   std::map<Name, Component>::iterator it;
@@ -510,14 +508,14 @@ double OpenManipulator::sendActuatorAngle(uint8_t active_joint_id, double radian
   return calc_angle;
 }
 
-bool OpenManipulator::sendActuatorSignal(uint8_t active_joint_id, bool onoff)
+bool RobotisManipulator::sendActuatorSignal(Name actuator_name, uint8_t active_joint_id, bool onoff)
 {
-  return actuator_->sendActuatorSignal(active_joint_id, onoff);
+  return actuator_.at(actuator_name)->sendActuatorSignal(active_joint_id, onoff);
 }
 
-std::vector<double> OpenManipulator::receiveAllActuatorAngle()
+std::vector<double> RobotisManipulator::receiveAllActuatorAngle(Name actuator_name)
 {
-  std::vector<double> angles = actuator_->receiveAllActuatorAngle();
+  std::vector<double> angles = actuator_.at(actuator_name)->receiveAllActuatorAngle();
   std::vector<uint8_t> active_joint_id = manipulator_.getAllActiveJointID();
   std::vector<uint8_t> sorted_id = active_joint_id;
 
@@ -557,86 +555,86 @@ std::vector<double> OpenManipulator::receiveAllActuatorAngle()
   return calc_sorted_angle;
 }
 
-void OpenManipulator::actuatorInit(const void *arg)
+void RobotisManipulator::actuatorInit(Name actuator_name, const void *arg)
 {
-  return actuator_->initActuator(arg);
+  return actuator_.at(actuator_name)->initActuator(arg);
 }
 
-void OpenManipulator::setActuatorControlMode()
+void RobotisManipulator::setActuatorControlMode(Name actuator_name)
 {
-  actuator_->setActuatorControlMode();
+  actuator_.at(actuator_name)->setActuatorControlMode();
 }
 
-void OpenManipulator::actuatorEnable()
+void RobotisManipulator::actuatorEnable(Name actuator_name)
 {
-  return actuator_->Enable();
+  return actuator_.at(actuator_name)->Enable();
 }
 
-void OpenManipulator::actuatorDisable()
+void RobotisManipulator::actuatorDisable(Name actuator_name)
 {
-  return actuator_->Disable();
+  return actuator_.at(actuator_name)->Disable();
 }
 
 // DRAW
-void OpenManipulator::drawInit(Name name, double move_time, const void *arg)
+void RobotisManipulator::drawInit(Name name, double move_time, const void *arg)
 {
   move_time_ = move_time;
-  draw_.at(name)->initDraw(arg);
+  drawing_.at(name)->initDraw(arg);
 }
 
-void OpenManipulator::setRadiusForDrawing(Name name, double radius)
+void RobotisManipulator::setRadiusForDrawing(Name name, double radius)
 {
-  draw_.at(name)->setRadius(radius);
+  drawing_.at(name)->setRadius(radius);
 }
 
-void OpenManipulator::setStartAngularPositionForDrawing(Name name, double start_angular_position)
+void RobotisManipulator::setStartAngularPositionForDrawing(Name name, double start_angular_position)
 {
-  draw_.at(name)->setAngularStartPosition(start_angular_position);
+  drawing_.at(name)->setAngularStartPosition(start_angular_position);
 }
 
-Pose OpenManipulator::getPoseForDrawing(Name name, double tick)
+Pose RobotisManipulator::getPoseForDrawing(Name name, double tick)
 {
-  return draw_.at(name)->getPose(tick);
+  return drawing_.at(name)->getPose(tick);
 }
 
 // JOINT TRAJECTORY
 
-void OpenManipulator::setMoveTime(double move_time)
+void RobotisManipulator::setMoveTime(double move_time)
 {
   move_time_ = move_time;
 }
-void OpenManipulator::setPresentTime(double present_time)
+void RobotisManipulator::setPresentTime(double present_time)
 {
   present_time_ = present_time;
 }
 
-void OpenManipulator::setControlTime(double control_time)
+void RobotisManipulator::setControlTime(double control_time)
 {
   control_time_ = control_time;
 }
 
-double OpenManipulator::getMoveTime()
+double RobotisManipulator::getMoveTime()
 {
   return move_time_;
 }
 
-double OpenManipulator::getControlTime()
+double RobotisManipulator::getControlTime()
 {
   return control_time_;
 }
 
-void OpenManipulator::startMoving()
+void RobotisManipulator::startMoving()
 {
   moving_ = true;
   start_time_ = present_time_;
 }
 
-bool OpenManipulator::isMoving()
+bool RobotisManipulator::isMoving()
 {
   return moving_;
 }
 
-void OpenManipulator::makeTrajectory(std::vector<Trajectory> start,std::vector<Trajectory> goal)
+void RobotisManipulator::makeTrajectory(std::vector<Trajectory> start,std::vector<Trajectory> goal)
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     joint_trajectory_->init(start, goal, move_time_, control_time_);
@@ -644,7 +642,7 @@ void OpenManipulator::makeTrajectory(std::vector<Trajectory> start,std::vector<T
     task_trajectory_->init(start, goal, move_time_, control_time_);
 }
 
-void OpenManipulator::setStartTrajectory(Trajectory trajectory)
+void RobotisManipulator::setStartTrajectory(Trajectory trajectory)
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     start_joint_trajectory_.push_back(trajectory);
@@ -652,7 +650,7 @@ void OpenManipulator::setStartTrajectory(Trajectory trajectory)
     start_task_trajectory_.push_back(trajectory);
 }
 
-void OpenManipulator::clearStartTrajectory()
+void RobotisManipulator::clearStartTrajectory()
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     start_joint_trajectory_.clear();
@@ -660,7 +658,7 @@ void OpenManipulator::clearStartTrajectory()
     start_task_trajectory_.clear();
 }
 
-std::vector<Trajectory> OpenManipulator::getStartTrajectory()
+std::vector<Trajectory> RobotisManipulator::getStartTrajectory()
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     return start_joint_trajectory_;
@@ -668,7 +666,7 @@ std::vector<Trajectory> OpenManipulator::getStartTrajectory()
     return start_task_trajectory_;
 }
 
-void OpenManipulator::setGoalTrajectory(Trajectory trajectory)
+void RobotisManipulator::setGoalTrajectory(Trajectory trajectory)
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     goal_joint_trajectory_.push_back(trajectory);
@@ -676,7 +674,7 @@ void OpenManipulator::setGoalTrajectory(Trajectory trajectory)
     goal_task_trajectory_.push_back(trajectory);
 }
 
-void OpenManipulator::clearGoalTrajectory()
+void RobotisManipulator::clearGoalTrajectory()
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     goal_joint_trajectory_.clear();
@@ -684,7 +682,7 @@ void OpenManipulator::clearGoalTrajectory()
     goal_task_trajectory_.clear();
 }
 
-std::vector<Trajectory> OpenManipulator::getGoalTrajectory()
+std::vector<Trajectory> RobotisManipulator::getGoalTrajectory()
 {
   if(trajectory_type_ == JOINT_TRAJECTORY)
     return goal_joint_trajectory_;
@@ -692,14 +690,14 @@ std::vector<Trajectory> OpenManipulator::getGoalTrajectory()
     return goal_task_trajectory_;
 }
 
-double OpenManipulator::toolMove(Name tool_name, double tool_value)
+double RobotisManipulator::toolMove(Name tool_name, double tool_value)
 {
   double calc_value = tool_value * manipulator_.getComponentToolCoefficient(tool_name);
   manipulator_.setComponentToolValue(tool_name, calc_value);
   return sendActuatorAngle(manipulator_.getComponentToolId(tool_name), calc_value);
 }
 
-void OpenManipulator::wait(double wait_time)
+void RobotisManipulator::wait(double wait_time)
 {
   Trajectory start;
   Trajectory goal;
@@ -732,27 +730,27 @@ void OpenManipulator::wait(double wait_time)
 }
 
 
-void OpenManipulator::setPreviousGoalPosition(std::vector<double> data)
+void RobotisManipulator::setPreviousGoalPosition(std::vector<double> data)
 {
   previous_goal_.position = data;
   return;
 }
 
-std::vector<double> OpenManipulator::getPreviousGoalPosition()
+std::vector<double> RobotisManipulator::getPreviousGoalPosition()
 {
   return previous_goal_.position;
 }
-void OpenManipulator::setStartPoseForDrawing(Name name, Pose start_pose)
+void RobotisManipulator::setStartPoseForDrawing(Name name, Pose start_pose)
 {
-  draw_.at(name)->setStartPose(start_pose);
+  drawing_.at(name)->setStartPose(start_pose);
 }
-void OpenManipulator::setEndPoseForDrawing(Name name, Pose end_pose)
+void RobotisManipulator::setEndPoseForDrawing(Name name, Pose end_pose)
 {
-  draw_.at(name)->setEndPose(end_pose);
+  drawing_.at(name)->setEndPose(end_pose);
 }
 
 
-std::vector<double> OpenManipulator::controlLoop(double present_time, Name tool_name)
+std::vector<double> RobotisManipulator::controlLoop(double present_time, Name tool_name)
 {
   setPresentTime(present_time);
   setAllActiveJointAngle(getPreviousGoalPosition());
@@ -783,7 +781,7 @@ std::vector<double> OpenManipulator::controlLoop(double present_time, Name tool_
   return {};
 }
 
-Goal OpenManipulator::getJointAngleFromJointTraj()
+Goal RobotisManipulator::getJointAngleFromJointTraj()
 {
   double tick_time = present_time_ - start_time_;
   Goal joint_goal_states;
@@ -805,7 +803,7 @@ Goal OpenManipulator::getJointAngleFromJointTraj()
   return joint_goal_states;
 }
 
-Goal OpenManipulator::getJointAngleFromTaskTraj(Name tool_name)
+Goal RobotisManipulator::getJointAngleFromTaskTraj(Name tool_name)
 {
   double tick_time = present_time_ - start_time_;
   Goal joint_goal_states;
@@ -857,7 +855,7 @@ Goal OpenManipulator::getJointAngleFromTaskTraj(Name tool_name)
   return joint_goal_states;
 
 }
-Goal OpenManipulator::getJointAngleFromDrawing(Name tool_name)
+Goal RobotisManipulator::getJointAngleFromDrawing(Name tool_name)
 {
   double tick_time = present_time_ - start_time_;
   Goal joint_goal_states;
@@ -878,7 +876,7 @@ Goal OpenManipulator::getJointAngleFromDrawing(Name tool_name)
   return joint_goal_states;
 }
 
-void OpenManipulator::setJointTrajectory(std::vector<double> joint_angle, double move_time)
+void RobotisManipulator::setJointTrajectory(std::vector<double> joint_angle, double move_time)
 {
   trajectory_type_ = JOINT_TRAJECTORY;
 
@@ -907,7 +905,7 @@ void OpenManipulator::setJointTrajectory(std::vector<double> joint_angle, double
   startMoving();
 }
 
-void OpenManipulator::setJointTrajectory(Name tool_name, Pose goal_pose, double move_time)
+void RobotisManipulator::setJointTrajectory(Name tool_name, Pose goal_pose, double move_time)
 {
   trajectory_type_ = JOINT_TRAJECTORY;
   std::vector<double> goal_position = kinematics_->inverse(&manipulator_, tool_name, goal_pose);
@@ -915,7 +913,7 @@ void OpenManipulator::setJointTrajectory(Name tool_name, Pose goal_pose, double 
 }
 
 
-void OpenManipulator::setTaskTrajectory(Name tool_name, Pose goal_pose, double move_time)
+void RobotisManipulator::setTaskTrajectory(Name tool_name, Pose goal_pose, double move_time)
 {
   trajectory_type_ = TASK_TRAJECTORY;
   move_time_ = move_time;
@@ -953,7 +951,7 @@ void OpenManipulator::setTaskTrajectory(Name tool_name, Pose goal_pose, double m
 
 }
 
-void OpenManipulator::setDrawing(Name tool_name, int object, double move_time, double option)
+void RobotisManipulator::setDrawing(Name tool_name, int object, double move_time, double option)
 {
   trajectory_type_ = DRAWING;
   move_time_ = move_time;
@@ -974,7 +972,7 @@ void OpenManipulator::setDrawing(Name tool_name, int object, double move_time, d
   startMoving();
 }
 
-void OpenManipulator::setDrawing(Name tool_name, int object, double move_time, Vector3f meter)
+void RobotisManipulator::setDrawing(Name tool_name, int object, double move_time, Vector3f meter)
 {
   trajectory_type_ = DRAWING;
   move_time_ = move_time;
