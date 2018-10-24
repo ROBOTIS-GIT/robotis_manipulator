@@ -14,14 +14,20 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Hye-Jong KIM, Darby Lim*/
+/* Authors: Darby Limm, Hye-Jong KIM */
 
-#include "robotis_manipulator/RMManager.h"
+#include "robotis_manipulator/robotis_manipulator_manager.h"
+
+using namespace ROBOTIS_MANIPULATOR;
+
+////////////////////////////////////////////////////////////////////////////
+////////////////////////////////Basic Function//////////////////////////////
+////////////////////////////////////////////////////////////////////////////
 
 using namespace Eigen;
 
 ///////////////////////////*initialize function*/////////////////////////////
-void RM_MANAGER::Manipulator::addWorld(Name world_name,
+void Manipulator::addWorld(Name world_name,
                            Name child_name,
                            Vector3f world_position,
                            Matrix3f world_orientation)
@@ -34,7 +40,7 @@ void RM_MANAGER::Manipulator::addWorld(Name world_name,
   world_.origin.acceleration = VectorXf::Zero(3);
 }
 
-void RM_MANAGER::Manipulator::addComponent(Name my_name,
+void Manipulator::addComponent(Name my_name,
                                Name parent_name,
                                Name child_name,
                                Vector3f relative_position,
@@ -76,12 +82,12 @@ void RM_MANAGER::Manipulator::addComponent(Name my_name,
   component_.insert(std::make_pair(my_name, temp_component));
 }
 
-void RM_MANAGER::Manipulator::addComponentChild(Name my_name, Name child_name)
+void Manipulator::addComponentChild(Name my_name, Name child_name)
 {
   component_.at(my_name).child.push_back(child_name);
 }
 
-void RM_MANAGER::Manipulator::addTool(Name my_name,
+void Manipulator::addTool(Name my_name,
                           Name parent_name,
                           Vector3f relative_position,
                           Matrix3f relative_orientation,
@@ -117,44 +123,44 @@ void RM_MANAGER::Manipulator::addTool(Name my_name,
   component_.insert(std::make_pair(my_name, temp_component));
 }
 
-void RM_MANAGER::Manipulator::checkManipulatorSetting()
+void Manipulator::checkManipulatorSetting()
 {
 
 }
 /////////////////////////////////////////////////////////////////////////////
 
 ///////////////////////////////Set function//////////////////////////////////
-void RM_MANAGER::Manipulator::setWorldPose(Pose world_pose)
+void Manipulator::setWorldPose(Pose world_pose)
 {
   world_.pose = world_pose;
 }
 
-void RM_MANAGER::Manipulator::setWorldPosition(Vector3f world_position)
+void Manipulator::setWorldPosition(Vector3f world_position)
 {
   world_.pose.position = world_position;
 }
 
-void RM_MANAGER::Manipulator::setWorldOrientation(Matrix3f world_orientation)
+void Manipulator::setWorldOrientation(Matrix3f world_orientation)
 {
   world_.pose.orientation = world_orientation;
 }
 
-void RM_MANAGER::Manipulator::setWorldState(State world_state)
+void Manipulator::setWorldState(State world_state)
 {
   world_.origin = world_state;
 }
 
-void RM_MANAGER::Manipulator::setWorldVelocity(VectorXf world_velocity)
+void Manipulator::setWorldVelocity(VectorXf world_velocity)
 {
   world_.origin.velocity = world_velocity;
 }
 
-void RM_MANAGER::Manipulator::setWorldAcceleration(VectorXf world_acceleration)
+void Manipulator::setWorldAcceleration(VectorXf world_acceleration)
 {
   world_.origin.acceleration = world_acceleration;
 }
 
-void RM_MANAGER::Manipulator::setComponent(Name name, Component component, bool *error)
+void Manipulator::setComponent(Name name, Component component, bool *error)
 {
   if (component_.find(name) != component_.end())
   {
@@ -167,7 +173,7 @@ void RM_MANAGER::Manipulator::setComponent(Name name, Component component, bool 
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentPoseToWorld(Name name, Pose pose_to_world)
+void Manipulator::setComponentPoseToWorld(Name name, Pose pose_to_world)
 {
   if (component_.find(name) != component_.end())
   {
@@ -179,7 +185,7 @@ void RM_MANAGER::Manipulator::setComponentPoseToWorld(Name name, Pose pose_to_wo
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentPositionToWorld(Name name, Vector3f position_to_world)
+void Manipulator::setComponentPositionToWorld(Name name, Vector3f position_to_world)
 {
   if (component_.find(name) != component_.end())
   {
@@ -191,7 +197,7 @@ void RM_MANAGER::Manipulator::setComponentPositionToWorld(Name name, Vector3f po
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentOrientationToWorld(Name name, Matrix3f orientation_to_wolrd)
+void Manipulator::setComponentOrientationToWorld(Name name, Matrix3f orientation_to_wolrd)
 {
   if (component_.find(name) != component_.end())
   {
@@ -203,7 +209,7 @@ void RM_MANAGER::Manipulator::setComponentOrientationToWorld(Name name, Matrix3f
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentStateToWorld(Name name, State state_to_world)
+void Manipulator::setComponentStateToWorld(Name name, State state_to_world)
 {
   if (component_.find(name) != component_.end())
   {
@@ -215,7 +221,7 @@ void RM_MANAGER::Manipulator::setComponentStateToWorld(Name name, State state_to
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentVelocityToWorld(Name name, VectorXf velocity)
+void Manipulator::setComponentVelocityToWorld(Name name, VectorXf velocity)
 {
   if (velocity.size() != 6)
   {
@@ -234,7 +240,7 @@ void RM_MANAGER::Manipulator::setComponentVelocityToWorld(Name name, VectorXf ve
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentAccelerationToWorld(Name name, VectorXf acceleration)
+void Manipulator::setComponentAccelerationToWorld(Name name, VectorXf acceleration)
 {
   if (acceleration.size() != 6)
   {
@@ -253,7 +259,7 @@ void RM_MANAGER::Manipulator::setComponentAccelerationToWorld(Name name, VectorX
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentJointAngle(Name name, double angle)
+void Manipulator::setComponentJointAngle(Name name, double angle)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -272,7 +278,7 @@ void RM_MANAGER::Manipulator::setComponentJointAngle(Name name, double angle)
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentJointVelocity(Name name, double angular_velocity)
+void Manipulator::setComponentJointVelocity(Name name, double angular_velocity)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -291,7 +297,7 @@ void RM_MANAGER::Manipulator::setComponentJointVelocity(Name name, double angula
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentJointAcceleration(Name name, double angular_acceleration)
+void Manipulator::setComponentJointAcceleration(Name name, double angular_acceleration)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -310,7 +316,7 @@ void RM_MANAGER::Manipulator::setComponentJointAcceleration(Name name, double an
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentToolOnOff(Name name, bool on_off)
+void Manipulator::setComponentToolOnOff(Name name, bool on_off)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -329,7 +335,7 @@ void RM_MANAGER::Manipulator::setComponentToolOnOff(Name name, bool on_off)
   }
 }
 
-void RM_MANAGER::Manipulator::setComponentToolValue(Name name, double value)
+void Manipulator::setComponentToolValue(Name name, double value)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -348,7 +354,7 @@ void RM_MANAGER::Manipulator::setComponentToolValue(Name name, double value)
   }
 }
 
-void RM_MANAGER::Manipulator::setAllActiveJointAngle(std::vector<double> angle_vector)
+void Manipulator::setAllActiveJointAngle(std::vector<double> angle_vector)
 {
   std::map<Name, Component>::iterator it;
   int8_t index = 0;
@@ -365,207 +371,207 @@ void RM_MANAGER::Manipulator::setAllActiveJointAngle(std::vector<double> angle_v
 
 ///////////////////////////////Get function//////////////////////////////////
 
-int8_t RM_MANAGER::Manipulator::getDOF()
+int8_t Manipulator::getDOF()
 {
   return dof_;
 }
 
-int8_t RM_MANAGER::Manipulator::getComponentSize()
+int8_t Manipulator::getComponentSize()
 {
   return component_.size();
 }
 
-Name RM_MANAGER::Manipulator::getWorldName()
+Name Manipulator::getWorldName()
 {
   return world_.name;
 }
 
-Name RM_MANAGER::Manipulator::getWorldChildName()
+Name Manipulator::getWorldChildName()
 {
   return world_.child;
 }
 
-Pose RM_MANAGER::Manipulator::getWorldPose()
+Pose Manipulator::getWorldPose()
 {
   return world_.pose;
 }
 
-Vector3f RM_MANAGER::Manipulator::getWorldPosition()
+Vector3f Manipulator::getWorldPosition()
 {
   return world_.pose.position;
 }
 
-Matrix3f RM_MANAGER::Manipulator::getWorldOrientation()
+Matrix3f Manipulator::getWorldOrientation()
 {
   return world_.pose.orientation;
 }
 
-State RM_MANAGER::Manipulator::getWorldState()
+State Manipulator::getWorldState()
 {
   return world_.origin;
 }
 
-VectorXf RM_MANAGER::Manipulator::getWorldVelocity()
+VectorXf Manipulator::getWorldVelocity()
 {
   return world_.origin.velocity;
 }
 
-VectorXf RM_MANAGER::Manipulator::getWorldAcceleration()
+VectorXf Manipulator::getWorldAcceleration()
 {
   return world_.origin.acceleration;
 }
 
-std::map<Name, Component> RM_MANAGER::Manipulator::getAllComponent()
+std::map<Name, Component> Manipulator::getAllComponent()
 {
   return component_;
 }
 
-std::map<Name, Component>::iterator RM_MANAGER::Manipulator::getIteratorBegin()
+std::map<Name, Component>::iterator Manipulator::getIteratorBegin()
 {
   return component_.begin();
 }
 
-std::map<Name, Component>::iterator RM_MANAGER::Manipulator::getIteratorEnd()
+std::map<Name, Component>::iterator Manipulator::getIteratorEnd()
 {
   return component_.end();;
 }
 
-Component RM_MANAGER::Manipulator::getComponent(Name name)
+Component Manipulator::getComponent(Name name)
 {
   return component_.at(name);
 }
 
-Name RM_MANAGER::Manipulator::getComponentParentName(Name name)
+Name Manipulator::getComponentParentName(Name name)
 {
   return component_.at(name).parent;
 }
 
-std::vector<Name> RM_MANAGER::Manipulator::getComponentChildName(Name name)
+std::vector<Name> Manipulator::getComponentChildName(Name name)
 {
   return component_.at(name).child;
 }
 
-Pose RM_MANAGER::Manipulator::getComponentPoseToWorld(Name name)
+Pose Manipulator::getComponentPoseToWorld(Name name)
 {
   return component_.at(name).pose_to_world;
 }
 
-Vector3f RM_MANAGER::Manipulator::getComponentPositionToWorld(Name name)
+Vector3f Manipulator::getComponentPositionToWorld(Name name)
 {
   return component_.at(name).pose_to_world.position;
 }
 
-Matrix3f RM_MANAGER::Manipulator::getComponentOrientationToWorld(Name name)
+Matrix3f Manipulator::getComponentOrientationToWorld(Name name)
 {
   return component_.at(name).pose_to_world.orientation;
 }
 
-State RM_MANAGER::Manipulator::getComponentStateToWorld(Name name)
+State Manipulator::getComponentStateToWorld(Name name)
 {
   return component_.at(name).origin;
 }
 
-VectorXf RM_MANAGER::Manipulator::getComponentVelocityToWorld(Name name)
+VectorXf Manipulator::getComponentVelocityToWorld(Name name)
 {
   return component_.at(name).origin.velocity;
 }
 
-VectorXf RM_MANAGER::Manipulator::getComponentAccelerationToWorld(Name name)
+VectorXf Manipulator::getComponentAccelerationToWorld(Name name)
 {
   return component_.at(name).origin.acceleration;
 }
 
-Pose RM_MANAGER::Manipulator::getComponentRelativePoseToParent(Name name)
+Pose Manipulator::getComponentRelativePoseToParent(Name name)
 {
   return component_.at(name).relative_to_parent;
 }
 
-Vector3f RM_MANAGER::Manipulator::getComponentRelativePositionToParent(Name name)
+Vector3f Manipulator::getComponentRelativePositionToParent(Name name)
 {
   return component_.at(name).relative_to_parent.position;
 }
 
-Matrix3f RM_MANAGER::Manipulator::getComponentRelativeOrientationToParent(Name name)
+Matrix3f Manipulator::getComponentRelativeOrientationToParent(Name name)
 {
   return component_.at(name).relative_to_parent.orientation;
 }
 
-Joint RM_MANAGER::Manipulator::getComponentJoint(Name name)
+Joint Manipulator::getComponentJoint(Name name)
 {
   return component_.at(name).joint;
 }
 
-int8_t RM_MANAGER::Manipulator::getComponentJointId(Name name)
+int8_t Manipulator::getComponentJointId(Name name)
 {
   return component_.at(name).joint.id;
 }
 
-double RM_MANAGER::Manipulator::getComponentJointCoefficient(Name name)
+double Manipulator::getComponentJointCoefficient(Name name)
 {
   return component_.at(name).joint.coefficient;
 }
 
-Vector3f RM_MANAGER::Manipulator::getComponentJointAxis(Name name)
+Vector3f Manipulator::getComponentJointAxis(Name name)
 {
   return component_.at(name).joint.axis;
 }
 
-double RM_MANAGER::Manipulator::getComponentJointAngle(Name name)
+double Manipulator::getComponentJointAngle(Name name)
 {
   return component_.at(name).joint.angle;
 }
 
-double RM_MANAGER::Manipulator::getComponentJointVelocity(Name name)
+double Manipulator::getComponentJointVelocity(Name name)
 {
   return component_.at(name).joint.velocity;
 }
 
-double RM_MANAGER::Manipulator::getComponentJointAcceleration(Name name)
+double Manipulator::getComponentJointAcceleration(Name name)
 {
   return component_.at(name).joint.acceleration;
 }
 
-Tool RM_MANAGER::Manipulator::getComponentTool(Name name)
+Tool Manipulator::getComponentTool(Name name)
 {
   return component_.at(name).tool;
 }
 
-int8_t RM_MANAGER::Manipulator::getComponentToolId(Name name)
+int8_t Manipulator::getComponentToolId(Name name)
 {
   return component_.at(name).tool.id;
 }
 
-double RM_MANAGER::Manipulator::getComponentToolCoefficient(Name name)
+double Manipulator::getComponentToolCoefficient(Name name)
 {
   return component_.at(name).tool.coefficient;
 }
 
-bool RM_MANAGER::Manipulator::getComponentToolOnOff(Name name)
+bool Manipulator::getComponentToolOnOff(Name name)
 {
   return component_.at(name).tool.on_off;
 }
 
-double RM_MANAGER::Manipulator::getComponentToolValue(Name name)
+double Manipulator::getComponentToolValue(Name name)
 {
   return component_.at(name).tool.value;
 }
 
-double RM_MANAGER::Manipulator::getComponentMass(Name name)
+double Manipulator::getComponentMass(Name name)
 {
   return component_.at(name).inertia.mass;
 }
 
-Matrix3f RM_MANAGER::Manipulator::getComponentInertiaTensor(Name name)
+Matrix3f Manipulator::getComponentInertiaTensor(Name name)
 {
   return component_.at(name).inertia.inertia_tensor;
 }
 
-Vector3f RM_MANAGER::Manipulator::getComponentCenterOfMass(Name name)
+Vector3f Manipulator::getComponentCenterOfMass(Name name)
 {
   return component_.at(name).inertia.center_of_mass;
 }
 
-std::vector<double> RM_MANAGER::Manipulator::getAllJointAngle()
+std::vector<double> Manipulator::getAllJointAngle()
 {
   std::vector<double> result_vector;
   std::map<Name, Component>::iterator it;
@@ -581,7 +587,7 @@ std::vector<double> RM_MANAGER::Manipulator::getAllJointAngle()
   return result_vector;
 }
 
-std::vector<double> RM_MANAGER::Manipulator::getAllActiveJointAngle()
+std::vector<double> Manipulator::getAllActiveJointAngle()
 {
   std::vector<double> result_vector;
   std::map<Name, Component>::iterator it;
@@ -597,7 +603,7 @@ std::vector<double> RM_MANAGER::Manipulator::getAllActiveJointAngle()
   return result_vector;
 }
 
-std::vector<uint8_t> RM_MANAGER::Manipulator::getAllActiveJointID()
+std::vector<uint8_t> Manipulator::getAllActiveJointID()
 {
   std::vector<uint8_t> active_joint_id;
   std::map<Name, Component>::iterator it;

@@ -16,7 +16,7 @@
 
 /* Authors: Hye-Jong KIM, Darby Lim */
 
-#include "robotis_manipulator/RMMath.h"
+#include "robotis_manipulator/robotis_manipulator_math.h"
 
 
 using namespace Eigen;

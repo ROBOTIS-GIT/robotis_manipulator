@@ -43,11 +43,12 @@ include_directories(
 )
 
 add_library(robotis_manipulator
-  src/RMAPI.cpp
-  src/RMManager.cpp
-  src/RMMath.cpp
-  src/RMTrajectory.cpp
-  src/OpenManipulator.cpp
+  src/robotis_manipulator.cpp
+  src/robotis_manipulator_common.cpp
+  src/robotis_manipulator_debug.cpp
+  src/robotis_manipulator_trajectory_generator.cpp
+  src/robotis_manipulator_manager.cpp
+  src/robotis_manipulator_math.cpp
 )
 
 add_dependencies(robotis_manipulator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

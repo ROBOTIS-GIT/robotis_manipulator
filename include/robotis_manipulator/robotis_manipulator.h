@@ -19,14 +19,14 @@
 #ifndef OPEN_MANIPULATOR_H_
 #define OPEN_MANIPULATOR_H_
 
-#include "RMAPI.h"
-#include "RMManager.h"
-#include "RMTrajectory.h"
-#include "RMMath.h"
+#include "robotis_manipulator_common.h"
+#include "robotis_manipulator_manager.h"
+#include "robotis_manipulator_trajectory_generator.h"
+#include "robotis_manipulator_math.h"
 
 #include <algorithm> // for sort()
 
-#define ACTUATOR_CONTROL_TIME 0.010//0.010
+#define ACTUATOR_CONTROL_TIME 0.010//0.010    //go out
 #define NUM_OF_DOF 4
 
 #define JOINT_TRAJECTORY  0
@@ -49,37 +49,27 @@ void Robot_State(void const *argument);
 void Actuator_Control(void const *argument);
 } // namespace THREAD
 
-namespace OPEN_MANIPULATOR
+namespace ROBOTIS_MANIPULATOR
 {
-typedef struct
-{
-  std::vector<double> position;
-  std::vector<double> velocity;
-  std::vector<double> acceleration;
-  Pose pose;
-  Pose pose_vel;
-  Pose pose_acc;
-} Goal;
 
-class OpenManipulator
+class RobotisManipulator
 {
 private:
-  RM_MANAGER::Manipulator manipulator_;
-  RM_TRAJECTORY::JointTrajectory *joint_trajectory_;
+  Manipulator manipulator_;
+
   Goal previous_goal_;
+
+  JointTrajectory *joint_trajectory_;
   std::vector<Trajectory> start_joint_trajectory_;
   std::vector<Trajectory> goal_joint_trajectory_;
 
-  RM_TRAJECTORY::TaskTrajectory *task_trajectory_;
+  TaskTrajectory *task_trajectory_;
   std::vector<Trajectory> start_task_trajectory_;
   std::vector<Trajectory> goal_task_trajectory_;
 
-  Manager *manager_;
   Kinematics *kinematics_;
-  Actuator *actuator_;
-
-
-  std::map<Name, Draw *> draw_;
+  std::map<Name, Actuator *> actuator_;
+  std::map<Name, Drawing *> drawing_;
 
   double move_time_;
   double control_time_;
@@ -95,12 +85,12 @@ private:
   Name trajectory_type_;
 
 public:
-  OpenManipulator();
-  virtual ~OpenManipulator();
+  RobotisManipulator();
+  virtual ~RobotisManipulator();
 
   void initKinematics(Kinematics *kinematics);
-  void initActuator(Actuator *actuator);
-  void addDraw(Name name, Draw *draw);
+  void addActuator(Name name, Actuator *actuator);
+  void addDraw(Name name, Drawing *drawing);
 
   void initTrajectory(std::vector<double> angle_vector);
 
@@ -213,15 +203,15 @@ public:
   std::vector<double> inverse(Name tool_name, Pose goal_pose);
 
   // ACTUATOR (INCLUDES VIRTUAL)
-  void actuatorInit(const void *arg);
-  void setActuatorControlMode();
-  void actuatorEnable();
-  void actuatorDisable();
-  std::vector<double> sendAllActuatorAngle(std::vector<double> radian_vector);
+  void actuatorInit(Name actuator_name, const void *arg);
+  void setActuatorControlMode(Name actuator_name);
+  void actuatorEnable(Name actuator_name);
+  void actuatorDisable(Name actuator_name);
+  std::vector<double> sendAllActuatorAngle(Name actuator_name, std::vector<double> radian_vector);
   std::vector<double> sendMultipleActuatorAngle(std::vector<uint8_t> active_joint_id, std::vector<double> radian_vector);
   double sendActuatorAngle(uint8_t active_joint_id, double radian);
-  bool sendActuatorSignal(uint8_t active_joint_id, bool onoff);
-  std::vector<double> receiveAllActuatorAngle();
+  bool sendActuatorSignal(Name actuator_name, uint8_t active_joint_id, bool onoff);
+  std::vector<double> receiveAllActuatorAngle(Name actuator_name);
 
   // DRAW (INCLUDES VIRTUAL)
   void drawInit(Name name, double move_time, const void *arg);
@@ -261,7 +251,7 @@ public:
   void setStartPoseForDrawing(Name name, Pose start_pose);
   void setEndPoseForDrawing(Name name, Pose end_pose);
 
-  std::vector<double> controlLoop(double present_time, Name tool_name);
+  std::vector<double> controlLoop(double present_time, Name tool_name, Name actuator_name);
   Goal getJointAngleFromJointTraj();
   Goal getJointAngleFromTaskTraj(Name tool_name);
   Goal getJointAngleFromDrawing(Name tool_name);
@@ -270,9 +260,6 @@ public:
   void setTaskTrajectory(Name tool_name, Pose goal_pose, double move_time);
   void setDrawing(Name tool_name, int object, double move_time, double option);
   void setDrawing(Name tool_name, int object, double move_time, Vector3f meter);
-
-
-
 
 };
 } // namespace OPEN_MANIPULATOR
