@@ -47,7 +47,7 @@ public:
   virtual ~JointActuator(){};
 
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
-  virtual void setMode(uint8_t actuator_id, const void *arg) = 0;
+  virtual void setMode(std::vector<uint8_t> actuator_id, const void *arg) = 0;
   virtual std::vector<uint8_t> getId() = 0;
 
   virtual void enable() = 0;

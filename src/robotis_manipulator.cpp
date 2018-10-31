@@ -805,7 +805,7 @@ void RobotisManipulator::toolActuatorInit(Name actuator_name, uint8_t id, const 
   }
 }
 
-void RobotisManipulator::JointActuatorSetMode(Name actuator_name, uint8_t id_array, const void *arg)
+void RobotisManipulator::JointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
   if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
   {

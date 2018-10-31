@@ -168,7 +168,7 @@ public:
   // ACTUATOR (INCLUDES VIRTUAL)
   void JointActuatorInit(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void toolActuatorInit(Name actuator_name, uint8_t id, const void *arg);
-  void JointActuatorSetMode(Name actuator_name, uint8_t id_array, const void *arg);
+  void JointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void toolActuatorSetMode(Name actuator_name, const void *arg);
   std::vector<uint8_t> getJointActuatorId(Name actuator_name);
   uint8_t getToolActuatorId(Name actuator_name);
