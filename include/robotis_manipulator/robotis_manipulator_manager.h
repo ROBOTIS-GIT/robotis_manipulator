@@ -16,8 +16,8 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM */
 
-#ifndef RMAPI_H_
-#define RMAPI_H_
+#ifndef ROBOTIS_MANAGER_H_
+#define ROBOTIS_MANAGER_H_
 
 #include <eigen3/Eigen/Eigen>
 
@@ -46,7 +46,8 @@ public:
   JointActuator(){};
   virtual ~JointActuator(){};
 
-  virtual void Init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
+  virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
+  virtual void setMode(uint8_t actuator_id, const void *arg) = 0;
   virtual std::vector<uint8_t> getId() = 0;
 
   virtual void enable() = 0;
@@ -64,7 +65,8 @@ public:
   ToolActuator(){};
   virtual ~ToolActuator(){};
 
-  virtual void Init(uint8_t actuator_id, const void *arg) = 0;
+  virtual void init(uint8_t actuator_id, const void *arg) = 0;
+  virtual void setMode(const void *arg) = 0;
   virtual uint8_t getId() = 0;
 
   virtual void enable() = 0;

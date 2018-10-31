@@ -19,7 +19,6 @@
 #include "robotis_manipulator/robotis_manipulator.h"
 
 using namespace ROBOTIS_MANIPULATOR;
-using namespace Eigen;
 
 
 ////////////////////////////////////////////////////////////////////////////
@@ -47,10 +46,10 @@ void RobotisManipulator::addWorld(Name world_name,
   manipulator_.world.child = child_name;
   manipulator_.world.pose.position = world_position;
   manipulator_.world.pose.orientation = world_orientation;
-  manipulator_.world.dynamic_pose.linear.velocity = Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.linear.accelation = Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.angular.velocity = Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.angular.accelation = Vector3d::Zero(3);
+  manipulator_.world.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
+  manipulator_.world.dynamic_pose.linear.accelation = Eigen::Vector3d::Zero(3);
+  manipulator_.world.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
+  manipulator_.world.dynamic_pose.angular.accelation = Eigen::Vector3d::Zero(3);
 }
 
 void RobotisManipulator::addComponent(Name my_name,
@@ -758,7 +757,7 @@ void RobotisManipulator::updatePassiveJointValue()
   return kinematics_->updatePassiveJointValue(&manipulator_);
 }
 
-MatrixXd RobotisManipulator::jacobian(Name tool_name)
+Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
 {
   return kinematics_->jacobian(&manipulator_, tool_name);
 }
@@ -786,7 +785,7 @@ void RobotisManipulator::JointActuatorInit(Name actuator_name, std::vector<uint8
 {
   if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
   {
-    joint_actuator_.at(actuator_name)->Init(id_array, arg);
+    joint_actuator_.at(actuator_name)->init(id_array, arg);
   }
   else
   {
@@ -798,7 +797,31 @@ void RobotisManipulator::toolActuatorInit(Name actuator_name, uint8_t id, const 
 {
   if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
   {
-    tool_actuator_.at(actuator_name)->Init(id, arg);
+    tool_actuator_.at(actuator_name)->init(id, arg);
+  }
+  else
+  {
+    //error
+  }
+}
+
+void RobotisManipulator::JointActuatorSetMode(Name actuator_name, uint8_t id_array, const void *arg)
+{
+  if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
+  {
+    joint_actuator_.at(actuator_name)->setMode(id_array, arg);
+  }
+  else
+  {
+    //error
+  }
+}
+
+void RobotisManipulator::toolActuatorSetMode(Name actuator_name, const void *arg)
+{
+  if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
+  {
+    tool_actuator_.at(actuator_name)->setMode(arg);
   }
   else
   {
@@ -1389,8 +1412,8 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
 
   setStartWayPoint(getPresentTaskWayPoint(tool_name));
 
-  Vector3d goal_position_to_world = goal_pose.position;
-  Vector3d goal_orientation_to_world = RM_MATH::convertQuaternionToRPY(goal_pose.orientation);
+  Eigen::Vector3d goal_position_to_world = goal_pose.position;
+  Eigen::Vector3d goal_orientation_to_world = RM_MATH::convertQuaternionToRPY(goal_pose.orientation);
 
   WayPoint goal_way_point;
   std::vector<WayPoint> goal_way_point_vector;
