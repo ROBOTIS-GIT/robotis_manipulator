@@ -19,7 +19,6 @@
 #ifndef RMTRAJECTORY_H_
 #define RMTRAJECTORY_H_
 
-
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/LU>
 #include <eigen3/Eigen/QR>
@@ -30,32 +29,24 @@
 #include "robotis_manipulator/robotis_manipulator_manager.h"
 
 #define PI 3.141592
-using namespace Eigen;
-
-typedef struct
-{
-  double position;
-  double velocity;
-  double acceleration;
-} Trajectory;
 
 namespace ROBOTIS_MANIPULATOR
 {
 class MinimumJerk
 {
 private:
-  VectorXf coefficient_;
+  Eigen::VectorXd coefficient_;
 
 public:
   MinimumJerk();
   virtual ~MinimumJerk();
 
-  void calcCoefficient(Trajectory start,
-                       Trajectory goal,
+  void calcCoefficient(WayPoint start,
+                       WayPoint goal,
                        double move_time,
                        double control_time);
 
-  VectorXf getCoefficient();
+  Eigen::VectorXd getCoefficient();
 };
 
 class JointTrajectory
@@ -64,25 +55,22 @@ private:
   MinimumJerk trajectory_generator_;
 
   uint8_t joint_num_;
-  MatrixXf coefficient_;
-  std::vector<double> position_;
-  std::vector<double> velocity_;
-  std::vector<double> acceleration_;
+  Eigen::MatrixXd coefficient_;
+  std::vector<WayPoint> joint_way_point_;
 
 public:
   JointTrajectory(uint8_t joint_num);
   virtual ~JointTrajectory();
 
-  void init(std::vector<Trajectory> start,
-            std::vector<Trajectory> goal,
-            double move_time,
-            double control_time);
+  void init(double move_time,
+            double control_time,
+            std::vector<WayPoint> start,
+            std::vector<WayPoint> goal
+            );
 
-  std::vector<double> getPosition(double tick);
-  std::vector<double> getVelocity(double tick);
-  std::vector<double> getAcceleration(double tick);
+  std::vector<WayPoint> getJointWayPoint(double tick);
 
-  MatrixXf getCoefficient();
+  Eigen::MatrixXd getCoefficient();
 };
 
 class TaskTrajectory
@@ -90,26 +78,44 @@ class TaskTrajectory
 private:
   MinimumJerk trajectory_generator_;
 
-  uint8_t num_of_axis_;
-  MatrixXf coefficient_;
-  std::vector<double> position_;
-  std::vector<double> velocity_;
-  std::vector<double> acceleration_;
+  uint8_t dof_;
+  Eigen::MatrixXd position_coefficient_;
+  std::vector<WayPoint> task_position_way_point_;
 
 public:
   TaskTrajectory();
   virtual ~TaskTrajectory();
 
-  void init(std::vector<Trajectory> start,
-            std::vector<Trajectory> goal,
-            double move_time,
-            double control_time);
+  void init(double move_time,
+            double control_time,
+            std::vector<WayPoint> start,
+            std::vector<WayPoint> goal
+            );
+  std::vector<WayPoint> getTaskWayPoint(double tick);
 
-  std::vector<double> getPosition(double tick);
-  std::vector<double> getVelocity(double tick);
-  std::vector<double> getAcceleration(double tick);
+  Eigen::MatrixXd getCoefficient();
+};
 
-  MatrixXf getCoefficient();
+
+class ManipulationTrajectory
+{
+public:
+  TrajectoryType trajectory_type_;
+  Manipulator manipulator_;
+
+  std::vector<WayPoint> start_way_point_;
+  std::vector<WayPoint> goal_way_point_;
+
+  JointTrajectory joint_;
+  TaskTrajectory task_;
+  std::map<Name, DrawingTrajectory *> drawing_;
+  Name present_drawing_object_name_;
+  Name present_controled_tool_name_;
+
+
+public:
+  ManipulationTrajectory();
+  ~ManipulationTrajectory();
 };
 
 
