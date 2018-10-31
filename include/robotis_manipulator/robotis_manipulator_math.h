@@ -25,41 +25,50 @@
 #include <eigen3/Eigen/LU>
 #include <math.h>
 
-using namespace Eigen;
-
 #define DEG2RAD 0.01745329252f //(M_PI / 180.0)
 #define RAD2DEG 57.2957795131f //(180.0 / M_PI)
 
-#define ZERO_VECTOR Vector3f::Zero()
-#define IDENTITY_MATRIX Matrix3f::Identity(3, 3)
+#define ZERO_VECTOR Vector3d::Zero()
+#define IDENTITY_MATRIX Matrix3d::Identity(3, 3)
 
 namespace RM_MATH
 {
-float sign(float number);
+double sign(double number);
 
-Vector3f makeVector3(float v1, float v2, float v3);
-Matrix3f makeMatrix3(float m11, float m12, float m13,
-                     float m21, float m22, float m23,
-                     float m31, float m32, float m33);
+Eigen::Vector3d makeVector3(double v1, double v2, double v3);
+Eigen::Matrix3d makeMatrix3(double m11, double m12, double m13,
+                            double m21, double m22, double m23,
+                            double m31, double m32, double m33);
 
-Vector3f matrixLogarithm(Matrix3f rotation_matrix);
-Matrix3f skewSymmetricMatrix(Vector3f v);
-Matrix3f rodriguesRotationMatrix(Vector3f axis, float angle);
+Eigen::Vector3d getTransitionXYZ(double position_x, double position_y, double position_z);
+Eigen::Matrix4d getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll, double pitch, double yaw);
+Eigen::Matrix4d getInverseTransformation(const Eigen::MatrixXd& transform);
+Eigen::Matrix3d getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , double iyz, double izz);
+Eigen::Matrix3d getRotationX(double angle);
+Eigen::Matrix3d getRotationY(double angle);
+Eigen::Matrix3d getRotationZ(double angle);
+Eigen::Matrix4d getRotation4d(double roll, double pitch, double yaw);
+Eigen::Matrix4d getTranslation4D(double position_x, double position_y, double position_z);
 
-Matrix3f makeRotationMatrix(float roll, float pitch, float yaw);
-Matrix3f makeRotationMatrix(Vector3f rotation_vector);
-Vector3f makeRotationVector(Matrix3f rotation_matrix);
+Eigen::Vector3d convertRotationToRPY(const Eigen::Matrix3d& rotation);
+Eigen::Matrix3d convertRPYToRotation(double roll, double pitch, double yaw);
+Eigen::Quaterniond convertRPYToQuaternion(double roll, double pitch, double yaw);
+Eigen::Quaterniond convertRotationToQuaternion(const Eigen::Matrix3d& rotation);
+Eigen::Vector3d convertQuaternionToRPY(const Eigen::Quaterniond& quaternion);
+Eigen::Matrix3d convertQuaternionToRotation(const Eigen::Quaterniond& quaternion);
+Eigen::Vector3d convertRotToOmega(const Eigen::Matrix3d& rotation_matrix);
 
-Vector3f positionDifference(Vector3f desired_position, Vector3f present_position);
-Vector3f orientationDifference(Matrix3f desired_orientation, Matrix3f present_orientation);
-VectorXf poseDifference(Vector3f desired_position, Vector3f present_position,
-                        Matrix3f desired_orientation, Matrix3f present_orientation);
+Eigen::Vector3d matrixLogarithm(Eigen::Matrix3d rotation_matrix);
+Eigen::Matrix3d skewSymmetricMatrix(Eigen::Vector3d v);
+Eigen::Matrix3d rodriguesRotationMatrix(Eigen::Vector3d axis, double angle);
 
-template <typename T>
-T map(T x, T in_min, T in_max, T out_min, T out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
+Eigen::Vector3d positionDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position);
+Eigen::Vector3d orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
+Eigen::VectorXd poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
+                        Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
+
+template <typename T> T map(T x, T in_min, T in_max, T out_min, T out_max);
+
 } // namespace MATH
 
 #endif // RMMATH_HPP_

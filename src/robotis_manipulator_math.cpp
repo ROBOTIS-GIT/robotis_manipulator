@@ -19,9 +19,7 @@
 #include "robotis_manipulator/robotis_manipulator_math.h"
 
 
-using namespace Eigen;
-
-float RM_MATH::sign(float number)
+double RM_MATH::sign(double number)
 {
   if (number >= 0.0)
   {
@@ -33,30 +31,234 @@ float RM_MATH::sign(float number)
   }
 }
 
-Vector3f RM_MATH::makeVector3(float v1, float v2, float v3)
+/////////////////////convert function/////////////////////////////////////
+
+Eigen::Vector3d RM_MATH::getTransitionXYZ(double position_x, double position_y, double position_z)
 {
-  Vector3f temp;
+  Eigen::Vector3d position;
+
+  position <<
+      position_x,
+      position_y,
+      position_z;
+
+  return position;
+}
+
+Eigen::Matrix4d RM_MATH::getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
+{
+  Eigen::Matrix4d transformation = getRotation4d(roll, pitch, yaw);
+  transformation.coeffRef(0,3) = position_x;
+  transformation.coeffRef(1,3) = position_y;
+  transformation.coeffRef(2,3) = position_z;
+
+  return transformation;
+}
+
+Eigen::Matrix4d RM_MATH::getInverseTransformation(const Eigen::MatrixXd& transform)
+{
+  // If T is Transform Matrix A from B, the BOA is translation component coordi. B to coordi. A
+
+  Eigen::Vector3d vec_boa;
+  Eigen::Vector3d vec_x, vec_y, vec_z;
+  Eigen::Matrix4d inv_t;
+
+  vec_boa(0) = -transform(0,3);
+  vec_boa(1) = -transform(1,3);
+  vec_boa(2) = -transform(2,3);
+
+  vec_x(0) = transform(0,0); vec_x(1) = transform(1,0); vec_x(2) = transform(2,0);
+  vec_y(0) = transform(0,1); vec_y(1) = transform(1,1); vec_y(2) = transform(2,1);
+  vec_z(0) = transform(0,2); vec_z(1) = transform(1,2); vec_z(2) = transform(2,2);
+
+  inv_t <<
+      vec_x(0), vec_x(1), vec_x(2), vec_boa.dot(vec_x),
+      vec_y(0), vec_y(1), vec_y(2), vec_boa.dot(vec_y),
+      vec_z(0), vec_z(1), vec_z(2), vec_boa.dot(vec_z),
+      0, 0, 0, 1;
+
+  return inv_t;
+}
+
+Eigen::Matrix3d RM_MATH::getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , double iyz, double izz)
+{
+  Eigen::Matrix3d inertia;
+
+  inertia <<
+      ixx, ixy, ixz,
+      ixy, iyy, iyz,
+      ixz, iyz, izz;
+
+  return inertia;
+}
+
+Eigen::Matrix3d RM_MATH::getRotationX(double angle)
+{
+  Eigen::Matrix3d rotation(3,3);
+
+  rotation <<
+      1.0, 0.0, 0.0,
+      0.0, cos(angle), -sin(angle),
+      0.0, sin(angle), cos(angle);
+
+  return rotation;
+}
+
+Eigen::Matrix3d RM_MATH::getRotationY(double angle)
+{
+  Eigen::Matrix3d rotation(3,3);
+
+  rotation <<
+      cos(angle), 0.0, sin(angle),
+      0.0, 1.0, 0.0,
+      -sin(angle), 0.0, cos(angle);
+
+  return rotation;
+}
+
+Eigen::Matrix3d RM_MATH::getRotationZ(double angle)
+{
+  Eigen::Matrix3d rotation(3,3);
+
+  rotation <<
+      cos(angle), -sin(angle), 0.0,
+      sin(angle), cos(angle), 0.0,
+      0.0, 0.0, 1.0;
+
+  return rotation;
+}
+
+Eigen::Matrix4d RM_MATH::getRotation4d(double roll, double pitch, double yaw )
+{
+  double sr = sin(roll), cr = cos(roll);
+  double sp = sin(pitch), cp = cos(pitch);
+  double sy = sin(yaw), cy = cos(yaw);
+
+  Eigen::Matrix4d mat_roll;
+  Eigen::Matrix4d mat_pitch;
+  Eigen::Matrix4d mat_yaw;
+
+  mat_roll <<
+      1, 0, 0, 0,
+      0, cr, -sr, 0,
+      0, sr, cr, 0,
+      0, 0, 0, 1;
+
+  mat_pitch <<
+      cp, 0, sp, 0,
+      0, 1, 0, 0,
+      -sp, 0, cp, 0,
+      0, 0, 0, 1;
+
+  mat_yaw <<
+      cy, -sy, 0, 0,
+      sy, cy, 0, 0,
+      0, 0, 1, 0,
+      0, 0, 0, 1;
+
+  Eigen::Matrix4d mat_rpy = (mat_yaw*mat_pitch)*mat_roll;
+
+  return mat_rpy;
+}
+
+Eigen::Matrix4d RM_MATH::getTranslation4D(double position_x, double position_y, double position_z)
+{
+  Eigen::Matrix4d mat_translation;
+
+  mat_translation <<
+      1, 0, 0, position_x,
+      0, 1, 0, position_y,
+      0, 0, 1, position_z,
+      0, 0, 0,          1;
+
+  return mat_translation;
+}
+
+Eigen::Vector3d RM_MATH::convertRotationToRPY(const Eigen::Matrix3d& rotation)
+{
+  Eigen::Vector3d rpy;// = Eigen::MatrixXd::Zero(3,1);
+
+  rpy.coeffRef(0,0) = atan2(rotation.coeff(2,1), rotation.coeff(2,2));
+  rpy.coeffRef(1,0) = atan2(-rotation.coeff(2,0), sqrt(pow(rotation.coeff(2,1), 2) + pow(rotation.coeff(2,2),2)));
+  rpy.coeffRef(2,0) = atan2 (rotation.coeff(1,0), rotation.coeff(0,0));
+
+  return rpy;
+}
+
+Eigen::Matrix3d RM_MATH::convertRPYToRotation(double roll, double pitch, double yaw)
+{
+  Eigen::Matrix3d rotation = getRotationZ(yaw)*getRotationY(pitch)*getRotationX(roll);
+
+  return rotation;
+}
+
+Eigen::Quaterniond RM_MATH::convertRPYToQuaternion(double roll, double pitch, double yaw)
+{
+  Eigen::Quaterniond quaternion;
+  quaternion = convertRPYToRotation(roll,pitch,yaw);
+
+  return quaternion;
+}
+
+Eigen::Quaterniond RM_MATH::convertRotationToQuaternion(const Eigen::Matrix3d& rotation)
+{
+  Eigen::Quaterniond quaternion;
+  quaternion = rotation;
+
+  return quaternion;
+}
+
+Eigen::Vector3d RM_MATH::convertQuaternionToRPY(const Eigen::Quaterniond& quaternion)
+{
+  Eigen::Vector3d rpy = convertRotationToRPY(quaternion.toRotationMatrix());
+
+  return rpy;
+}
+
+Eigen::Matrix3d RM_MATH::convertQuaternionToRotation(const Eigen::Quaterniond& quaternion)
+{
+  Eigen::Matrix3d rotation = quaternion.toRotationMatrix();
+
+  return rotation;
+}
+
+Eigen::Vector3d RM_MATH::convertRotToOmega(const Eigen::Matrix3d& rotation_matrix)
+{
+  return matrixLogarithm(rotation_matrix);
+}
+
+
+///////////////////////////////////////////////////////////////////////
+
+
+Eigen::Vector3d RM_MATH::makeVector3(double v1, double v2, double v3)
+{
+  Eigen::Vector3d temp;
   temp << v1, v2, v3;
   return temp;
 }
 
-Matrix3f RM_MATH::makeMatrix3(float m11, float m12, float m13,
-                           float m21, float m22, float m23,
-                           float m31, float m32, float m33)
+Eigen::Matrix3d RM_MATH::makeMatrix3(double m11, double m12, double m13,
+                                     double m21, double m22, double m23,
+                                     double m31, double m32, double m33)
 {
-  Matrix3f temp;
+  Eigen::Matrix3d temp;
   temp << m11, m12, m13, m21, m22, m23, m31, m32, m33;
   return temp;
 }
 
-Vector3f RM_MATH::matrixLogarithm(Matrix3f rotation_matrix)
-{
-  Matrix3f R = rotation_matrix;
-  Vector3f l = Vector3f::Zero();
-  Vector3f rotation_vector = Vector3f::Zero();
 
-  float theta = 0.0;
-  float diag = 0.0;
+//////////////////////
+
+
+Eigen::Vector3d RM_MATH::matrixLogarithm(Eigen::Matrix3d rotation_matrix)
+{
+  Eigen::Matrix3d R = rotation_matrix;
+  Eigen::Vector3d l = Eigen::Vector3d::Zero();
+  Eigen::Vector3d rotation_vector = Eigen::Vector3d::Zero();
+
+  double theta = 0.0;
+  double diag = 0.0;
   bool diagonal_matrix = R.isDiagonal();
 
   l << R(2, 1) - R(1, 2),
@@ -67,7 +269,7 @@ Vector3f RM_MATH::matrixLogarithm(Matrix3f rotation_matrix)
 
   if (R.isIdentity())
   {
-    rotation_vector.setZero();
+    rotation_vector.setZero(3);
     return rotation_vector;
   }
   
@@ -83,20 +285,20 @@ Vector3f RM_MATH::matrixLogarithm(Matrix3f rotation_matrix)
   return rotation_vector;
 }
 
-Matrix3f RM_MATH::skewSymmetricMatrix(Vector3f v)
+Eigen::Matrix3d RM_MATH::skewSymmetricMatrix(Eigen::Vector3d v)
 {
-  Matrix3f skew_symmetric_matrix = Matrix3f::Zero();
+  Eigen::Matrix3d skew_symmetric_matrix = Eigen::Matrix3d::Zero();
   skew_symmetric_matrix << 0, -v(2), v(1),
       v(2), 0, -v(0),
       -v(1), v(0), 0;
   return skew_symmetric_matrix;
 }
 
-Matrix3f RM_MATH::rodriguesRotationMatrix(Vector3f axis, float angle)
+Eigen::Matrix3d RM_MATH::rodriguesRotationMatrix(Eigen::Vector3d axis, double angle)
 {
-  Matrix3f skew_symmetric_matrix = Matrix3f::Zero();
-  Matrix3f rotation_matrix = Matrix3f::Zero();
-  Matrix3f Identity_matrix = Matrix3f::Identity();
+  Eigen::Matrix3d skew_symmetric_matrix = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d rotation_matrix = Eigen::Matrix3d::Zero();
+  Eigen::Matrix3d Identity_matrix = Eigen::Matrix3d::Identity();
 
   skew_symmetric_matrix = skewSymmetricMatrix(axis);
   rotation_matrix = Identity_matrix +
@@ -105,69 +307,29 @@ Matrix3f RM_MATH::rodriguesRotationMatrix(Vector3f axis, float angle)
   return rotation_matrix;
 }
 
-Matrix3f RM_MATH::makeRotationMatrix(float roll, float pitch, float yaw)
+
+Eigen::Vector3d RM_MATH::positionDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position)
 {
-#if 0 // Euler angle
-  Eigen::Matrix3f rotation_matrix = Eigen::Matrix3f::Identity();
-
-  rotation_matrix << cos(yaw) * cos(pitch), (-1.0f) * sin(yaw) * cos(roll) + cos(yaw) * sin(pitch) * sin(roll), sin(yaw) * sin(roll) + cos(yaw) * sin(pitch) * cos(roll),
-      sin(yaw) * cos(pitch), cos(yaw) * cos(roll) + sin(yaw) * sin(pitch) * sin(roll), (-1.0f) * cos(yaw) * sin(roll) + sin(yaw) * sin(pitch) * cos(roll),
-      (-1.0f) * sin(pitch), cos(pitch) * sin(roll), cos(pitch) * cos(roll);
-
-  return rotation_matrix;
-#endif
-
-  Vector3f rotation_vector;
-
-  rotation_vector(0) = roll;
-  rotation_vector(1) = pitch;
-  rotation_vector(2) = yaw;
-
-  return makeRotationMatrix(rotation_vector);
-}
-
-Matrix3f RM_MATH::makeRotationMatrix(Vector3f rotation_vector)
-{
-  Matrix3f rotation_matrix;
-  Vector3f axis;
-  float angle;
-
-  angle = rotation_vector.norm();
-  axis(0) = rotation_vector(0) / angle;
-  axis(1) = rotation_vector(1) / angle;
-  axis(2) = rotation_vector(2) / angle;
-
-  rotation_matrix = rodriguesRotationMatrix(axis, angle);
-  return rotation_matrix;
-}
-
-Vector3f RM_MATH::makeRotationVector(Matrix3f rotation_matrix)
-{
-  return matrixLogarithm(rotation_matrix);
-}
-
-Vector3f RM_MATH::positionDifference(Vector3f desired_position, Vector3f present_position)
-{
-  Vector3f position_difference;
+  Eigen::Vector3d position_difference;
   position_difference = desired_position - present_position;
 
   return position_difference;
 }
 
-Vector3f RM_MATH::orientationDifference(Matrix3f desired_orientation, Matrix3f present_orientation)
+Eigen::Vector3d RM_MATH::orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
 {
-  Vector3f orientation_difference;
-  orientation_difference = present_orientation * makeRotationVector(present_orientation.transpose() * desired_orientation);                   
+  Eigen::Vector3d orientation_difference;
+  orientation_difference = present_orientation * matrixLogarithm(present_orientation.transpose() * desired_orientation);
 
   return orientation_difference;
 }
 
-VectorXf RM_MATH::poseDifference(Vector3f desired_position, Vector3f present_position,
-                              Matrix3f desired_orientation, Matrix3f present_orientation)
+Eigen::VectorXd RM_MATH::poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
+                              Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
 {
-  Vector3f position_difference;
-  Vector3f orientation_difference;
-  VectorXf pose_difference(6);
+  Eigen::Vector3d position_difference;
+  Eigen::Vector3d orientation_difference;
+  Eigen::VectorXd pose_difference(6);
 
   position_difference = positionDifference(desired_position, present_position);
   orientation_difference = orientationDifference(desired_orientation, present_orientation);
@@ -175,4 +337,13 @@ VectorXf RM_MATH::poseDifference(Vector3f desired_position, Vector3f present_pos
       orientation_difference(0), orientation_difference(1), orientation_difference(2);
 
   return pose_difference;
+}
+
+///////////////////////////////////////////////////
+
+
+template <typename T>
+T RM_MATH::map(T x, T in_min, T in_max, T out_min, T out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
