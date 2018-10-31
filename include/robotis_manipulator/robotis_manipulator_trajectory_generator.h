@@ -16,8 +16,8 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM */
 
-#ifndef RMTRAJECTORY_H_
-#define RMTRAJECTORY_H_
+#ifndef ROBOTIS_MNAMIPULATOR_TRAJECTORY_GENERATOR_H_
+#define ROBOTIS_MNAMIPULATOR_TRAJECTORY_GENERATOR_H_
 
 #include <eigen3/Eigen/Eigen>
 #include <eigen3/Eigen/LU>

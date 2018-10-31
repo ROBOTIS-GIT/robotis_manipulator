@@ -16,8 +16,8 @@
 
 /* Authors: Hye-Jong KIM, Darby Lim */
 
-#ifndef RMMATH_H_
-#define RMMATH_H_
+#ifndef ROBOTIS_MANIPULATOR_MATH_H_
+#define ROBOTIS_MANIPULATOR_MATH_H_
 
 #include <unistd.h>
 
