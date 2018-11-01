@@ -93,7 +93,6 @@ public:
             std::vector<WayPoint> goal
             );
   std::vector<WayPoint> getTaskWayPoint(double tick);
-
   Eigen::MatrixXd getCoefficient();
 };
 

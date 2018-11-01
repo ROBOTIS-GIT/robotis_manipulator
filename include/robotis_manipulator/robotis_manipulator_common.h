@@ -154,7 +154,7 @@ private:
 //  std::map<Name, Component>::iterator it_component_;
 
 public:
-  Manipulator() {}
+  Manipulator();
   ~Manipulator() {}
 
   void addWorld(Name world_name,

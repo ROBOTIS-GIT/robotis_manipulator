@@ -3,7 +3,9 @@
 using namespace ROBOTIS_MANIPULATOR;
 
 /////////////////////Manipulator class//////////////////////
-
+Manipulator::Manipulator()
+    :dof_(0)
+{}
 ///////////////////////////////add function//////////////////////////////////
 void Manipulator::addWorld(Name world_name,
                            Name child_name,

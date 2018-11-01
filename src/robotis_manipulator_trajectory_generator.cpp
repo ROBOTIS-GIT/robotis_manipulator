@@ -136,11 +136,9 @@ Eigen::MatrixXd JointTrajectory::getCoefficient()
 
 TaskTrajectory::TaskTrajectory()
 {
-  dof_ = 3;
-  position_coefficient_ = Eigen::MatrixXd::Identity(6, 3);
-  task_position_way_point_.reserve(3);
+  dof_ = 6;
+  position_coefficient_ = Eigen::MatrixXd::Identity(6, dof_);
 }
-
 TaskTrajectory::~TaskTrajectory() {}
 
 void TaskTrajectory::init(double move_time,
