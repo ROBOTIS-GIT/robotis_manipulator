@@ -42,14 +42,7 @@ void RobotisManipulator::addWorld(Name world_name,
                            Eigen::Vector3d world_position,
                            Eigen::Quaterniond world_orientation)
 {
-  manipulator_.world.name = world_name;
-  manipulator_.world.child = child_name;
-  manipulator_.world.pose.position = world_position;
-  manipulator_.world.pose.orientation = world_orientation;
-  manipulator_.world.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.linear.accelation = Eigen::Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  manipulator_.world.dynamic_pose.angular.accelation = Eigen::Vector3d::Zero(3);
+  manipulator_.addWorld(world_name, child_name, world_position, world_orientation);
 }
 
 void RobotisManipulator::addComponent(Name my_name,
@@ -64,40 +57,13 @@ void RobotisManipulator::addComponent(Name my_name,
                                Eigen::Matrix3d inertia_tensor,
                                Eigen::Vector3d center_of_mass)
 {
-  if (joint_actuator_id != -1)
-    manipulator_.dof++;
-
-  Component temp_component;
-
-  temp_component.parent = parent_name;
-  temp_component.child.push_back(child_name);
-  temp_component.relative_to_parent.position = relative_position;
-  temp_component.relative_to_parent.orientation = relative_orientation;
-  temp_component.pose_to_world.position = Eigen::Vector3d::Zero();
-  temp_component.pose_to_world.orientation = Eigen::Quaterniond::Identity();
-  temp_component.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.linear.accelation = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.angular.accelation = Eigen::Vector3d::Zero(3);
-  temp_component.joint.id = joint_actuator_id;
-  temp_component.joint.coefficient = coefficient;
-  temp_component.joint.axis = axis_of_rotation;
-  temp_component.joint.value = 0.0;
-  temp_component.joint.velocity = 0.0;
-  temp_component.joint.acceleration = 0.0;
-  temp_component.tool.id = -1;
-  temp_component.tool.coefficient = 0;
-  temp_component.tool.value = 0.0;
-  temp_component.inertia.mass = mass;
-  temp_component.inertia.inertia_tensor = inertia_tensor;
-  temp_component.inertia.center_of_mass = center_of_mass;
-
-  manipulator_.component.insert(std::make_pair(my_name, temp_component));
+  manipulator_.addComponent(my_name, parent_name, child_name, relative_position, relative_orientation, axis_of_rotation,
+                            joint_actuator_id, coefficient, mass, inertia_tensor, center_of_mass);
 }
 
 void RobotisManipulator::addComponentChild(Name my_name, Name child_name)
 {
-  manipulator_.component.at(my_name).child.push_back(child_name);
+  manipulator_.addComponentChild(my_name, child_name);
 }
 
 void RobotisManipulator::addTool(Name my_name,
@@ -110,32 +76,9 @@ void RobotisManipulator::addTool(Name my_name,
                           Eigen::Matrix3d inertia_tensor,
                           Eigen::Vector3d center_of_mass)
 {
-  Component temp_component;
 
-  temp_component.parent = parent_name;
-  temp_component.relative_to_parent.position = relative_position;
-  temp_component.relative_to_parent.orientation = relative_orientation;
-  temp_component.pose_to_world.position = Eigen::Vector3d::Zero();
-  temp_component.pose_to_world.orientation = Eigen::Quaterniond::Identity();
-  temp_component.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.linear.accelation = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.dynamic_pose.angular.accelation = Eigen::Vector3d::Zero(3);
-  temp_component.joint.id = -1;
-  temp_component.joint.coefficient = 0;
-  temp_component.joint.axis = Eigen::Vector3d::Zero();
-  temp_component.joint.value = 0.0;
-  temp_component.joint.velocity = 0.0;
-  temp_component.joint.acceleration = 0.0;
-  temp_component.tool.id = tool_id;
-  temp_component.tool.coefficient = coefficient;
-
-  temp_component.tool.value = 0.0;
-  temp_component.inertia.mass = mass;
-  temp_component.inertia.inertia_tensor = inertia_tensor;
-  temp_component.inertia.center_of_mass = center_of_mass;
-
-  manipulator_.component.insert(std::make_pair(my_name, temp_component));
+  manipulator_.addTool(my_name, parent_name, relative_position, relative_orientation, tool_id, coefficient, mass,
+                       inertia_tensor, center_of_mass);
 }
 
 void RobotisManipulator::checkManipulatorSetting()
@@ -165,587 +108,10 @@ void RobotisManipulator::addDrawingTrajectory(Name name, DrawingTrajectory *draw
 
 /////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////Set function//////////////////////////////////
-void RobotisManipulator::setWorldPose(Pose world_pose)
+// MANIPULATOR
+Manipulator RobotisManipulator::getManipulator()
 {
-  manipulator_.world.pose = world_pose;
-}
-
-void RobotisManipulator::setWorldPosition(Eigen::Vector3d world_position)
-{
-  manipulator_.world.pose.position = world_position;
-}
-
-void RobotisManipulator::setWorldOrientation(Eigen::Quaterniond world_orientation)
-{
-  manipulator_.world.pose.orientation = world_orientation;
-}
-
-void RobotisManipulator::setWorldDynamicPose(Dynamicpose world_dynamic_pose)
-{
-  manipulator_.world.dynamic_pose = world_dynamic_pose;
-}
-
-void RobotisManipulator::setWorldLinearVelocity(Eigen::Vector3d world_linear_velocity)
-{
-  manipulator_.world.dynamic_pose.linear.velocity = world_linear_velocity;
-}
-
-void RobotisManipulator::setWorldAngularVelocity(Eigen::Vector3d world_angular_velocity)
-{
-  manipulator_.world.dynamic_pose.angular.velocity = world_angular_velocity;
-}
-
-void RobotisManipulator::setWorldLinearAcceleration(Eigen::Vector3d world_linear_acceleration)
-{
-  manipulator_.world.dynamic_pose.linear.accelation = world_linear_acceleration;
-}
-
-void RobotisManipulator::setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration)
-{
-  manipulator_.world.dynamic_pose.angular.accelation = world_angular_acceleration;
-}
-
-
-void RobotisManipulator::setComponentPoseToWorld(Name name, Pose pose_to_world)
-{
-  if (manipulator_.component.find(name) != manipulator_.component.end())
-  {
-    manipulator_.component.at(name).pose_to_world = pose_to_world;
-  }
-  else
-  {
-    //error
-  }
-}
-
-void RobotisManipulator::setComponentPositionToWorld(Name name, Eigen::Vector3d position_to_world)
-{
-  if (manipulator_.component.find(name) != manipulator_.component.end())
-  {
-    manipulator_.component.at(name).pose_to_world.position = position_to_world;
-  }
-  else
-  {
-    //error
-  }
-}
-
-void RobotisManipulator::setComponentOrientationToWorld(Name name, Eigen::Quaterniond orientation_to_wolrd)
-{
-  if (manipulator_.component.find(name) != manipulator_.component.end())
-  {
-    manipulator_.component.at(name).pose_to_world.orientation = orientation_to_wolrd;
-  }
-  else
-  {
-    //error
-  }
-}
-
-void RobotisManipulator::setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose)
-{
-  if (manipulator_.component.find(name) != manipulator_.component.end())
-  {
-    manipulator_.component.at(name).dynamic_pose = dynamic_pose;
-  }
-  else
-  {
-    //error
-  }
-}
-
-void RobotisManipulator::setJointValue(Name name, double joint_value)
-{
-  if (manipulator_.component.at(name).tool.id > 0)
-  {
-    //error
-  }
-  else
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).joint.value = joint_value;
-    }
-    else
-    {
-      //error
-    }
-  }
-}
-
-void RobotisManipulator::setJointVelocity(Name name, double joint_velocity)
-{
-  if (manipulator_.component.at(name).tool.id > 0)
-  {
-    //error
-  }
-  else
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).joint.velocity = joint_velocity;
-    }
-    else
-    {
-      //error
-    }
-  }
-}
-
-void RobotisManipulator::setJointAcceleration(Name name, double joint_acceleration)
-{
-  if (manipulator_.component.at(name).tool.id > 0)
-  {
-    //error
-  }
-  else
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).joint.acceleration = joint_acceleration;
-    }
-    else
-    {
-      //error
-    }
-  }
-}
-
-void RobotisManipulator::setAllAcutiveJointValue(std::vector<double> joint_value_vector)
-{
-  std::map<Name, Component>::iterator it;
-  int8_t index = 0;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1)
-    {
-      manipulator_.component.at(it->first).joint.value = joint_value_vector.at(index);
-    }
-    index++;
-  }
-}
-
-void RobotisManipulator::setAllAcutiveJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector)
-{
-  std::map<Name, Component>::iterator it;
-  int8_t index = 0;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1)
-    {
-      manipulator_.component.at(it->first).joint.value = joint_value_vector.at(index);
-      manipulator_.component.at(it->first).joint.velocity = joint_velocity_vector.at(index);
-      manipulator_.component.at(it->first).joint.acceleration = joint_acceleration_vector.at(index);
-    }
-    index++;
-  }
-}
-
-void RobotisManipulator::setAllJointValue(std::vector<double> joint_value_vector)
-{
-  std::map<Name, Component>::iterator it;
-  int8_t index = 0;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).tool.id == -1)
-    {
-      manipulator_.component.at(it->first).joint.value = joint_value_vector.at(index);
-    }
-    index++;
-  }
-}
-
-void RobotisManipulator::setAllJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector)
-{
-  std::map<Name, Component>::iterator it;
-  int8_t index = 0;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).tool.id == -1)
-    {
-      manipulator_.component.at(it->first).joint.value = joint_value_vector.at(index);
-      manipulator_.component.at(it->first).joint.velocity = joint_velocity_vector.at(index);
-      manipulator_.component.at(it->first).joint.acceleration = joint_acceleration_vector.at(index);
-    }
-    index++;
-  }
-}
-
-void RobotisManipulator::setJointActuatorValue(Name name, Actuator actuator_value)
-{
-  if (manipulator_.component.at(name).joint.id == -1)
-  {
-    //error not active joint
-  }
-  else
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).joint.value = manipulator_.component.at(name).joint.coefficient *  actuator_value.value;
-      manipulator_.component.at(name).joint.velocity = manipulator_.component.at(name).joint.coefficient *  actuator_value.velocity;
-      manipulator_.component.at(name).joint.acceleration = manipulator_.component.at(name).joint.coefficient *  actuator_value.acceleration;
-    }
-    else
-    {
-      //error
-    }
-  }
-
-}
-
-void RobotisManipulator::setAllJointActuatorValue(std::vector<Actuator> actuator_value_vector)
-{
-  std::map<Name, Component>::iterator it;
-  int8_t index = 0;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1)
-    {
-      manipulator_.component.at(it->first).joint.value = manipulator_.component.at(it->first).joint.coefficient *  actuator_value_vector.at(index).value;
-      manipulator_.component.at(it->first).joint.velocity = manipulator_.component.at(it->first).joint.coefficient *  actuator_value_vector.at(index).velocity;
-      manipulator_.component.at(it->first).joint.acceleration = manipulator_.component.at(it->first).joint.coefficient *  actuator_value_vector.at(index).acceleration;
-    }
-    index++;
-  }
-}
-
-void RobotisManipulator::setToolValue(Name name, double tool_value)
-{
-  if (manipulator_.component.at(name).tool.id > 0)
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).tool.value = tool_value;
-    }
-    else
-    {
-      //error
-    }
-  }
-  else
-  {
-    //error
-  }
-}
-
-void RobotisManipulator::setToolActuatorValue(Name name, double actuator_value)
-{
-  if (manipulator_.component.at(name).tool.id == -1)
-  {
-    //error not tool
-  }
-  else
-  {
-    if (manipulator_.component.find(name) != manipulator_.component.end())
-    {
-      manipulator_.component.at(name).tool.value = manipulator_.component.at(name).tool.coefficient * actuator_value;
-    }
-    else
-    {
-      //error
-    }
-  }
-}
-
-
-///////////////////////////////Get function//////////////////////////////////
-
-int8_t RobotisManipulator::getDOF()
-{
-  return manipulator_.dof;
-}
-
-Name RobotisManipulator::getWorldName()
-{
-  return manipulator_.world.name;
-}
-
-Name RobotisManipulator::getWorldChildName()
-{
-  return manipulator_.world.child;
-}
-
-Pose RobotisManipulator::getWorldPose()
-{
-  return manipulator_.world.pose;
-}
-
-Eigen::Vector3d RobotisManipulator::getWorldPosition()
-{
-  return manipulator_.world.pose.position;
-}
-
-Eigen::Quaterniond RobotisManipulator::getWorldOrientation()
-{
-  return manipulator_.world.pose.orientation;
-}
-
-Dynamicpose RobotisManipulator::getWorldDynamicPose()
-{
-  return manipulator_.world.dynamic_pose;
-}
-
-int8_t RobotisManipulator::getComponentSize()
-{
-  return manipulator_.component.size();
-}
-
-std::map<Name, Component> RobotisManipulator::getAllComponent()
-{
-  return manipulator_.component;
-}
-
-std::map<Name, Component>::iterator RobotisManipulator::getIteratorBegin()
-{
-  return manipulator_.component.begin();
-}
-
-std::map<Name, Component>::iterator RobotisManipulator::getIteratorEnd()
-{
-  return manipulator_.component.end();;
-}
-
-Component RobotisManipulator::getComponent(Name name)
-{
-  return manipulator_.component.at(name);
-}
-
-Name RobotisManipulator::getComponentParentName(Name name)
-{
-  return manipulator_.component.at(name).parent;
-}
-
-std::vector<Name> RobotisManipulator::getComponentChildName(Name name)
-{
-  return manipulator_.component.at(name).child;
-}
-
-Pose RobotisManipulator::getComponentPoseToWorld(Name name)
-{
-  return manipulator_.component.at(name).pose_to_world;
-}
-
-Eigen::Vector3d RobotisManipulator::getComponentPositionToWorld(Name name)
-{
-  return manipulator_.component.at(name).pose_to_world.position;
-}
-
-Eigen::Quaterniond RobotisManipulator::getComponentOrientationToWorld(Name name)
-{
-  return manipulator_.component.at(name).pose_to_world.orientation;
-}
-
-Dynamicpose RobotisManipulator::getComponentDynamicPoseToWorld(Name name)
-{
-  return manipulator_.component.at(name).dynamic_pose;
-}
-
-Pose RobotisManipulator::getComponentRelativePoseToParent(Name name)
-{
-  return manipulator_.component.at(name).relative_to_parent;
-}
-
-Eigen::Vector3d RobotisManipulator::getComponentRelativePositionToParent(Name name)
-{
-  return manipulator_.component.at(name).relative_to_parent.position;
-}
-
-Eigen::Quaterniond RobotisManipulator::getComponentRelativeOrientationToParent(Name name)
-{
-  return manipulator_.component.at(name).relative_to_parent.orientation;
-}
-
-Joint RobotisManipulator::getComponentJoint(Name name)
-{
-  return manipulator_.component.at(name).joint;
-}
-
-int8_t RobotisManipulator::getJointId(Name name)
-{
-  return manipulator_.component.at(name).joint.id;
-}
-
-double RobotisManipulator::getJointCoefficient(Name name)
-{
-  return manipulator_.component.at(name).joint.coefficient;
-}
-
-Eigen::Vector3d RobotisManipulator::getJointAxis(Name name)
-{
-  return manipulator_.component.at(name).joint.axis;
-}
-
-double RobotisManipulator::getJointValue(Name name)
-{
-
-  return manipulator_.component.at(name).joint.value;
-}
-
-double RobotisManipulator::getJointVelocity(Name name)
-{
-  return manipulator_.component.at(name).joint.velocity;
-}
-
-double RobotisManipulator::getJointAcceleration(Name name)
-{
-  return manipulator_.component.at(name).joint.acceleration;
-}
-
-Actuator RobotisManipulator::getJointActuatorValue(Name name)
-{
-  Actuator result_value;
-
-  result_value.value = manipulator_.component.at(name).joint.value / manipulator_.component.at(name).joint.coefficient;
-  result_value.velocity = manipulator_.component.at(name).joint.velocity / manipulator_.component.at(name).joint.coefficient;
-  result_value.acceleration = manipulator_.component.at(name).joint.acceleration / manipulator_.component.at(name).joint.coefficient;
-
-  return result_value;
-}
-
-int8_t RobotisManipulator::getToolId(Name name)
-{
-  return manipulator_.component.at(name).tool.id;
-}
-
-double RobotisManipulator::getToolCoefficient(Name name)
-{
-  return manipulator_.component.at(name).tool.coefficient;
-}
-
-double RobotisManipulator::getToolValue(Name name)
-{
-  return manipulator_.component.at(name).tool.value;
-}
-
-double RobotisManipulator::getToolActuatorValue(Name name)
-{
-  return manipulator_.component.at(name).tool.value / manipulator_.component.at(name).tool.coefficient;
-}
-
-double RobotisManipulator::getComponentMass(Name name)
-{
-  return manipulator_.component.at(name).inertia.mass;
-}
-
-Eigen::Matrix3d RobotisManipulator::getComponentInertiaTensor(Name name)
-{
-  return manipulator_.component.at(name).inertia.inertia_tensor;
-}
-
-Eigen::Vector3d RobotisManipulator::getComponentCenterOfMass(Name name)
-{
-  return manipulator_.component.at(name).inertia.center_of_mass;
-}
-
-std::vector<double> RobotisManipulator::getAllJointValue()
-{
-  std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).tool.id == -1) // Check whether Tool or not
-    {
-      // This is not Tool -> This is Joint
-      result_vector.push_back(manipulator_.component.at(it->first).joint.value);
-    }
-  }
-  return result_vector;
-}
-
-std::vector<double> RobotisManipulator::getAllActiveJointValue()
-{
-  std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
-    {
-      // Active
-      result_vector.push_back(manipulator_.component.at(it->first).joint.value);
-    }
-  }
-  return result_vector;
-}
-
-void RobotisManipulator::getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector)
-{
-  std::map<Name, Component>::iterator it;
-
-  joint_value_vector->clear();
-  joint_velocity_vector->clear();
-  joint_accelerarion_vector->clear();
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
-    {
-      // Active
-      joint_value_vector->push_back(manipulator_.component.at(it->first).joint.value);
-      joint_velocity_vector->push_back(manipulator_.component.at(it->first).joint.velocity);
-      joint_accelerarion_vector->push_back(manipulator_.component.at(it->first).joint.acceleration);
-    }
-  }
-}
-
-std::vector<Actuator> RobotisManipulator::getAllJointActuatorValue()
-{
-  std::map<Name, Component>::iterator it;
-  Actuator result;
-  std::vector<Actuator> result_vector;
-
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
-    {
-      // Active
-      result.value = manipulator_.component.at(it->first).joint.value / manipulator_.component.at(it->first).joint.coefficient;
-      result.velocity = manipulator_.component.at(it->first).joint.velocity / manipulator_.component.at(it->first).joint.coefficient;
-      result.acceleration = manipulator_.component.at(it->first).joint.acceleration / manipulator_.component.at(it->first).joint.coefficient;
-
-      result_vector.push_back(result);
-    }
-  }
-
-  return result_vector;
-}
-
-std::vector<uint8_t> RobotisManipulator::getAllJointID()
-{
-  std::vector<uint8_t> joint_id;
-  std::map<Name, Component>::iterator it;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).tool.id == -1)
-    {
-      joint_id.push_back(manipulator_.component.at(it->first).joint.id);
-    }
-  }
-  return joint_id;
-}
-
-std::vector<uint8_t> RobotisManipulator::getAllActiveJointID()
-{
-  std::vector<uint8_t> active_joint_id;
-  std::map<Name, Component>::iterator it;
-
-  for (it = manipulator_.component.begin(); it != manipulator_.component.end(); it++)
-  {
-    if (manipulator_.component.at(it->first).joint.id != -1)
-    {
-      active_joint_id.push_back(manipulator_.component.at(it->first).joint.id);
-    }
-  }
-  return active_joint_id;
+  return manipulator_;
 }
 
 
@@ -1148,8 +514,8 @@ void RobotisManipulator::initWayPoint(std::vector<double> joint_value_vector)
   setPresentJointWayPoint(joint_way_point_vector);
   UpdatePresentWayPoint();
 
-  trajectory_.start_way_point_.reserve(manipulator_.dof);
-  trajectory_.goal_way_point_.reserve(manipulator_.dof);
+  trajectory_.start_way_point_.reserve(manipulator_.getDOF());
+  trajectory_.goal_way_point_.reserve(manipulator_.getDOF());
 }
 
 
@@ -1161,28 +527,28 @@ void RobotisManipulator::UpdatePresentWayPoint()
 
   //dynamics (velocity)
   std::map<Name, Component>::iterator it;
-  Eigen::VectorXd joint_velocity(trajectory_.manipulator_.dof);
+  Eigen::VectorXd joint_velocity(trajectory_.manipulator_.getDOF());
   Eigen::VectorXd pose_velocity(6);
   Eigen::Vector3d linear_velocity;
   Eigen::Vector3d angular_velocity;
 
   int8_t index = 0;
-  for (it = trajectory_.manipulator_.component.begin(); it != trajectory_.manipulator_.component.end(); it++)
+  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
   {
-    if (trajectory_.manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
+    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
     {
       // Active
-      joint_velocity[index] = trajectory_.manipulator_.component.at(it->first).joint.velocity;
+      joint_velocity[index] = trajectory_.manipulator_.getJointVelocity(it->first);
       index++;
     }
   }
-  for (it = trajectory_.manipulator_.component.begin(); it != trajectory_.manipulator_.component.end(); it++)
+  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
   {
-    if (trajectory_.manipulator_.component.at(it->first).tool.id != -1)
+    if (trajectory_.manipulator_.getToolId(it->first) != -1)
     {
-      for(int index2 = 0; index2 < trajectory_.manipulator_.dof; index2++)
+      for(int index2 = 0; index2 < trajectory_.manipulator_.getDOF(); index2++)
       {
-        joint_velocity[index2] =trajectory_.manipulator_.component.at(it->first).joint.velocity;
+        joint_velocity[index2] =trajectory_.manipulator_.getJointVelocity(it->first);
       }
       pose_velocity = kinematics_->jacobian(&trajectory_.manipulator_, it->first)*joint_velocity;
       linear_velocity[0] = pose_velocity[0];
@@ -1191,11 +557,13 @@ void RobotisManipulator::UpdatePresentWayPoint()
       angular_velocity[0] = pose_velocity[3];
       angular_velocity[1] = pose_velocity[4];
       angular_velocity[2] = pose_velocity[5];
-      trajectory_.manipulator_.component.at(it->first).dynamic_pose.linear.velocity = linear_velocity;
-      trajectory_.manipulator_.component.at(it->first).dynamic_pose.linear.velocity = angular_velocity;
+      Dynamicpose dynamic_pose;
+      dynamic_pose.linear.velocity = linear_velocity;
+      dynamic_pose.angular.velocity = angular_velocity;
+      dynamic_pose.linear.accelation = Eigen::Vector3d::Zero();
+      dynamic_pose.angular.accelation = Eigen::Vector3d::Zero();
 
-      trajectory_.manipulator_.component.at(it->first).dynamic_pose.linear.accelation = Eigen::Vector3d::Zero();
-      trajectory_.manipulator_.component.at(it->first).dynamic_pose.linear.accelation = Eigen::Vector3d::Zero();
+      trajectory_.manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
     }
   }
 }
@@ -1205,13 +573,13 @@ void RobotisManipulator::setPresentJointWayPoint(std::vector<WayPoint> joint_val
   std::map<Name, Component>::iterator it;
   int8_t index = 0;
 
-  for (it = trajectory_.manipulator_.component.begin(); it != trajectory_.manipulator_.component.end(); it++)
+  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
   {
-    if (trajectory_.manipulator_.component.at(it->first).joint.id != -1)
+    if (trajectory_.manipulator_.getJointId(it->first) != -1)
     {
-      trajectory_.manipulator_.component.at(it->first).joint.value = joint_value_vector.at(index).value;
-      trajectory_.manipulator_.component.at(it->first).joint.velocity = joint_value_vector.at(index).velocity;
-      trajectory_.manipulator_.component.at(it->first).joint.acceleration = joint_value_vector.at(index).acceleration;
+      trajectory_.manipulator_.setJointValue(it->first, joint_value_vector.at(index).value);
+      trajectory_.manipulator_.setJointVelocity(it->first, joint_value_vector.at(index).velocity);
+      trajectory_.manipulator_.setJointAcceleration(it->first, joint_value_vector.at(index).acceleration);
     }
     index++;
   }
@@ -1219,11 +587,13 @@ void RobotisManipulator::setPresentJointWayPoint(std::vector<WayPoint> joint_val
 
 void RobotisManipulator::setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_value_vector)
 {
+  Pose pose_to_world;
+  Dynamicpose dynamic_pose;
   for(int pos_count = 0; pos_count < 3; pos_count++)
   {
-    trajectory_.manipulator_.component.at(tool_name).pose_to_world.position[pos_count] = tool_value_vector.at(pos_count).value;
-    trajectory_.manipulator_.component.at(tool_name).dynamic_pose.linear.velocity[pos_count] = tool_value_vector.at(pos_count).velocity;
-    trajectory_.manipulator_.component.at(tool_name).dynamic_pose.linear.accelation[pos_count] = tool_value_vector.at(pos_count).acceleration;
+    pose_to_world.position[pos_count] = tool_value_vector.at(pos_count).value;
+    dynamic_pose.linear.velocity[pos_count] = tool_value_vector.at(pos_count).velocity;
+    dynamic_pose.linear.accelation[pos_count] = tool_value_vector.at(pos_count).acceleration;
   }
 
   Eigen::Vector3d orientation_value_vector;
@@ -1237,9 +607,12 @@ void RobotisManipulator::setPresentTaskWayPoint(Name tool_name, std::vector<WayP
   }
   Eigen::Quaterniond orientation_Quat;
   orientation_Quat = RM_MATH::convertRPYToQuaternion(orientation_value_vector[0], orientation_value_vector[1], orientation_value_vector[2]);
-  trajectory_.manipulator_.component.at(tool_name).pose_to_world.orientation = orientation_Quat;
-  trajectory_.manipulator_.component.at(tool_name).dynamic_pose.angular.velocity = orientation_velocity_vector;
-  trajectory_.manipulator_.component.at(tool_name).dynamic_pose.angular.accelation = orientation_acceleration_vector;
+  pose_to_world.orientation = orientation_Quat;
+  dynamic_pose.angular.velocity = orientation_velocity_vector;
+  dynamic_pose.angular.accelation = orientation_acceleration_vector;
+
+  trajectory_.manipulator_.setComponentPoseToWorld(tool_name, pose_to_world);
+  trajectory_.manipulator_.setComponentDynamicPoseToWorld(tool_name, dynamic_pose);
 }
 
 
@@ -1249,14 +622,14 @@ std::vector<WayPoint> RobotisManipulator::getPresentJointWayPoint()
   WayPoint result;
   std::vector<WayPoint> result_vector;
 
-  for (it = trajectory_.manipulator_.component.begin(); it != trajectory_.manipulator_.component.end(); it++)
+  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
   {
-    if (trajectory_.manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
+    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
     {
       // Active
-      result.value = trajectory_.manipulator_.component.at(it->first).joint.value;
-      result.velocity = trajectory_.manipulator_.component.at(it->first).joint.velocity;
-      result.acceleration = trajectory_.manipulator_.component.at(it->first).joint.acceleration;
+      result.value = trajectory_.manipulator_.getJointValue(it->first);
+      result.velocity = trajectory_.manipulator_.getJointVelocity(it->first);
+      result.acceleration = trajectory_.manipulator_.getJointAcceleration(it->first);
 
       result_vector.push_back(result);
     }
@@ -1270,19 +643,19 @@ std::vector<WayPoint> RobotisManipulator::getPresentTaskWayPoint(Name tool_name)
   WayPoint result;
   for(int pos_count = 0; pos_count < 3; pos_count++)
   {
-    result.value = trajectory_.manipulator_.component.at(tool_name).pose_to_world.position[pos_count];
-    result.velocity = trajectory_.manipulator_.component.at(tool_name).dynamic_pose.linear.velocity[pos_count];
-    result.acceleration = trajectory_.manipulator_.component.at(tool_name).dynamic_pose.linear.accelation[pos_count];
+    result.value = trajectory_.manipulator_.getComponentPoseToWorld(tool_name).position[pos_count];
+    result.velocity = trajectory_.manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.velocity[pos_count];
+    result.acceleration = trajectory_.manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.accelation[pos_count];
 
     result_vector.push_back(result);
   }
 
-  Eigen::Vector3d orientation_vector =  RM_MATH::convertQuaternionToRPY(trajectory_.manipulator_.component.at(tool_name).pose_to_world.orientation);
+  Eigen::Vector3d orientation_vector =  RM_MATH::convertQuaternionToRPY(trajectory_.manipulator_.getComponentPoseToWorld(tool_name).orientation);
   for(int ori_count = 0; ori_count < 3; ori_count++)
   {
     result.value = orientation_vector[ori_count];
-    result.velocity = trajectory_.manipulator_.component.at(tool_name).dynamic_pose.angular.velocity[ori_count];
-    result.acceleration = trajectory_.manipulator_.component.at(tool_name).dynamic_pose.angular.accelation[ori_count];
+    result.velocity = trajectory_.manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.velocity[ori_count];
+    result.acceleration = trajectory_.manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.accelation[ori_count];
 
     result_vector.push_back(result);
   }
@@ -1356,7 +729,7 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
 
   WayPoint goal_way_point;
   std::vector<WayPoint> goal_way_point_vector;
-  for (uint8_t index = 0; index < trajectory_.manipulator_.dof; index++)
+  for (uint8_t index = 0; index < trajectory_.manipulator_.getDOF(); index++)
   {
     goal_way_point.value = goal_joint_angle.at(index);
     goal_way_point.velocity = 0.0;
@@ -1386,7 +759,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
 
   WayPoint goal_way_point;
   std::vector<WayPoint> goal_way_point_vector;
-  for (uint8_t index = 0; index < trajectory_.manipulator_.dof; index++)
+  for (uint8_t index = 0; index < trajectory_.manipulator_.getDOF(); index++)
   {
     goal_way_point.value = goal_joint_angle.at(index);
     goal_way_point.velocity = 0.0;
@@ -1583,23 +956,20 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
 
   std::map<Name, Component>::iterator it;
   int index_it;
-  for (it = trajectory_.manipulator_.component.begin(); it != trajectory_.manipulator_.component.end(); it++)
+  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
   {
-    if (trajectory_.manipulator_.component.at(it->first).joint.id != -1) // Check whether Active or Passive
+    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
     {
       // Active
-      result.at(index_it).value = result_joint_actuator_value.at(index_it).value / trajectory_.manipulator_.component.at(it->first).joint.coefficient;
-      result.at(index_it).velocity = result_joint_actuator_value.at(index_it).velocity / trajectory_.manipulator_.component.at(it->first).joint.coefficient;
-      result.at(index_it).acceleration = result_joint_actuator_value.at(index_it).acceleration / trajectory_.manipulator_.component.at(it->first).joint.coefficient;
+      result.at(index_it).value = result_joint_actuator_value.at(index_it).value / trajectory_.manipulator_.getJointCoefficient(it->first);
+      result.at(index_it).velocity = result_joint_actuator_value.at(index_it).velocity / trajectory_.manipulator_.getJointCoefficient(it->first);
+      result.at(index_it).acceleration = result_joint_actuator_value.at(index_it).acceleration / trajectory_.manipulator_.getJointCoefficient(it->first);
     }
     index_it++;
   }
 
   return result;
 }
-
-
-
 
 
 std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
@@ -1629,7 +999,7 @@ void RobotisManipulator::trajectoryControllerLoop(double present_time)
     joint_goal_way_point = TrajectoryTimeCounter();
 
     ///////////////////send target angle////////////////////////////////
-    sendAllJointActuatorValue(getAllActiveJointID(), joint_goal_way_point);
+    sendAllJointActuatorValue(manipulator_.getAllActiveJointID(), joint_goal_way_point);
     /////////////////////////////////////////////////////////////////////
   }
 
@@ -1637,8 +1007,8 @@ void RobotisManipulator::trajectoryControllerLoop(double present_time)
 
 double RobotisManipulator::toolMove(Name tool_name, double tool_value)
 {
-  setToolValue(tool_name, tool_value);
-  sendToolActuatorValue(getToolId(tool_name), getToolActuatorValue(tool_name));
+  manipulator_.setToolValue(tool_name, tool_value);
+  sendToolActuatorValue(manipulator_.getToolId(tool_name), manipulator_.getToolActuatorValue(tool_name));
 }
 
 
