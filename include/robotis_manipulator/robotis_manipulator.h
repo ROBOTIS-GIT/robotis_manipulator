@@ -88,7 +88,7 @@ public:
   void initWayPoint(std::vector<double> joint_value_vector); //****
 
   // MANIPULATOR
-  Manipulator getManipulator();
+  Manipulator *getManipulator();
 
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();

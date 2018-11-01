@@ -109,9 +109,9 @@ void RobotisManipulator::addDrawingTrajectory(Name name, DrawingTrajectory *draw
 /////////////////////////////////////////////////////////////////////////////
 
 // MANIPULATOR
-Manipulator RobotisManipulator::getManipulator()
+Manipulator *RobotisManipulator::getManipulator()
 {
-  return manipulator_;
+  return &manipulator_;
 }
 
 
