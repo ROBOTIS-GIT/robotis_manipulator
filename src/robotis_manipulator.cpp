@@ -931,6 +931,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       goal_pose.position[1] = task_way_point_value.at(1).value;
       goal_pose.position[2] = task_way_point_value.at(2).value;
       goal_pose.orientation = RM_MATH::convertRPYToQuaternion(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
+
       joint_value = kinematics_->inverse(&trajectory_.manipulator_, trajectory_.present_controled_tool_name_, goal_pose);
       joint_way_point_value.resize(joint_value.size());
 
