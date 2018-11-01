@@ -889,21 +889,11 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
 {
   std::vector<Actuator> result_joint_actuator_value;
   std::vector<Actuator> result;
+  std::vector<WayPoint> joint_way_point_value;
 
   if(trajectory_.trajectory_type_ == JOINT_TRAJECTORY)
   {
-    std::vector<WayPoint> joint_way_point_value;
-    joint_way_point_value = trajectory_.joint_.getJointWayPoint(tick_time);
-    setPresentJointWayPoint(joint_way_point_value);
-    UpdatePresentWayPoint();
-    result_joint_actuator_value.resize(joint_way_point_value.size());
-
-    for(int index = 0; index < joint_way_point_value.size(); index++)
-    {
-      result_joint_actuator_value.at(index).value = joint_way_point_value.at(index).value;
-      result_joint_actuator_value.at(index).velocity = joint_way_point_value.at(index).velocity;
-      result_joint_actuator_value.at(index).acceleration = joint_way_point_value.at(index).acceleration;
-    }
+    joint_way_point_value = trajectory_.joint_.getJointWayPoint(tick_time);UpdatePresentWayPoint();
   }
   else if(trajectory_.trajectory_type_ == TASK_TRAJECTORY)
   {
@@ -918,13 +908,13 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     goal_pose.position[2] = task_way_point_value.at(2).value;
     goal_pose.orientation = RM_MATH::convertRPYToQuaternion(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
     joint_value = kinematics_->inverse(&trajectory_.manipulator_, trajectory_.present_controled_tool_name_, goal_pose);
-    result_joint_actuator_value.resize(joint_value.size());
+    joint_way_point_value.resize(joint_value.size());
 
     for(int index = 0; index < joint_value.size(); index++)
     {
-      result_joint_actuator_value.at(index).value = joint_value.at(index);
-      result_joint_actuator_value.at(index).velocity = 0.0;
-      result_joint_actuator_value.at(index).acceleration = 0.0;
+      joint_way_point_value.at(index).value = joint_value.at(index);
+      joint_way_point_value.at(index).velocity = 0.0;
+      joint_way_point_value.at(index).acceleration = 0.0;
     }
   }
   else if(trajectory_.trajectory_type_ == DRAWING_TRAJECTORY)
@@ -942,31 +932,32 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       goal_pose.position[2] = task_way_point_value.at(2).value;
       goal_pose.orientation = RM_MATH::convertRPYToQuaternion(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
       joint_value = kinematics_->inverse(&trajectory_.manipulator_, trajectory_.present_controled_tool_name_, goal_pose);
-      result_joint_actuator_value.resize(joint_value.size());
+      joint_way_point_value.resize(joint_value.size());
 
       for(int index = 0; index < joint_value.size(); index++)
       {
-        result_joint_actuator_value.at(index).value = joint_value.at(index);
-        result_joint_actuator_value.at(index).velocity = 0.0;
-        result_joint_actuator_value.at(index).acceleration = 0.0;
+        joint_way_point_value.at(index).value = joint_value.at(index);
+        joint_way_point_value.at(index).velocity = 0.0;
+        joint_way_point_value.at(index).acceleration = 0.0;
       }
     }
     else if(trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->output_way_point_type_==JOINT)
     {
       std::vector<WayPoint> joint_way_point_value;
-      joint_way_point_value = trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->getJointWayPoint(tick_time);
-      setPresentJointWayPoint(joint_way_point_value);
-      UpdatePresentWayPoint();
-      result_joint_actuator_value.resize(joint_way_point_value.size());
-
-      for(int index = 0; index < joint_way_point_value.size(); index++)
-      {
-        result_joint_actuator_value.at(index).value = joint_way_point_value.at(index).value;
-        result_joint_actuator_value.at(index).velocity = joint_way_point_value.at(index).velocity;
-        result_joint_actuator_value.at(index).acceleration = joint_way_point_value.at(index).acceleration;
-      }
+      joint_way_point_value = trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->getJointWayPoint(tick_time);   
     }
   }
+
+  setPresentJointWayPoint(joint_way_point_value);
+  UpdatePresentWayPoint();
+  result_joint_actuator_value.resize(joint_way_point_value.size());
+  for(int index = 0; index < joint_way_point_value.size(); index++)
+  {
+    result_joint_actuator_value.at(index).value = joint_way_point_value.at(index).value;
+    result_joint_actuator_value.at(index).velocity = joint_way_point_value.at(index).velocity;
+    result_joint_actuator_value.at(index).acceleration = joint_way_point_value.at(index).acceleration;
+  }
+
   std::map<Name, Component>::iterator it;
   int index_it=0;
   result.resize(result_joint_actuator_value.size());
@@ -982,6 +973,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     }
     index_it++;
   }
+
 
   return result;
 }
