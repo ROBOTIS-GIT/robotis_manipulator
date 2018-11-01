@@ -28,8 +28,8 @@
 #define DEG2RAD 0.01745329252f //(M_PI / 180.0)
 #define RAD2DEG 57.2957795131f //(180.0 / M_PI)
 
-#define ZERO_VECTOR Vector3d::Zero()
-#define IDENTITY_MATRIX Matrix3d::Identity(3, 3)
+#define ZERO_VECTOR Eigen::Vector3d::Zero()
+#define IDENTITY_MATRIX Eigen::Matrix3d::Identity(3, 3)
 
 namespace RM_MATH
 {
