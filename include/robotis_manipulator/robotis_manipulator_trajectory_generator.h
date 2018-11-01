@@ -59,9 +59,10 @@ private:
   std::vector<WayPoint> joint_way_point_;
 
 public:
-  JointTrajectory(uint8_t joint_num);
+  JointTrajectory();
   virtual ~JointTrajectory();
 
+  void setJointNum(uint8_t joint_num);
   void init(double move_time,
             double control_time,
             std::vector<WayPoint> start,
@@ -114,8 +115,8 @@ public:
 
 
 public:
-  ManipulationTrajectory();
-  ~ManipulationTrajectory();
+  ManipulationTrajectory() {}
+  ~ManipulationTrajectory() {}
 };
 
 

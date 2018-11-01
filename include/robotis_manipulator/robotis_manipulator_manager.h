@@ -85,8 +85,8 @@ public:
   virtual ~DrawingTrajectory(){};
 
   virtual void init(double move_time, double control_time, std::vector<WayPoint> start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
-  virtual std::vector<WayPoint> getJointWayPoint(double tick);
-  virtual std::vector<WayPoint> getTaskWayPoint(double tick);
+  virtual std::vector<WayPoint> getJointWayPoint(double tick) = 0;
+  virtual std::vector<WayPoint> getTaskWayPoint(double tick) = 0;
 
 };
 

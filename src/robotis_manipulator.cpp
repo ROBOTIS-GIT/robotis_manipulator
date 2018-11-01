@@ -147,7 +147,7 @@ std::vector<double> RobotisManipulator::inverse(Name tool_name, Pose goal_pose)
 
 
 // ACTUATOR
-void RobotisManipulator::JointActuatorInit(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
+void RobotisManipulator::jointActuatorInit(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
   if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
   {
@@ -171,7 +171,7 @@ void RobotisManipulator::toolActuatorInit(Name actuator_name, uint8_t id, const 
   }
 }
 
-void RobotisManipulator::JointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
+void RobotisManipulator::jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
   if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
   {
@@ -498,11 +498,14 @@ bool RobotisManipulator::isMoving()
 
 // Way Point
 
-void RobotisManipulator::initWayPoint(std::vector<double> joint_value_vector)
+void RobotisManipulator::initTrajectoryWayPoint()
 {
   trajectory_.manipulator_ = manipulator_;
   std::vector<WayPoint> joint_way_point_vector;
   WayPoint joint_way_point;
+  std::vector<double> joint_value_vector;
+  joint_value_vector = manipulator_.getAllActiveJointValue();
+
   for(int index; index < joint_value_vector.size(); index++)
   {
     joint_way_point.value = joint_value_vector.at(index);
@@ -698,6 +701,7 @@ std::vector<WayPoint> RobotisManipulator::getGoalWayPoint()
 
 void RobotisManipulator::makeJointTrajectory()
 {
+  trajectory_.joint_.setJointNum(manipulator_.getDOF());
   trajectory_.joint_.init(manipulation_time_.move_time, manipulation_time_.control_time, trajectory_.start_way_point_, trajectory_.goal_way_point_);
 }
 

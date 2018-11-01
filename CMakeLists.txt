@@ -11,6 +11,7 @@ add_compile_options(-std=c++11)
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
     roscpp
+    cmake_modules
 )
 find_package(Eigen3 REQUIRED)
 
@@ -51,5 +52,5 @@ add_library(robotis_manipulator
   src/robotis_manipulator_math.cpp
 )
 
-add_dependencies(robotis_manipulator ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+add_dependencies(robotis_manipulator ${catkin_EXPORTED_TARGETS})
 target_link_libraries(robotis_manipulator ${catkin_LIBRARIES})

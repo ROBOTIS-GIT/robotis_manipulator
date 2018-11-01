@@ -85,7 +85,7 @@ public:
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator);
   void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
 
-  void initWayPoint(std::vector<double> joint_value_vector); //****
+  void initTrajectoryWayPoint(); //****
 
   // MANIPULATOR
   Manipulator *getManipulator();
@@ -98,9 +98,9 @@ public:
   std::vector<double> inverse(Name tool_name, Pose goal_pose);
 
   // ACTUATOR (INCLUDES VIRTUAL)
-  void JointActuatorInit(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
+  void jointActuatorInit(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void toolActuatorInit(Name actuator_name, uint8_t id, const void *arg);
-  void JointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
+  void jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void toolActuatorSetMode(Name actuator_name, const void *arg);
   std::vector<uint8_t> getJointActuatorId(Name actuator_name);
   uint8_t getToolActuatorId(Name actuator_name);

@@ -67,12 +67,8 @@ Eigen::VectorXd MinimumJerk::getCoefficient()
 
 //-------------------- Joint trajectory --------------------//
 
-JointTrajectory::JointTrajectory(uint8_t joint_num)
-{
-  joint_num_ = joint_num;
-  coefficient_ = Eigen::MatrixXd::Identity(6, joint_num);
-  joint_way_point_.reserve(joint_num);
-}
+JointTrajectory::JointTrajectory()
+{}
 
 JointTrajectory::~JointTrajectory() {}
 
@@ -89,6 +85,12 @@ void JointTrajectory::init(double move_time,
 
     coefficient_.col(index) = trajectory_generator_.getCoefficient();
   }
+}
+
+void JointTrajectory::setJointNum(uint8_t joint_num)
+{
+  joint_num_ = joint_num;
+  coefficient_ = Eigen::MatrixXd::Identity(6, joint_num);
 }
 
 std::vector<WayPoint> JointTrajectory::getJointWayPoint(double tick)
