@@ -206,8 +206,8 @@ public:
   void setJointValue(Name name, double joint_value);
   void setJointVelocity(Name name, double joint_velocity);
   void setJointAcceleration(Name name, double joint_acceleration);
-  void setAllAcutiveJointValue(std::vector<double> joint_value_vector);
-  void setAllAcutiveJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector);
+  void setAllActiveJointValue(std::vector<double> joint_value_vector);
+  void setAllActiveJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector);
   void setAllJointValue(std::vector<double> joint_value_vector);
   void setAllJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector);
   void setJointActuatorValue(Name name, Actuator actuator_value);

@@ -258,7 +258,7 @@ void Manipulator::setJointAcceleration(Name name, double joint_acceleration)
   }
 }
 
-void Manipulator::setAllAcutiveJointValue(std::vector<double> joint_value_vector)
+void Manipulator::setAllActiveJointValue(std::vector<double> joint_value_vector)
 {
   std::map<Name, Component>::iterator it;
   int8_t index = 0;
@@ -273,7 +273,7 @@ void Manipulator::setAllAcutiveJointValue(std::vector<double> joint_value_vector
   }
 }
 
-void Manipulator::setAllAcutiveJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector)
+void Manipulator::setAllActiveJointValue(std::vector<double> joint_value_vector, std::vector<double> joint_velocity_vector, std::vector<double> joint_acceleration_vector)
 {
   std::map<Name, Component>::iterator it;
   int8_t index = 0;
