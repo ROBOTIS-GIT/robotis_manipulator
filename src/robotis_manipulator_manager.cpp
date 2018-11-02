@@ -17,3 +17,26 @@
 /* Authors: Darby Limm, Hye-Jong KIM */
 
 #include "robotis_manipulator/robotis_manipulator_manager.h"
+
+using namespace ROBOTIS_MANIPULATOR;
+
+bool JointActuator::findId(uint8_t actuator_id)
+{
+  std::vector<uint8_t> id = getId();
+  for(int index = 0; index < id.size(); index++)
+  {
+    if(id.at(index) == actuator_id);
+    return true;
+  }
+  return false;
+}
+
+
+bool ToolActuator::findId(uint8_t actuator_id)
+{
+  if(getId() == actuator_id);
+  {
+    return true;
+  }
+  return false;
+}

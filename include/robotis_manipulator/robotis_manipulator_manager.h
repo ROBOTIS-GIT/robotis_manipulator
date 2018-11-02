@@ -16,8 +16,8 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM */
 
-#ifndef ROBOTIS_MANAGER_H_
-#define ROBOTIS_MANAGER_H_
+#ifndef ROBOTIS_MANIPULATOR_MANAGER_H_
+#define ROBOTIS_MANIPULATOR_MANAGER_H_
 
 #include <eigen3/Eigen/Eigen>
 
@@ -53,10 +53,10 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendJointActuatorValue(uint8_t actuator_id, Actuator value) = 0;
-  virtual bool sendMultipleJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<Actuator> value_vector) = 0;
-  virtual Actuator receiveJointActuatorValue(uint8_t actuator_id) = 0;
-  virtual std::vector<Actuator> receiveMultipleJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
+  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<Actuator> value_vector) = 0;
+  virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
+
+  bool findId(uint8_t actuator_id);
 };
 
 class ToolActuator
@@ -72,8 +72,10 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendToolActuatorValue(uint8_t actuator_id, double value) = 0;
-  virtual double receiveToolActuatorValue(uint8_t actuator_id) = 0;
+  virtual bool sendToolActuatorValue(double value) = 0;
+  virtual double receiveToolActuatorValue() = 0;
+
+  bool findId(uint8_t actuator_id);
 };
 
 

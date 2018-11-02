@@ -112,7 +112,6 @@ public:
   Name present_drawing_object_name_;
   Name present_controled_tool_name_;
 
-
 public:
   ManipulationTrajectory() {}
   ~ManipulationTrajectory() {}
