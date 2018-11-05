@@ -825,6 +825,24 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
   startMoving();
 }
 
+void RobotisManipulator::jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = goal_position;
+  goal_pose.orientation = trajectory_.manipulator_.getComponentOrientationToWorld(tool_name);
+  jointTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
+void RobotisManipulator::jointTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.manipulator_.getComponentPositionToWorld(tool_name);
+  goal_pose.orientation = goal_orientation;
+  jointTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
 void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, double move_time)
 {
   trajectory_.trajectory_type_ = JOINT_TRAJECTORY;
@@ -853,6 +871,24 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
 
   makeJointTrajectory();
   startMoving();
+}
+
+void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = goal_position;
+  goal_pose.orientation = trajectory_.manipulator_.getComponentOrientationToWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
+void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.manipulator_.getComponentPositionToWorld(tool_name);
+  goal_pose.orientation = goal_orientation;
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
 void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, double move_time)
@@ -888,7 +924,6 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
     goal_way_point_vector.push_back(goal_way_point);
   }
   setGoalWayPoint(goal_way_point_vector);
-
   makeTaskTrajectory();
   startMoving();
 }
@@ -956,8 +991,6 @@ void RobotisManipulator::TrajectoryWait(double wait_time)
   makeJointTrajectory();
   startMoving();
 }
-
-
 
 std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_time)
 {
