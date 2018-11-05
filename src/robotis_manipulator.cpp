@@ -686,9 +686,9 @@ void RobotisManipulator::setPresentTaskWayPoint(Name tool_name, std::vector<WayP
     orientation_velocity_vector[ori_count] = tool_value_vector.at(ori_count+3).velocity;
     orientation_acceleration_vector[ori_count] = tool_value_vector.at(ori_count+3).acceleration;
   }
-  Eigen::Matrix3d orientation_Quat;
-  orientation_Quat = RM_MATH::convertRPYToRotation(orientation_value_vector[0], orientation_value_vector[1], orientation_value_vector[2]);
-  pose_to_world.orientation = orientation_Quat;
+  Eigen::Matrix3d orientation;
+  orientation = RM_MATH::convertRPYToRotation(orientation_value_vector[0], orientation_value_vector[1], orientation_value_vector[2]);
+  pose_to_world.orientation = orientation;
   dynamic_pose.angular.velocity = orientation_velocity_vector;
   dynamic_pose.angular.accelation = orientation_acceleration_vector;
 
