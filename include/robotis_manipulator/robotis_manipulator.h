@@ -180,9 +180,7 @@ public:
 
   // Additional Functions
   void trajectoryControllerLoop(double present_time);
-
   double toolMove(Name tool_name, double tool_value);
-
 
 };
 } // namespace OPEN_MANIPULATOR

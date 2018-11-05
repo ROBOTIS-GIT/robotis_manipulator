@@ -25,7 +25,7 @@ typedef struct _Pose
 typedef struct _Dynamicvector
 {
   Eigen::Vector3d velocity;
-  Eigen::Vector3d accelation;
+  Eigen::Vector3d effort;
 } Dynamicvector;
 
 typedef struct _Dynamicpose
@@ -51,7 +51,7 @@ typedef struct _Point
 {
   double value;
   double velocity;
-  double acceleration;
+  double effort;
 } Actuator, WayPoint;
 
 ///////////////////Trajectory struct////////////////////////
@@ -81,7 +81,7 @@ typedef struct _Joint
   double coefficient; //actuator angle to joint angle
   double value;
   double velocity;
-  double acceleration;
+  double effort;
 } Joint;
 
 ////////////////////////////////////////////////////////////
@@ -191,8 +191,8 @@ public:
   void setWorldDynamicPose(Dynamicpose world_dynamic_pose);
   void setWorldLinearVelocity(Eigen::Vector3d world_linear_velocity);
   void setWorldAngularVelocity(Eigen::Vector3d world_angular_velocity);
-  void setWorldLinearAcceleration(Eigen::Vector3d world_angular_velocity);
-  void setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration);
+  void setWorldLinearEffort(Eigen::Vector3d world_angular_velocity);
+  void setWorldAngularEffort(Eigen::Vector3d world_angular_effort);
   void setComponent(Name component_name, Component component);
   void setComponentActuatorName(Name component_name, Name actuator_name);
   void setComponentPoseToWorld(Name name, Pose pose_to_world);
@@ -201,7 +201,7 @@ public:
   void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
   void setJointValue(Name name, double joint_value);
   void setJointVelocity(Name name, double joint_velocity);
-  void setJointAcceleration(Name name, double joint_acceleration);
+  void setJointeffort(Name name, double joint_effort);
   void setJointValue(Name name, WayPoint joint_value);
 //  void setJointValueFromId(int8_t joint_id, WayPoint joint_value);
   void setAllActiveJointValue(std::vector<double> joint_value_vector);
@@ -244,7 +244,7 @@ public:
   Eigen::Vector3d getJointAxis(Name name);
   double getJointValue(Name name);
   double getJointVelocity(Name name);
-  double getJointAcceleration(Name name);
+  double getJointeffort(Name name);
 //  Actuator getJointActuatorValue(Name name);
   int8_t getToolId(Name name);
   double getToolCoefficient(Name name);
@@ -267,9 +267,6 @@ public:
 };
 
 ////////////////////////////////////////////////////////////
-
-  Pose transWayPointToPose(std::vector<WayPoint> way_point_vector);
-
 
 
 }
