@@ -462,11 +462,10 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
   std::vector<Actuator> single_value_vector;
   std::vector<uint8_t> single_actuator_id;
-  single_value_vector.resize(4);
   for(it_joint_actuator_ = joint_actuator_.begin(); it_joint_actuator_ != joint_actuator_.end(); it_joint_actuator_++)
   {
     single_actuator_id = joint_actuator_.at(it_joint_actuator_->first)->getId();
-    //single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
+    single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
     for(int index=0; index < single_actuator_id.size(); index++)
     {
       get_actuator_id.push_back(single_actuator_id.at(index));
@@ -962,13 +961,13 @@ void RobotisManipulator::TrajectoryWait(double wait_time)
 
 std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_time)
 {
-  std::vector<Actuator> result_joint_actuator_value;
-  std::vector<Actuator> result;
   std::vector<WayPoint> joint_way_point_value;
 
   if(trajectory_.trajectory_type_ == JOINT_TRAJECTORY)
   {
-    joint_way_point_value = trajectory_.joint_.getJointWayPoint(tick_time);UpdatePresentWayPoint();
+    joint_way_point_value = trajectory_.joint_.getJointWayPoint(tick_time);
+    setPresentJointWayPoint(joint_way_point_value);
+    UpdatePresentWayPoint();
   }
   else if(trajectory_.trajectory_type_ == TASK_TRAJECTORY)
   {
@@ -991,10 +990,17 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       joint_way_point_value.at(index).velocity = 0.0;
       joint_way_point_value.at(index).acceleration = 0.0;
     }
+    setPresentJointWayPoint(joint_way_point_value);
   }
   else if(trajectory_.trajectory_type_ == DRAWING_TRAJECTORY)
   {
-    if(trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->output_way_point_type_==TASK)
+    if(trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->output_way_point_type_==JOINT)
+    {
+      joint_way_point_value = trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->getJointWayPoint(tick_time);
+      setPresentJointWayPoint(joint_way_point_value);
+      UpdatePresentWayPoint();
+    }
+    else if(trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->output_way_point_type_==TASK)
     {
       std::vector<WayPoint> task_way_point_value;
       Pose goal_pose;
@@ -1016,42 +1022,11 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
         joint_way_point_value.at(index).velocity = 0.0;
         joint_way_point_value.at(index).acceleration = 0.0;
       }
-    }
-    else if(trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->output_way_point_type_==JOINT)
-    {
-      std::vector<WayPoint> joint_way_point_value;
-      joint_way_point_value = trajectory_.drawing_.at(trajectory_.present_drawing_object_name_)->getJointWayPoint(tick_time);   
+      setPresentJointWayPoint(joint_way_point_value);
     }
   }
 
-  setPresentJointWayPoint(joint_way_point_value);
-  UpdatePresentWayPoint();
-  result_joint_actuator_value.resize(joint_way_point_value.size());
-  for(int index = 0; index < joint_way_point_value.size(); index++)
-  {
-    result_joint_actuator_value.at(index).value = joint_way_point_value.at(index).value;
-    result_joint_actuator_value.at(index).velocity = joint_way_point_value.at(index).velocity;
-    result_joint_actuator_value.at(index).acceleration = joint_way_point_value.at(index).acceleration;
-  }
-
-  std::map<Name, Component>::iterator it;
-  int index_it=0;
-  result.resize(result_joint_actuator_value.size());
-
-  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
-  {
-    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
-    {
-      // Active
-      result.at(index_it).value = result_joint_actuator_value.at(index_it).value / trajectory_.manipulator_.getJointCoefficient(it->first);
-      result.at(index_it).velocity = result_joint_actuator_value.at(index_it).velocity / trajectory_.manipulator_.getJointCoefficient(it->first);
-      result.at(index_it).acceleration = result_joint_actuator_value.at(index_it).acceleration / trajectory_.manipulator_.getJointCoefficient(it->first);
-    }
-    index_it++;
-  }
-
-
-  return result;
+  return joint_way_point_value;
 }
 
 
