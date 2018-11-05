@@ -462,17 +462,18 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
   std::vector<Actuator> single_value_vector;
   std::vector<uint8_t> single_actuator_id;
-
+  single_value_vector.resize(4);
   for(it_joint_actuator_ = joint_actuator_.begin(); it_joint_actuator_ != joint_actuator_.end(); it_joint_actuator_++)
   {
     single_actuator_id = joint_actuator_.at(it_joint_actuator_->first)->getId();
-    single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
+    //single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
     for(int index=0; index < single_actuator_id.size(); index++)
     {
       get_actuator_id.push_back(single_actuator_id.at(index));
       get_value_vector.push_back(single_value_vector.at(index));
     }
   }
+
   std::map<Name, Component>::iterator it;
   std::vector<WayPoint> result_vector;
   WayPoint result;
@@ -980,7 +981,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     goal_pose.position[0] = task_way_point_value.at(0).value;
     goal_pose.position[1] = task_way_point_value.at(1).value;
     goal_pose.position[2] = task_way_point_value.at(2).value;
-    goal_pose.orientation = RM_MATH::convertRPYToQuaternion(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
+    goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
     joint_value = kinematics_->inverse(&trajectory_.manipulator_, trajectory_.present_controled_tool_name_, goal_pose);
     joint_way_point_value.resize(joint_value.size());
 
@@ -1004,7 +1005,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       goal_pose.position[0] = task_way_point_value.at(0).value;
       goal_pose.position[1] = task_way_point_value.at(1).value;
       goal_pose.position[2] = task_way_point_value.at(2).value;
-      goal_pose.orientation = RM_MATH::convertRPYToQuaternion(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
+      goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
 
       joint_value = kinematics_->inverse(&trajectory_.manipulator_, trajectory_.present_controled_tool_name_, goal_pose);
       joint_way_point_value.resize(joint_value.size());
