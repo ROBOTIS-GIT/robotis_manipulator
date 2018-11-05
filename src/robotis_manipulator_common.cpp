@@ -790,6 +790,17 @@ Name Manipulator::findToolComponentNameFromId(int8_t id)
   }
 }
 
+Pose transTaskWayPointToPose(std::vector<WayPoint> way_point_vector)
+{
+  Pose pose;
+  pose.position[0] = way_point_vector.at(0).value;
+  pose.position[1] = way_point_vector.at(1).value;
+  pose.position[2] = way_point_vector.at(2).value;
+  pose.orientation = RM_MATH::convertRPYToRotation(way_point_vector.at(3).value, way_point_vector.at(4).value, way_point_vector.at(5).value);
+
+  return pose;
+}
+
 
 
 

@@ -7,6 +7,7 @@
 #include <math.h>
 #include <vector>
 #include <map>
+#include "robotis_manipulator_math.h"
 
 namespace ROBOTIS_MANIPULATOR
 {
@@ -266,6 +267,10 @@ public:
 };
 
 ////////////////////////////////////////////////////////////
+
+  Pose transWayPointToPose(std::vector<WayPoint> way_point_vector);
+
+
 
 }
 
