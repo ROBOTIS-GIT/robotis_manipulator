@@ -462,17 +462,18 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
   std::vector<Actuator> single_value_vector;
   std::vector<uint8_t> single_actuator_id;
-
+  single_value_vector.resize(4);
   for(it_joint_actuator_ = joint_actuator_.begin(); it_joint_actuator_ != joint_actuator_.end(); it_joint_actuator_++)
   {
     single_actuator_id = joint_actuator_.at(it_joint_actuator_->first)->getId();
-    single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
+    //single_value_vector = joint_actuator_.at(it_joint_actuator_->first)->receiveJointActuatorValue(single_actuator_id);
     for(int index=0; index < single_actuator_id.size(); index++)
     {
       get_actuator_id.push_back(single_actuator_id.at(index));
       get_value_vector.push_back(single_value_vector.at(index));
     }
   }
+
   std::map<Name, Component>::iterator it;
   std::vector<WayPoint> result_vector;
   WayPoint result;

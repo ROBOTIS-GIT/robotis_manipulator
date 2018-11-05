@@ -24,7 +24,6 @@
 #include "robotis_manipulator_trajectory_generator.h"
 #include "robotis_manipulator_math.h"
 
-#include <unistd.h>
 #include <algorithm> // for sort()
 
 
