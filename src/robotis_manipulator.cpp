@@ -943,6 +943,15 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
   startMoving();
 }
 
+void RobotisManipulator::taskTrajectoryMoveToPresentPosition(Name tool_name, Eigen::Vector3d meter, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.manipulator_.getComponentPositionToWorld(tool_name) + meter;
+  goal_pose.orientation = trajectory_.manipulator_.getComponentOrientationToWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
 void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time)
 {
   Pose goal_pose;
@@ -998,7 +1007,7 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
   startMoving();
 }
 
-void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name, double *arg, double move_time)
+void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time)
 {
   trajectory_.trajectory_type_ = DRAWING_TRAJECTORY;
   trajectory_.present_controled_tool_name_ = tool_name;
@@ -1018,7 +1027,7 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name
   startMoving();
 }
 
-void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, double *arg, double move_time)
+void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, const void *arg, double move_time)
 {
   trajectory_.trajectory_type_ = DRAWING_TRAJECTORY;
 
@@ -1161,6 +1170,7 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
 
     return joint_goal_way_point;
   }
+  return {};
 }
 
 void RobotisManipulator::toolMove(Name tool_name, double tool_value)
@@ -1170,10 +1180,5 @@ void RobotisManipulator::toolMove(Name tool_name, double tool_value)
     tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))->sendToolActuatorValue(tool_value);
   }
 }
-
-
-
-
-
 
 
