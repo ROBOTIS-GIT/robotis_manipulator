@@ -36,10 +36,11 @@ private:
   Manipulator manipulator_;
   ManipulationTrajectory trajectory_;
 
+  bool using_platform_;
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, JointActuator *>::iterator it_joint_actuator_;
 
-  std::map<Name, ToolActuator *> tool_actuator_;  
+  std::map<Name, ToolActuator *> tool_actuator_;
   std::map<Name, ToolActuator *>::iterator it_tool_actuator_;
 
   Kinematics *kinematics_;
@@ -119,6 +120,7 @@ public:
 
   // MANIPULATOR
   Manipulator *getManipulator();
+  void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
 
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();
@@ -179,8 +181,8 @@ public:
   void TrajectoryWait(double wait_time);
 
   // Additional Functions
-  void trajectoryControllerLoop(double present_time);
-  double toolMove(Name tool_name, double tool_value);
+  std::vector<WayPoint> trajectoryControllerLoop(double present_time);
+  void toolMove(Name tool_name, double tool_value);
 
 };
 } // namespace OPEN_MANIPULATOR
