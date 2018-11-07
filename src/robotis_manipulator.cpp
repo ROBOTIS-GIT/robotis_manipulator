@@ -885,10 +885,6 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
   setMoveTime(move_time);
 
   std::vector<WayPoint> temp = getPresentJointWayPoint();
-  printf("-----joint start  %lf, %lf, %lf %lf\n", temp.at(0).value
-         , temp.at(1).value
-         , temp.at(2).value
-         , temp.at(3).value);
   setStartWayPoint(getPresentJointWayPoint());
 
   WayPoint goal_way_point;
@@ -1002,10 +998,6 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
 
   setMoveTime(move_time);
   std::vector<WayPoint> temp = getPresentTaskWayPoint(tool_name);
-  printf("-----start  %lf, %lf, %lf %lf\n", temp.at(0).value
-         , temp.at(1).value
-         , temp.at(2).value
-         , temp.at(3).value);
   setStartWayPoint(getPresentTaskWayPoint(tool_name));
 
   Eigen::Vector3d goal_position_to_world = goal_pose.position;
@@ -1029,6 +1021,7 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
     goal_way_point_vector.push_back(goal_way_point);
   }
   setGoalWayPoint(goal_way_point_vector);
+
   if(isMoving())
   {
     moving_=false;
@@ -1052,6 +1045,7 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name
   setMoveTime(move_time);
 
   setStartWayPoint(getPresentTaskWayPoint(tool_name));
+
   if(isMoving())
   {
     moving_=false;
@@ -1074,14 +1068,13 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, const void *ar
   setMoveTime(move_time);
 
   setStartWayPoint(getPresentJointWayPoint());
+
   if(isMoving())
   {
     moving_=false;
     while(!step_moving_) ;
   }
-
   makeDrawingTrajectory(drawing_name, arg);
-
   startMoving();
 }
 
@@ -1189,7 +1182,6 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
 std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
 {
   double tick_time = manipulation_time_.present_time - manipulation_time_.start_time;
-  printf("present = %lf start = %lf tick_time = %lf   ", manipulation_time_.present_time, manipulation_time_.start_time, tick_time);
 
   if(tick_time < manipulation_time_.move_time)
   {
@@ -1213,9 +1205,6 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
     step_moving_ = false;
     std::vector<WayPoint> joint_goal_way_point;
     joint_goal_way_point = TrajectoryTimeCounter();
-
-    printf("%lf, %lf, %lf %lf\n", joint_goal_way_point.at(0).value, joint_goal_way_point.at(1).value, joint_goal_way_point.at(2).value, joint_goal_way_point.at(3).value);
-
     step_moving_ = true;
     return joint_goal_way_point;
   }
