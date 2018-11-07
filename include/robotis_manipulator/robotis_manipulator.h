@@ -36,7 +36,6 @@ private:
   Manipulator manipulator_;
   ManipulationTrajectory trajectory_;
 
-  bool using_platform_;
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, JointActuator *>::iterator it_joint_actuator_;
 
@@ -46,7 +45,9 @@ private:
   Kinematics *kinematics_;
 
   ManipulationTime manipulation_time_;
+  bool using_platform_;
   bool moving_;
+  bool step_moving_;
 
 private:
   // time

@@ -27,7 +27,8 @@ using namespace ROBOTIS_MANIPULATOR;
 
 RobotisManipulator::RobotisManipulator() :
                                      moving_(false),
-                                     using_platform_(false)
+                                     using_platform_(false),
+                                     step_moving_(false)
 {
 
 }
@@ -555,6 +556,7 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
 bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, double value)
 {
+  manipulator_.setToolGoalValue(tool_component_name, value / manipulator_.getToolCoefficient(tool_component_name));
   if(using_platform_)
   {
     return tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))
@@ -577,10 +579,14 @@ double RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
 
 bool RobotisManipulator::sendAllToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector)
 {
+  for (int index = 0; index < tool_component_name.size(); index++)
+    manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getToolCoefficient(tool_component_name.at(index)));
+
   if(using_platform_)
   {
     for (int index = 0; index < tool_component_name.size(); index++)
     {
+      manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index));
       tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getToolCoefficient(tool_component_name.at(index)));
     }
     return true;
@@ -596,6 +602,7 @@ std::vector<double> RobotisManipulator::receiveAllToolActuatorValue(std::vector<
     for (int index = 0; index < tool_component_name.size(); index++)
     {
       result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue() * manipulator_.getToolCoefficient(tool_component_name.at(index));
+      manipulator_.setToolValue(tool_component_name.at(index), result);
       result_vector.push_back(result);
     }
     return result_vector;
@@ -674,49 +681,49 @@ void RobotisManipulator::UpdatePresentWayPoint()
   kinematics_->updatePassiveJointValue(&trajectory_.manipulator_);
   kinematics_->forward(&trajectory_.manipulator_);
 
-  //dynamics (velocity)
-  std::map<Name, Component>::iterator it;
-  Eigen::VectorXd joint_velocity(trajectory_.manipulator_.getDOF());
+//  //dynamics (velocity)
+//  std::map<Name, Component>::iterator it;
+//  Eigen::VectorXd joint_velocity(trajectory_.manipulator_.getDOF());
 
-  Eigen::VectorXd pose_velocity(6);
-  Eigen::Vector3d linear_velocity;
-  Eigen::Vector3d angular_velocity;
+//  Eigen::VectorXd pose_velocity(6);
+//  Eigen::Vector3d linear_velocity;
+//  Eigen::Vector3d angular_velocity;
 
-  int8_t index = 0;
-  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
-  {
-    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
-    {
-      // Active
-      joint_velocity[index] = trajectory_.manipulator_.getJointVelocity(it->first);
-      index++;
-    }
-  }
+//  int8_t index = 0;
+//  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
+//  {
+//    if (trajectory_.manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
+//    {
+//      // Active
+//      joint_velocity[index] = trajectory_.manipulator_.getJointVelocity(it->first);
+//      index++;
+//    }
+//  }
 
-  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
-  {
-    if (trajectory_.manipulator_.getJointId(it->first) != -1)
-    {
-      for(int index2 = 0; index2 < trajectory_.manipulator_.getDOF(); index2++)
-      {
-        joint_velocity[index2] =trajectory_.manipulator_.getJointVelocity(it->first);
-      }
-      pose_velocity = kinematics_->jacobian(&trajectory_.manipulator_, it->first)*joint_velocity;
-      linear_velocity[0] = pose_velocity[0];
-      linear_velocity[1] = pose_velocity[1];
-      linear_velocity[2] = pose_velocity[2];
-      angular_velocity[0] = pose_velocity[3];
-      angular_velocity[1] = pose_velocity[4];
-      angular_velocity[2] = pose_velocity[5];
-      Dynamicpose dynamic_pose;
-      dynamic_pose.linear.velocity = linear_velocity;
-      dynamic_pose.angular.velocity = angular_velocity;
-      dynamic_pose.linear.effort = Eigen::Vector3d::Zero();
-      dynamic_pose.angular.effort = Eigen::Vector3d::Zero();
+//  for (it = trajectory_.manipulator_.getIteratorBegin(); it != trajectory_.manipulator_.getIteratorEnd(); it++)
+//  {
+//    if (trajectory_.manipulator_.getJointId(it->first) != -1)
+//    {
+//      for(int index2 = 0; index2 < trajectory_.manipulator_.getDOF(); index2++)
+//      {
+//        joint_velocity[index2] =trajectory_.manipulator_.getJointVelocity(it->first);
+//      }
+//      pose_velocity = kinematics_->jacobian(&trajectory_.manipulator_, it->first)*joint_velocity;
+//      linear_velocity[0] = pose_velocity[0];
+//      linear_velocity[1] = pose_velocity[1];
+//      linear_velocity[2] = pose_velocity[2];
+//      angular_velocity[0] = pose_velocity[3];
+//      angular_velocity[1] = pose_velocity[4];
+//      angular_velocity[2] = pose_velocity[5];
+//      Dynamicpose dynamic_pose;
+//      dynamic_pose.linear.velocity = linear_velocity;
+//      dynamic_pose.angular.velocity = angular_velocity;
+//      dynamic_pose.linear.effort = Eigen::Vector3d::Zero();
+//      dynamic_pose.angular.effort = Eigen::Vector3d::Zero();
 
-      trajectory_.manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
-    }
-  }
+//      trajectory_.manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
+//    }
+//  }
 }
 
 void RobotisManipulator::setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector)
@@ -877,6 +884,11 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
 
   setMoveTime(move_time);
 
+  std::vector<WayPoint> temp = getPresentJointWayPoint();
+  printf("-----joint start  %lf, %lf, %lf %lf\n", temp.at(0).value
+         , temp.at(1).value
+         , temp.at(2).value
+         , temp.at(3).value);
   setStartWayPoint(getPresentJointWayPoint());
 
   WayPoint goal_way_point;
@@ -891,6 +903,11 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
   }
   setGoalWayPoint(goal_way_point_vector);
 
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_) ;
+  }
   makeJointTrajectory();
   startMoving();
 }
@@ -939,6 +956,11 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
   }
   setGoalWayPoint(goal_way_point_vector);
 
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_) ;
+  }
   makeJointTrajectory();
   startMoving();
 }
@@ -979,7 +1001,11 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
   clearGoalWayPoint();
 
   setMoveTime(move_time);
-
+  std::vector<WayPoint> temp = getPresentTaskWayPoint(tool_name);
+  printf("-----start  %lf, %lf, %lf %lf\n", temp.at(0).value
+         , temp.at(1).value
+         , temp.at(2).value
+         , temp.at(3).value);
   setStartWayPoint(getPresentTaskWayPoint(tool_name));
 
   Eigen::Vector3d goal_position_to_world = goal_pose.position;
@@ -1003,6 +1029,11 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
     goal_way_point_vector.push_back(goal_way_point);
   }
   setGoalWayPoint(goal_way_point_vector);
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_) ;
+  }
   makeTaskTrajectory();
   startMoving();
 }
@@ -1021,9 +1052,12 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name
   setMoveTime(move_time);
 
   setStartWayPoint(getPresentTaskWayPoint(tool_name));
-
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_) ;
+  }
   makeDrawingTrajectory(drawing_name, arg);
-
   startMoving();
 }
 
@@ -1040,6 +1074,11 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, const void *ar
   setMoveTime(move_time);
 
   setStartWayPoint(getPresentJointWayPoint());
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_) ;
+  }
 
   makeDrawingTrajectory(drawing_name, arg);
 
@@ -1067,6 +1106,11 @@ void RobotisManipulator::TrajectoryWait(double wait_time)
   }
   setGoalWayPoint(goal_way_point_vector);
 
+  if(isMoving())
+  {
+    moving_= false;
+    while(!step_moving_) ;
+  }
   makeJointTrajectory();
   startMoving();
 }
@@ -1145,6 +1189,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
 std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
 {
   double tick_time = manipulation_time_.present_time - manipulation_time_.start_time;
+  printf("present = %lf start = %lf tick_time = %lf   ", manipulation_time_.present_time, manipulation_time_.start_time, tick_time);
 
   if(tick_time < manipulation_time_.move_time)
   {
@@ -1165,9 +1210,13 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
 
   if(moving_)
   {
+    step_moving_ = false;
     std::vector<WayPoint> joint_goal_way_point;
     joint_goal_way_point = TrajectoryTimeCounter();
 
+    printf("%lf, %lf, %lf %lf\n", joint_goal_way_point.at(0).value, joint_goal_way_point.at(1).value, joint_goal_way_point.at(2).value, joint_goal_way_point.at(3).value);
+
+    step_moving_ = true;
     return joint_goal_way_point;
   }
   return {};
@@ -1175,9 +1224,11 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
 
 void RobotisManipulator::toolMove(Name tool_name, double tool_value)
 {
+  manipulator_.setToolGoalValue(tool_name, tool_value);
   if(using_platform_)
   {
-    tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))->sendToolActuatorValue(tool_value);
+    tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))
+        ->sendToolActuatorValue(tool_value );
   }
 }
 

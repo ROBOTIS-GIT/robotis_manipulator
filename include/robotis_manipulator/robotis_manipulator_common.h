@@ -93,6 +93,7 @@ typedef struct _Tool
   int8_t id;
   double coefficient; //actuator value to tool value
   double value;       //m or rad
+  double goal_value;       //m or rad
 } Tool;
 
 ////////////////////////////////////////////////////////////
@@ -146,7 +147,6 @@ private:
   int8_t dof_;
   World world_;
   std::map<Name, Component> component_;
-  std::map<Name, Component>::iterator it_component_;
 
 public:
   Manipulator();
@@ -211,6 +211,8 @@ public:
 //  void setJointActuatorValue(Name name, Actuator actuator_value);
 //  void setAllJointActuatorValue(std::vector<Actuator> actuator_value_vector);
   void setToolValue(Name name, double tool_value);
+  void setToolGoalValue(Name name, double tool_goal_value);
+
 //  void setToolValueFromId(int8_t tool_id, double tool_value);
 //  void setToolActuatorValue(Name name, double actuator_value);
 
@@ -250,6 +252,7 @@ public:
   double getToolCoefficient(Name name);
 //  double getToolCoefficientFromId(int8_t id);
   double getToolValue(Name name);
+  double getToolGoalValue(Name name);
 //  double getToolActuatorValue(Name name);
   double getComponentMass(Name name);
   Eigen::Matrix3d getComponentInertiaTensor(Name name);
