@@ -874,6 +874,15 @@ void RobotisManipulator::makeDrawingTrajectory(Name drawing_name, const void *ar
 
 //Trajectory Control Fuction
 
+void RobotisManipulator::jointTrajectoryMoveToPresentValue(std::vector<double> goal_joint_angle, double move_time)
+{
+  std::vector<WayPoint> temp = getPresentJointWayPoint();
+  std::vector<double> goal_joint_value;
+  for(int i = 0; i < manipulator_.getDOF(); i ++)
+    goal_joint_value.push_back(temp.at(i).value + goal_joint_angle.at(i));
+
+  jointTrajectoryMove(goal_joint_value, move_time);
+}
 
 void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angle, double move_time)
 {
