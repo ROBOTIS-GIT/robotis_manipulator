@@ -348,7 +348,7 @@ void Trajectory::setPresentJointWayPoint(std::vector<WayPoint> joint_value_vecto
     {
       manipulator_.setJointValue(it->first, joint_value_vector.at(index).value);
       manipulator_.setJointVelocity(it->first, joint_value_vector.at(index).velocity);
-      manipulator_.setJointeffort(it->first, joint_value_vector.at(index).effort);
+      manipulator_.setJointEffort(it->first, joint_value_vector.at(index).effort);
     }
     index++;
   }
@@ -397,7 +397,7 @@ std::vector<WayPoint> Trajectory::getPresentJointWayPoint()
       // Active
       result.value = manipulator_.getJointValue(it->first);
       result.velocity = manipulator_.getJointVelocity(it->first);
-      result.effort = manipulator_.getJointeffort(it->first);
+      result.effort = manipulator_.getJointEffort(it->first);
 
       result_vector.push_back(result);
     }
