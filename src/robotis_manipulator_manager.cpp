@@ -40,3 +40,15 @@ bool ToolActuator::findId(uint8_t actuator_id)
   }
   return false;
 }
+
+
+WayPointType DrawingTrajectory::getOutputWayPointType()
+{
+  return output_way_point_type_;
+}
+
+
+void DrawingTrajectory::setOutputWayPointType(WayPointType way_point_type)
+{
+  output_way_point_type_ = way_point_type;
+}

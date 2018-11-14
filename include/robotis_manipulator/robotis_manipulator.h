@@ -34,7 +34,7 @@ class RobotisManipulator
 {
 private:
   Manipulator manipulator_;
-  ManipulationTrajectory trajectory_;
+  Trajectory trajectory_;
 
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, JointActuator *>::iterator it_joint_actuator_;
@@ -44,35 +44,13 @@ private:
 
   Kinematics *kinematics_;
 
-  ManipulationTime manipulation_time_;
+//  Time manipulation_time_;
   bool using_platform_;
   bool moving_;
   bool step_moving_;
 
 private:
-  // time
-  void setPresentTime(double present_time);
-  void setMoveTime(double move_time);
   void startMoving();
-
-  //Way Point
-  void setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector);
-  void setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_position_value_vector);
-  std::vector<WayPoint> getPresentJointWayPoint();
-  std::vector<WayPoint> getPresentTaskWayPoint(Name tool_name);
-  void UpdatePresentWayPoint(); //forward kinematics,dynamics
-
-  void setStartWayPoint(std::vector<WayPoint> start_way_point);
-  void setGoalWayPoint(std::vector<WayPoint> goal_way_point);
-  void clearStartWayPoint();
-  void clearGoalWayPoint();
-  std::vector<WayPoint> getStartWayPoint();
-  std::vector<WayPoint> getGoalWayPoint();
-
-  //Trajectory
-  void makeJointTrajectory();
-  void makeTaskTrajectory();
-  void makeDrawingTrajectory(Name drawing_name, const void *arg);
 
   std::vector<Actuator> getTrajectoryJointValue(double tick_time);
   std::vector<Actuator> TrajectoryTimeCounter();
@@ -117,8 +95,6 @@ public:
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
   void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
 
-  void initTrajectoryWayPoint(); //****
-
   // MANIPULATOR
   Manipulator *getManipulator();
   void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
@@ -161,12 +137,14 @@ public:
   std::vector<double> receiveAllToolActuatorValue(std::vector<Name> tool_component_name);
 
   // time
-  void setControlTime(double control_time);
-  double getMoveTime();
-  double getControlTime();
+  void setTrajectoryControlTime(double trajectory_control_time);
+  double getTrajectoryMoveTime();
+  double getTrajectoryControlTime();
   bool isMoving();
 
   //Trajectory Control Fuction
+  void initTrajectoryWayPoint(double present_time);
+
   void jointTrajectoryMoveToPresentValue(std::vector<double> goal_joint_angle, double move_time);
   void jointTrajectoryMove(std::vector<double> goal_joint_angle, double move_time);
   void jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);

@@ -81,8 +81,10 @@ public:
 
 class DrawingTrajectory
 {
-public:
+private:
   WayPointType output_way_point_type_;
+
+public:
   DrawingTrajectory(){};
   virtual ~DrawingTrajectory(){};
 
@@ -90,6 +92,8 @@ public:
   virtual std::vector<WayPoint> getJointWayPoint(double tick) = 0;
   virtual std::vector<WayPoint> getTaskWayPoint(double tick) = 0;
 
+  WayPointType getOutputWayPointType();
+  void setOutputWayPointType(WayPointType way_point_type);
 };
 
 } // namespace OPEN_MANIPULATOR

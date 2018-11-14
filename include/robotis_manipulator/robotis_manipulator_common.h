@@ -129,13 +129,13 @@ typedef struct _Component
 
 /////////////////////////Time struct////////////////////////
 
-typedef struct _ManipulationTime
+typedef struct _Time
 {
-  double move_time;
-  double control_time;
+  double total_move_time;
+  double control_loop_time;
   double present_time;
   double start_time;
-}ManipulationTime;
+}Time;
 
 ////////////////////////////////////////////////////////////
 

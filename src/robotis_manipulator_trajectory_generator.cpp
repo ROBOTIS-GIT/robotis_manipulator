@@ -195,3 +195,335 @@ Eigen::MatrixXd TaskTrajectory::getCoefficient()
 {
   return position_coefficient_;
 }
+
+
+
+//------------------------ trajectory ------------------------//
+
+void Trajectory::setMoveTime(double move_time)
+{
+  trajectory_time_.total_move_time = move_time;
+}
+
+void Trajectory::setPresentTime(double present_time)
+{
+  trajectory_time_.present_time = present_time;
+}
+
+void Trajectory::setStartTimeFromPresentTime()
+{
+  trajectory_time_.start_time = trajectory_time_.present_time;
+}
+
+void Trajectory::setControlLoopTime(double control_time)
+{
+  trajectory_time_.control_loop_time = control_time;
+}
+
+double Trajectory::getMoveTime()
+{
+  return trajectory_time_.total_move_time;
+}
+
+double Trajectory::getControlLoopTime()
+{
+  return trajectory_time_.control_loop_time;
+}
+
+double Trajectory::getTickTime()
+{
+  trajectory_time_.present_time - trajectory_time_.start_time;
+}
+
+void Trajectory::setTrajectoryManipulator(Manipulator manipulator)
+{
+  manipulator_= manipulator;
+}
+
+Manipulator* Trajectory::getTrajectoryManipulator()
+{
+  return &manipulator_;
+}
+
+JointTrajectory Trajectory::getJointTrajectory()
+{
+  return joint_;
+}
+
+TaskTrajectory Trajectory::getTaskTrajectory()
+{
+  return task_;
+}
+
+void Trajectory::addDrawingTrajectory(Name name, DrawingTrajectory *drawing)
+{
+  drawing_.insert(std::make_pair(name, drawing));
+}
+
+DrawingTrajectory* Trajectory::getDrawingtrajectory(Name name)
+{
+  return drawing_.at(name);
+}
+
+
+void Trajectory::setPresentDrawingObjectName(Name present_drawing_object_name)
+{
+  present_drawing_object_name_ = present_drawing_object_name;
+}
+
+void Trajectory::setPresentControlToolName(Name present_control_tool_name)
+{
+  present_control_tool_name_ = present_control_tool_name;
+}
+
+Name Trajectory::getPresentDrawingObjectName()
+{
+  return present_drawing_object_name_;
+}
+
+Name Trajectory::getPresentControlToolName()
+{
+ return present_control_tool_name_;
+}
+
+void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
+{
+  //kinematics (position)
+  kinematics->updatePassiveJointValue(&manipulator_);
+  kinematics->forward(&manipulator_);
+
+  //dynamics (velocity)
+  std::map<Name, Component>::iterator it;
+  Eigen::VectorXd joint_velocity(manipulator_.getDOF());
+
+  Eigen::VectorXd pose_velocity(6);
+  Eigen::Vector3d linear_velocity;
+  Eigen::Vector3d angular_velocity;
+
+  int8_t index = 0;
+  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+  {
+    if (manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
+    {
+      // Active
+      joint_velocity[index] = manipulator_.getJointVelocity(it->first);
+      index++;
+    }
+  }
+
+  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+  {
+    if (manipulator_.getJointId(it->first) != -1)
+    {
+      for(int index2 = 0; index2 < manipulator_.getDOF(); index2++)
+      {
+        joint_velocity[index2] =manipulator_.getJointVelocity(it->first);
+      }
+      pose_velocity = kinematics->jacobian(&manipulator_, it->first)*joint_velocity;
+      linear_velocity[0] = pose_velocity[0];
+      linear_velocity[1] = pose_velocity[1];
+      linear_velocity[2] = pose_velocity[2];
+      angular_velocity[0] = pose_velocity[3];
+      angular_velocity[1] = pose_velocity[4];
+      angular_velocity[2] = pose_velocity[5];
+      Dynamicpose dynamic_pose;
+      dynamic_pose.linear.velocity = linear_velocity;
+      dynamic_pose.angular.velocity = angular_velocity;
+      dynamic_pose.linear.effort = Eigen::Vector3d::Zero();
+      dynamic_pose.angular.effort = Eigen::Vector3d::Zero();
+
+      manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
+    }
+  }
+}
+
+void Trajectory::setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector)
+{
+  std::map<Name, Component>::iterator it;
+  int8_t index = 0;
+
+  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+  {
+    if (manipulator_.getJointId(it->first) != -1)
+    {
+      manipulator_.setJointValue(it->first, joint_value_vector.at(index).value);
+      manipulator_.setJointVelocity(it->first, joint_value_vector.at(index).velocity);
+      manipulator_.setJointeffort(it->first, joint_value_vector.at(index).effort);
+    }
+    index++;
+  }
+}
+
+void Trajectory::setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_value_vector)
+{
+  Pose pose_to_world;
+  Dynamicpose dynamic_pose;
+  for(int pos_count = 0; pos_count < 3; pos_count++)
+  {
+    pose_to_world.position[pos_count] = tool_value_vector.at(pos_count).value;
+    dynamic_pose.linear.velocity[pos_count] = tool_value_vector.at(pos_count).velocity;
+    dynamic_pose.linear.effort[pos_count] = tool_value_vector.at(pos_count).effort;
+  }
+
+  Eigen::Vector3d orientation_value_vector;
+  Eigen::Vector3d orientation_velocity_vector;
+  Eigen::Vector3d orientation_effort_vector;
+  for(int ori_count = 0; ori_count < 3; ori_count++)
+  {
+    orientation_value_vector[ori_count] = tool_value_vector.at(ori_count+3).value;
+    orientation_velocity_vector[ori_count] = tool_value_vector.at(ori_count+3).velocity;
+    orientation_effort_vector[ori_count] = tool_value_vector.at(ori_count+3).effort;
+  }
+  Eigen::Matrix3d orientation;
+  orientation = RM_MATH::convertRPYToRotation(orientation_value_vector[0], orientation_value_vector[1], orientation_value_vector[2]);
+  pose_to_world.orientation = orientation;
+  dynamic_pose.angular.velocity = orientation_velocity_vector;
+  dynamic_pose.angular.effort = orientation_effort_vector;
+
+  manipulator_.setComponentPoseToWorld(tool_name, pose_to_world);
+  manipulator_.setComponentDynamicPoseToWorld(tool_name, dynamic_pose);
+}
+
+std::vector<WayPoint> Trajectory::getPresentJointWayPoint()
+{
+  std::map<Name, Component>::iterator it;
+  WayPoint result;
+  std::vector<WayPoint> result_vector;
+
+  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+  {
+    if (manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
+    {
+      // Active
+      result.value = manipulator_.getJointValue(it->first);
+      result.velocity = manipulator_.getJointVelocity(it->first);
+      result.effort = manipulator_.getJointeffort(it->first);
+
+      result_vector.push_back(result);
+    }
+  }
+  return result_vector;
+}
+
+std::vector<WayPoint> Trajectory::getPresentTaskWayPoint(Name tool_name)
+{
+  std::vector<WayPoint> result_vector;
+  WayPoint result;
+  for(int pos_count = 0; pos_count < 3; pos_count++)
+  {
+    result.value = manipulator_.getComponentPoseToWorld(tool_name).position[pos_count];
+    result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.velocity[pos_count];
+    result.effort = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.effort[pos_count];
+
+    result_vector.push_back(result);
+  }
+
+  Eigen::Vector3d orientation_vector =  RM_MATH::convertRotationToRPY(manipulator_.getComponentPoseToWorld(tool_name).orientation);
+  for(int ori_count = 0; ori_count < 3; ori_count++)
+  {
+    result.value = orientation_vector[ori_count];
+    result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.velocity[ori_count];
+    result.effort = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.effort[ori_count];
+
+    result_vector.push_back(result);
+  }
+
+  return result_vector;
+}
+
+void Trajectory::setStartWayPoint(std::vector<WayPoint> start_way_point)
+{
+  start_way_point_ = start_way_point;
+}
+
+void Trajectory::setGoalWayPoint(std::vector<WayPoint> goal_way_point)
+{
+  goal_way_point_ = goal_way_point;
+}
+
+void Trajectory::clearStartWayPoint()
+{
+  start_way_point_.clear();
+}
+
+void Trajectory::clearGoalWayPoint()
+{
+  goal_way_point_.clear();
+}
+
+std::vector<WayPoint> Trajectory::getStartWayPoint()
+{
+  return start_way_point_;
+}
+
+std::vector<WayPoint> Trajectory::getGoalWayPoint()
+{
+  return goal_way_point_;
+}
+
+
+void Trajectory::setTrajectoryType(TrajectoryType trajectory_type)
+{
+  trajectory_type_ = trajectory_type;
+}
+
+bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
+{
+  if(trajectory_type_==trajectory_type)
+    return true;
+  else
+    return false;
+}
+
+
+//Trajectory
+void Trajectory::makeJointTrajectory()
+{
+  joint_.setJointNum(manipulator_.getDOF());
+  joint_.init(trajectory_time_.total_move_time, trajectory_time_.control_loop_time, start_way_point_, goal_way_point_);
+}
+
+void Trajectory::makeTaskTrajectory()
+{
+  task_.init(trajectory_time_.total_move_time, trajectory_time_.control_loop_time, start_way_point_, goal_way_point_);
+}
+
+void Trajectory::makeDrawingTrajectory(Name drawing_name, const void *arg)
+{
+  drawing_.at(drawing_name)->init(trajectory_time_.total_move_time, trajectory_time_.control_loop_time, start_way_point_, arg);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

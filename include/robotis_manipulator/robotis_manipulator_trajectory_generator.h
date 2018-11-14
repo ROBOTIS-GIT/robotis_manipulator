@@ -97,9 +97,9 @@ public:
 };
 
 
-class ManipulationTrajectory
+class Trajectory
 {
-public:
+private:
   TrajectoryType trajectory_type_;
   Manipulator manipulator_;
 
@@ -110,11 +110,61 @@ public:
   TaskTrajectory task_;
   std::map<Name, DrawingTrajectory *> drawing_;
   Name present_drawing_object_name_;
-  Name present_controled_tool_name_;
+  Name present_control_tool_name_;
+
+  Time trajectory_time_;
 
 public:
-  ManipulationTrajectory() {}
-  ~ManipulationTrajectory() {}
+  Trajectory() {}
+  ~Trajectory() {}
+
+  //time
+  void setMoveTime(double move_time);
+  void setPresentTime(double present_time);
+  void setStartTimeFromPresentTime();
+  void setControlLoopTime(double control_time);
+  double getMoveTime();
+  double getControlLoopTime();
+  double getTickTime();
+
+  //Manipulator
+  void setTrajectoryManipulator(Manipulator manipulator);
+  Manipulator* getTrajectoryManipulator();
+
+  //Joint
+  JointTrajectory getJointTrajectory();
+
+  //Task
+  TaskTrajectory getTaskTrajectory();
+
+  //Drawing
+  void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
+  DrawingTrajectory* getDrawingtrajectory(Name name);
+  void setPresentDrawingObjectName(Name present_drawing_object_name);
+  void setPresentControlToolName(Name present_control_tool_name);
+  Name getPresentDrawingObjectName();
+  Name getPresentControlToolName();
+
+  //Way Point
+  void UpdatePresentWayPoint(Kinematics* kinematics); //forward kinematics,dynamics
+  void setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector);
+  void setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_position_value_vector);
+  std::vector<WayPoint> getPresentJointWayPoint();
+  std::vector<WayPoint> getPresentTaskWayPoint(Name tool_name);
+
+  void setStartWayPoint(std::vector<WayPoint> start_way_point);
+  void setGoalWayPoint(std::vector<WayPoint> goal_way_point);
+  void clearStartWayPoint();
+  void clearGoalWayPoint();
+  std::vector<WayPoint> getStartWayPoint();
+  std::vector<WayPoint> getGoalWayPoint();
+
+  //Trajectory
+  void setTrajectoryType(TrajectoryType trajectory_type);
+  bool checkTrajectoryType(TrajectoryType trajectory_type);
+  void makeJointTrajectory();
+  void makeTaskTrajectory();
+  void makeDrawingTrajectory(Name drawing_name, const void *arg);
 };
 
 
