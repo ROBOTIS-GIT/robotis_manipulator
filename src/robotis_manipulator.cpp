@@ -28,7 +28,8 @@ using namespace ROBOTIS_MANIPULATOR;
 RobotisManipulator::RobotisManipulator() :
                                      moving_(false),
                                      using_platform_(false),
-                                     step_moving_(false)
+                                     step_moving_(false),
+                                     trajectory_initialization(false)
 {
 
 }
