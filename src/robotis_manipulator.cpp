@@ -256,7 +256,7 @@ void RobotisManipulator::actuatorEnable(Name actuator_name)
       //error
     }
   }
-  trajectory_initialization == false;
+  trajectory_initialization = false;
 }
 
 void RobotisManipulator::actuatorDisable(Name actuator_name)
@@ -287,7 +287,7 @@ void RobotisManipulator::allJointActuatorEnable()
       joint_actuator_.at(it_joint_actuator_->first)->enable();
     }
   }
-  trajectory_initialization == false;
+  trajectory_initialization = false;
 }
 
 void RobotisManipulator::allJointActuatorDisable()
@@ -310,7 +310,7 @@ void RobotisManipulator::allToolActuatorEnable()
       tool_actuator_.at(it_tool_actuator_->first)->enable();
     }
   }
-  trajectory_initialization == false;
+  trajectory_initialization = false;
 }
 
 void RobotisManipulator::allToolActuatorDisable()
@@ -337,7 +337,7 @@ void RobotisManipulator::allActuatorEnable()
       tool_actuator_.at(it_tool_actuator_->first)->enable();
     }
   }
-  trajectory_initialization == false;
+  trajectory_initialization = false;
 }
 
 void RobotisManipulator::allActuatorDisable()
@@ -985,6 +985,7 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
   if(!trajectory_initialization)
   {
     trajectory_.initTrajectoryWayPoint(present_time, manipulator_, kinematics_);
+    trajectory_initialization = true;
   }
 
   if(moving_)
