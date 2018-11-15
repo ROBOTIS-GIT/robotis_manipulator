@@ -232,7 +232,7 @@ double Trajectory::getControlLoopTime()
 
 double Trajectory::getTickTime()
 {
-  trajectory_time_.present_time - trajectory_time_.start_time;
+  return trajectory_time_.present_time - trajectory_time_.start_time;
 }
 
 void Trajectory::setTrajectoryManipulator(Manipulator manipulator)
