@@ -35,6 +35,7 @@ class RobotisManipulator
 private:
   Manipulator manipulator_;
   Trajectory trajectory_;
+  bool trajectory_initialization;
 
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, JointActuator *>::iterator it_joint_actuator_;
@@ -143,8 +144,6 @@ public:
   bool isMoving();
 
   //Trajectory Control Fuction
-  void initTrajectoryWayPoint(double present_time);
-
   void jointTrajectoryMoveToPresentValue(std::vector<double> goal_joint_angle, double move_time);
   void jointTrajectoryMove(std::vector<double> goal_joint_angle, double move_time);
   void jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);

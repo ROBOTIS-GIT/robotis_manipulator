@@ -286,6 +286,27 @@ Name Trajectory::getPresentControlToolName()
  return present_control_tool_name_;
 }
 
+void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics* kinematics)
+{
+  setTrajectoryManipulator(present_real_manipulator);
+  std::vector<WayPoint> joint_way_point_vector;
+  WayPoint joint_way_point;
+  std::vector<double> joint_value_vector;
+  joint_value_vector = getTrajectoryManipulator()->getAllActiveJointValue();
+
+  for(int index=0; index < joint_value_vector.size(); index++)
+  {
+    joint_way_point.value = joint_value_vector.at(index);
+    joint_way_point.velocity = 0.0;
+    joint_way_point.effort = 0.0;
+    joint_way_point_vector.push_back(joint_way_point);
+  }
+
+  setPresentJointWayPoint(joint_way_point_vector);
+  UpdatePresentWayPoint(kinematics);
+  setPresentTime(present_time);
+}
+
 void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
 {
   //kinematics (position)

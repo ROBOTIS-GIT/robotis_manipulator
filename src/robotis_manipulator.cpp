@@ -255,6 +255,7 @@ void RobotisManipulator::actuatorEnable(Name actuator_name)
       //error
     }
   }
+  trajectory_initialization == false;
 }
 
 void RobotisManipulator::actuatorDisable(Name actuator_name)
@@ -285,6 +286,7 @@ void RobotisManipulator::allJointActuatorEnable()
       joint_actuator_.at(it_joint_actuator_->first)->enable();
     }
   }
+  trajectory_initialization == false;
 }
 
 void RobotisManipulator::allJointActuatorDisable()
@@ -307,6 +309,7 @@ void RobotisManipulator::allToolActuatorEnable()
       tool_actuator_.at(it_tool_actuator_->first)->enable();
     }
   }
+  trajectory_initialization == false;
 }
 
 void RobotisManipulator::allToolActuatorDisable()
@@ -333,6 +336,7 @@ void RobotisManipulator::allActuatorEnable()
       tool_actuator_.at(it_tool_actuator_->first)->enable();
     }
   }
+  trajectory_initialization == false;
 }
 
 void RobotisManipulator::allActuatorDisable()
@@ -638,31 +642,6 @@ bool RobotisManipulator::isMoving()
 {
   return moving_;
 }
-
-
-// Way Point
-
-void RobotisManipulator::initTrajectoryWayPoint(double present_time)
-{
-  trajectory_.setTrajectoryManipulator(manipulator_);
-  std::vector<WayPoint> joint_way_point_vector;
-  WayPoint joint_way_point;
-  std::vector<double> joint_value_vector;
-  joint_value_vector = trajectory_.getTrajectoryManipulator()->getAllActiveJointValue();
-
-  for(int index=0; index < joint_value_vector.size(); index++)
-  {
-    joint_way_point.value = joint_value_vector.at(index);
-    joint_way_point.velocity = 0.0;
-    joint_way_point.effort = 0.0;
-    joint_way_point_vector.push_back(joint_way_point);
-  }
-
-  trajectory_.setPresentJointWayPoint(joint_way_point_vector);
-  trajectory_.UpdatePresentWayPoint(kinematics_);
-  trajectory_.setPresentTime(present_time);
-}
-
 
 
 //Trajectory Control Fuction
@@ -1001,6 +980,11 @@ std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
 std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double present_time)
 {
   trajectory_.setPresentTime(present_time);
+
+  if(!trajectory_initialization)
+  {
+    trajectory_.initTrajectoryWayPoint(present_time, manipulator_, kinematics_);
+  }
 
   if(moving_)
   {
