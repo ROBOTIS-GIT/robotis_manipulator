@@ -140,6 +140,7 @@ public:
   //Drawing
   void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
   DrawingTrajectory* getDrawingtrajectory(Name name);
+  void setDrawingOption(Name name, const void* arg);
   void setPresentDrawingObjectName(Name present_drawing_object_name);
   void setPresentControlToolName(Name present_control_tool_name);
   Name getPresentDrawingObjectName();

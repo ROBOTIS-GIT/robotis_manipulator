@@ -172,6 +172,11 @@ std::vector<double> RobotisManipulator::inverse(Name tool_name, Pose goal_pose)
   return kinematics_->inverse(&manipulator_, tool_name, goal_pose);
 }
 
+void RobotisManipulator::kinematicsSetOption(const void* arg)
+{
+  kinematics_->setOption(arg);
+}
+
 
 // ACTUATOR
 
@@ -811,6 +816,11 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Pose goal_pose, doub
   }
   trajectory_.makeTaskTrajectory();
   startMoving();
+}
+
+void RobotisManipulator::drawingTrajectorysetOption(Name drawing_name, const void* arg)
+{
+  trajectory_.setDrawingOption(drawing_name, arg);
 }
 
 void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time)

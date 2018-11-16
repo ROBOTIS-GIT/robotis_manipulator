@@ -106,6 +106,7 @@ public:
   void forward();
   void forward(Name first_component_name);
   std::vector<double> inverse(Name tool_name, Pose goal_pose);
+  void kinematicsSetOption(const void* arg);
 
   // ACTUATOR (INCLUDES VIRTUAL)
   void jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
@@ -155,6 +156,7 @@ public:
   void taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time);
   void taskTrajectoryMove(Name tool_name, Pose goal_pose, double move_time);
 
+  void drawingTrajectorysetOption(Name drawing_name, const void* arg);
   void drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time);
   void drawingTrajectoryMove(Name drawing_name, const void *arg, double move_time);
   void TrajectoryWait(double wait_time);

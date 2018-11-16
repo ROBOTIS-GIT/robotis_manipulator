@@ -265,6 +265,11 @@ DrawingTrajectory* Trajectory::getDrawingtrajectory(Name name)
   return drawing_.at(name);
 }
 
+void Trajectory::setDrawingOption(Name name, const void* arg)
+{
+  drawing_.at(name)->setOption(arg);
+}
+
 
 void Trajectory::setPresentDrawingObjectName(Name present_drawing_object_name)
 {
