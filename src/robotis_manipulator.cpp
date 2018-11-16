@@ -471,7 +471,7 @@ WayPoint RobotisManipulator::receiveJointActuatorValue(Name joint_component_name
 
     result.at(0).value = result.at(0).value * manipulator_.getJointCoefficient(joint_component_name);
     result.at(0).velocity = result.at(0).velocity * manipulator_.getJointCoefficient(joint_component_name);
-    result.at(0).effort = result.at(0).velocity * manipulator_.getJointCoefficient(joint_component_name);
+    result.at(0).effort = result.at(0).effort * manipulator_.getJointCoefficient(joint_component_name);
 
     manipulator_.setJointValue(joint_component_name, result.at(0));
     return result.at(0);

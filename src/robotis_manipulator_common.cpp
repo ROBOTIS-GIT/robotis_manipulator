@@ -251,7 +251,7 @@ void Manipulator::setJointVelocity(Name name, double joint_velocity)
   }
 }
 
-void Manipulator::setJointeffort(Name name, double joint_effort)
+void Manipulator::setJointEffort(Name name, double joint_effort)
 {
   if (component_.at(name).tool.id > 0)
   {
@@ -633,7 +633,7 @@ double Manipulator::getJointVelocity(Name name)
   return component_.at(name).joint.velocity;
 }
 
-double Manipulator::getJointeffort(Name name)
+double Manipulator::getJointEffort(Name name)
 {
   return component_.at(name).joint.effort;
 }

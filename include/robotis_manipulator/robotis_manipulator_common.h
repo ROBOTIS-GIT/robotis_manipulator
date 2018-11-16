@@ -201,7 +201,7 @@ public:
   void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
   void setJointValue(Name name, double joint_value);
   void setJointVelocity(Name name, double joint_velocity);
-  void setJointeffort(Name name, double joint_effort);
+  void setJointEffort(Name name, double joint_effort);
   void setJointValue(Name name, WayPoint joint_value);
 //  void setJointValueFromId(int8_t joint_id, WayPoint joint_value);
   void setAllActiveJointValue(std::vector<double> joint_value_vector);
@@ -246,7 +246,7 @@ public:
   Eigen::Vector3d getJointAxis(Name name);
   double getJointValue(Name name);
   double getJointVelocity(Name name);
-  double getJointeffort(Name name);
+  double getJointEffort(Name name);
 //  Actuator getJointActuatorValue(Name name);
   int8_t getToolId(Name name);
   double getToolCoefficient(Name name);
