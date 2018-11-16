@@ -26,7 +26,7 @@
 #include <math.h>
 #include <vector>
 
-#include "robotis_manipulator/robotis_manipulator_manager.h"
+#include "robotis_manipulator_manager.h"
 
 #define PI 3.141592
 

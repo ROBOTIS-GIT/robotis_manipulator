@@ -16,7 +16,7 @@
 
 /* Authors: Darby Limm, Hye-Jong KIM */
 
-#include "robotis_manipulator/robotis_manipulator.h"
+#include "../../include/robotis_manipulator/robotis_manipulator.h"
 
 using namespace ROBOTIS_MANIPULATOR;
 

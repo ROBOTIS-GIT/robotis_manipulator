@@ -1,4 +1,4 @@
-#include "robotis_manipulator/robotis_manipulator_common.h"
+#include "../../include/robotis_manipulator/robotis_manipulator_common.h"
 
 using namespace ROBOTIS_MANIPULATOR;
 

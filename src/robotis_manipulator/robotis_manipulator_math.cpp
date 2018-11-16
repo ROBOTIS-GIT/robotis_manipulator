@@ -16,7 +16,7 @@
 
 /* Authors: Hye-Jong KIM, Darby Lim */
 
-#include "robotis_manipulator/robotis_manipulator_math.h"
+#include "../../include/robotis_manipulator/robotis_manipulator_math.h"
 
 
 double RM_MATH::sign(double number)

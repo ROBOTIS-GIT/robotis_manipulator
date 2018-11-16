@@ -16,7 +16,7 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM */
 
-#include "robotis_manipulator/robotis_manipulator_trajectory_generator.h"
+#include "../../include/robotis_manipulator/robotis_manipulator_trajectory_generator.h"
 
 using namespace ROBOTIS_MANIPULATOR;
 
