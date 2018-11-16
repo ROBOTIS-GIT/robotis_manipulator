@@ -44,7 +44,7 @@ void Manipulator::addComponent(Name my_name,
   temp_component.relative_to_parent.position = relative_position;
   temp_component.relative_to_parent.orientation = relative_orientation;
   temp_component.pose_to_world.position = Eigen::Vector3d::Zero();
-  temp_component.pose_to_world.orientation = Eigen::Quaterniond::Identity();
+  temp_component.pose_to_world.orientation = Eigen::Matrix3d::Identity();
   temp_component.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
   temp_component.dynamic_pose.linear.effort = Eigen::Vector3d::Zero(3);
   temp_component.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
@@ -86,7 +86,7 @@ void Manipulator::addTool(Name my_name,
   temp_component.relative_to_parent.position = relative_position;
   temp_component.relative_to_parent.orientation = relative_orientation;
   temp_component.pose_to_world.position = Eigen::Vector3d::Zero();
-  temp_component.pose_to_world.orientation = Eigen::Quaterniond::Identity();
+  temp_component.pose_to_world.orientation = Eigen::Matrix3d::Identity();
   temp_component.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
   temp_component.dynamic_pose.linear.effort = Eigen::Vector3d::Zero(3);
   temp_component.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);

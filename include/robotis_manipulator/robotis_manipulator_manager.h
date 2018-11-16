@@ -19,7 +19,11 @@
 #ifndef ROBOTIS_MANIPULATOR_MANAGER_H_
 #define ROBOTIS_MANIPULATOR_MANAGER_H_
 
-#include <eigen3/Eigen/Eigen>
+#if defined(__OPENCR__)
+  #include <Eigen.h>  // Calls main Eigen matrix class library
+#else
+  #include <eigen3/Eigen/Eigen>
+#endif
 
 #include "robotis_manipulator_common.h"
 

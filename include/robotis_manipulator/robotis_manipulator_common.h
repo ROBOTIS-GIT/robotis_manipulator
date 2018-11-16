@@ -2,8 +2,13 @@
 #define ROBOTIS_MANIPULATOR_COMMON_H
 
 #include <unistd.h>
-#include <eigen3/Eigen/Eigen>
-#include <eigen3/Eigen/LU>
+#if defined(__OPENCR__)
+  #include <Eigen.h>  // Calls main Eigen matrix class library
+  #include <Eigen/LU> // Calls inverse, determinant, LU decomp., etc.
+#else
+  #include <eigen3/Eigen/Eigen>
+  #include <eigen3/Eigen/LU>
+#endif
 #include <math.h>
 #include <vector>
 #include <map>

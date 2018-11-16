@@ -19,16 +19,22 @@
 #ifndef ROBOTIS_MNAMIPULATOR_TRAJECTORY_GENERATOR_H_
 #define ROBOTIS_MNAMIPULATOR_TRAJECTORY_GENERATOR_H_
 
-#include <eigen3/Eigen/Eigen>
-#include <eigen3/Eigen/LU>
-#include <eigen3/Eigen/QR>
-
 #include <math.h>
 #include <vector>
 
 #include "robotis_manipulator_manager.h"
 
-#define PI 3.141592
+#if defined(__OPENCR__)
+  #include <Eigen.h>  // Calls main Eigen matrix class library
+  #include <Eigen/LU> // Calls inverse, determinant, LU decomp., etc.
+  #include <Eigen/QR>
+#else
+  #include <eigen3/Eigen/Eigen>
+  #include <eigen3/Eigen/LU>
+  #include <eigen3/Eigen/QR>
+
+  #define PI 3.141592
+#endif
 
 namespace ROBOTIS_MANIPULATOR
 {
