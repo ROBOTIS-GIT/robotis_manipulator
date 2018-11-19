@@ -1015,7 +1015,7 @@ void RobotisManipulator::toolMove(Name tool_name, double tool_value)
   if(using_platform_)
   {
     tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))
-        ->sendToolActuatorValue(tool_value );
+        ->sendToolActuatorValue(tool_value / manipulator_.getToolCoefficient(tool_name));
   }
 }
 
