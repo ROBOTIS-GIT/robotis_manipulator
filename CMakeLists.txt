@@ -45,12 +45,12 @@ include_directories(
 )
 
 add_library(robotis_manipulator
-  src/robotis_manipulator.cpp
-  src/robotis_manipulator_common.cpp
-  src/robotis_manipulator_debug.cpp
-  src/robotis_manipulator_trajectory_generator.cpp
-  src/robotis_manipulator_manager.cpp
-  src/robotis_manipulator_math.cpp
+  src/robotis_manipulator/robotis_manipulator.cpp
+  src/robotis_manipulator/robotis_manipulator_common.cpp
+  src/robotis_manipulator/robotis_manipulator_debug.cpp
+  src/robotis_manipulator/robotis_manipulator_trajectory_generator.cpp
+  src/robotis_manipulator/robotis_manipulator_manager.cpp
+  src/robotis_manipulator/robotis_manipulator_math.cpp
 )
 
 add_dependencies(robotis_manipulator ${catkin_EXPORTED_TARGETS})
