@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,174 +14,22 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Hye-Jong KIM */
+/* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-#ifndef RMAPI_H_
-#define RMAPI_H_
+#ifndef ROBOTIS_MANIPULATOR_MANAGER_H_
+#define ROBOTIS_MANIPULATOR_MANAGER_H_
 
-
-#include <eigen3/Eigen/Eigen>
-
-#include <vector>
-#include <map>
+#if defined(__OPENCR__)
+  #include <Eigen.h>  // Calls main Eigen matrix class library
+#else
+  #include <eigen3/Eigen/Eigen>
+#endif
 
 #include "robotis_manipulator_common.h"
-#include "robotis_manipulator_manager.h"
-#include "robotis_manipulator_math.h"
+
 
 namespace ROBOTIS_MANIPULATOR
 {
-class Manipulator
-{
-private:
-  int8_t dof_;
-  World world_;
-  std::map<Name, Component> component_;
-  std::map<Name, Component>::iterator it_component_;
-
-  /////////////////////////////Parameter list///////////////////////////////
-  /*
-  dof_
-  world_.name
-  world_.child
-  world_.pose.position
-  world_.pose.orientation
-  world_.origin.velocity
-  world_.origin.acceleration
-  component_.at(name).parent
-  component_.at(name).child.at(i)
-  component_.at(name).relative_to_parent.position
-  component_.at(name).relative_to_parent.orientation
-  component_.at(name).pose_to_world.position
-  component_.at(name).pose_to_world.orientation
-  component_.at(name).origin.velocity
-  component_.at(name).origin.acceleration
-  component_.at(name).joint.id
-  component_.at(name).joint.coefficient
-  component_.at(name).joint.axis
-  component_.at(name).joint.angle
-  component_.at(name).joint.velocity
-  component_.at(name).joint.acceleration
-  component_.at(name).tool.id
-  component_.at(name).tool.coefficient
-  component_.at(name).tool.on_off
-  component_.at(name).tool.value
-  component_.at(name).inertia.mass
-  component_.at(name).inertia.inertia_tensor
-  component_.at(name).inertia.center_of_mass
-  */
-  /////////////////////////////////////////////////////////////////////////////
-
-public:
-  Manipulator() : dof_(0){};
-  virtual ~Manipulator(){};
-
-  ///////////////////////////initialize function/////////////////////////////
-
-  void addWorld(Name world_name,
-                Name child_name,
-                Vector3f world_position = Vector3f::Zero(),
-                Matrix3f world_orientation = Matrix3f::Identity(3, 3));
-
-  void addComponent(Name my_name,
-                    Name parent_name,
-                    Name child_name,
-                    Vector3f relative_position,
-                    Matrix3f relative_orientation,
-                    Vector3f axis_of_rotation = Vector3f::Zero(),
-                    int8_t joint_actuator_id = -1,
-                    double coefficient = 1.0f,
-                    double mass = 0.0f,
-                    Matrix3f inertia_tensor = Matrix3f::Identity(3, 3),
-                    Vector3f center_of_mass = Vector3f::Zero());
-
-  void addTool(Name my_name,
-               Name parent_name,
-               Vector3f relative_position,
-               Matrix3f relative_orientation,
-               int8_t tool_id = -1,
-               double coefficient = 1.0f,
-               double mass = 0.0f,
-               Matrix3f inertia_tensor = Matrix3f::Identity(3, 3),
-               Vector3f center_of_mass = Vector3f::Zero());
-
-  void addComponentChild(Name my_name, Name child_name);
-  void checkManipulatorSetting();
-
-  ///////////////////////////////Set function//////////////////////////////////
-
-  void setWorldPose(Pose world_pose);
-  void setWorldPosition(Vector3f world_position);
-  void setWorldOrientation(Matrix3f world_orientation);
-  void setWorldState(State world_state);
-  void setWorldVelocity(VectorXf world_velocity);
-  void setWorldAcceleration(VectorXf world_acceleration);
-
-  void setComponent(Name name, Component component, bool *error = NULL);
-  void setComponentPoseToWorld(Name name, Pose pose_to_world);
-  void setComponentPositionToWorld(Name name, Vector3f position_to_world);
-  void setComponentOrientationToWorld(Name name, Matrix3f orientation_to_wolrd);
-  void setComponentStateToWorld(Name name, State state_to_world);
-  void setComponentVelocityToWorld(Name name, VectorXf velocity);
-  void setComponentAccelerationToWorld(Name name, VectorXf accelaration);
-  void setComponentJointAngle(Name name, double angle);
-  void setComponentJointVelocity(Name name, double angular_velocity);
-  void setComponentJointAcceleration(Name name, double angular_acceleration);
-  void setComponentToolOnOff(Name name, bool on_off);
-  void setComponentToolValue(Name name, double value);
-
-  void setAllActiveJointAngle(std::vector<double> angle_vector);
-
-  ///////////////////////////////Get function//////////////////////////////////
-
-  int8_t getDOF();
-
-  Name getWorldName();
-  Name getWorldChildName();
-  Pose getWorldPose();
-  Vector3f getWorldPosition();
-  Matrix3f getWorldOrientation();
-  State getWorldState();
-  VectorXf getWorldVelocity();
-  VectorXf getWorldAcceleration();
-
-  int8_t getComponentSize();
-  std::map<Name, Component> getAllComponent();
-  std::map<Name, Component>::iterator getIteratorBegin();
-  std::map<Name, Component>::iterator getIteratorEnd();
-  Component getComponent(Name name);
-  Name getComponentParentName(Name name);
-  std::vector<Name> getComponentChildName(Name name);
-  Pose getComponentPoseToWorld(Name name);
-  Vector3f getComponentPositionToWorld(Name name);
-  Matrix3f getComponentOrientationToWorld(Name name);
-  State getComponentStateToWorld(Name name);
-  VectorXf getComponentVelocityToWorld(Name name);
-  VectorXf getComponentAccelerationToWorld(Name name);
-  Pose getComponentRelativePoseToParent(Name name);
-  Vector3f getComponentRelativePositionToParent(Name name);
-  Matrix3f getComponentRelativeOrientationToParent(Name name);
-  Joint getComponentJoint(Name name);
-  int8_t getComponentJointId(Name name);
-  double getComponentJointCoefficient(Name name);
-  Vector3f getComponentJointAxis(Name name);
-  double getComponentJointAngle(Name name);
-  double getComponentJointVelocity(Name name);
-  double getComponentJointAcceleration(Name name);
-  Tool getComponentTool(Name name);
-  int8_t getComponentToolId(Name name);
-  double getComponentToolCoefficient(Name name);
-  bool getComponentToolOnOff(Name name);
-  double getComponentToolValue(Name name);
-  double getComponentMass(Name name);
-  Matrix3f getComponentInertiaTensor(Name name);
-  Vector3f getComponentCenterOfMass(Name name);
-
-  std::vector<double> getAllJointAngle();
-  std::vector<double> getAllActiveJointAngle();
-  std::vector<uint8_t> getAllActiveJointID();
-
-};
 
 class Kinematics : public Manipulator
 {
@@ -189,43 +37,69 @@ public:
   Kinematics(){};
   virtual ~Kinematics(){};
 
-  virtual MatrixXf jacobian(Manipulator *manipulator, Name tool_name) = 0;
+  virtual void setOption(const void *arg) = 0;
+  virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
+  virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
   virtual void forward(Manipulator *manipulator) = 0;
   virtual void forward(Manipulator *manipulator, Name component_name) = 0;
   virtual std::vector<double> inverse(Manipulator *manipulator, Name tool_name, Pose target_pose) = 0;
 };
 
-class Actuator
+class JointActuator
 {
 public:
-  Actuator(){};
-  virtual ~Actuator(){};
+  JointActuator(){};
+  virtual ~JointActuator(){};
 
-  virtual void initActuator(const void *arg) = 0;
-  virtual void setActuatorControlMode() = 0;
+  virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
+  virtual void setMode(std::vector<uint8_t> actuator_id, const void *arg) = 0;
+  virtual std::vector<uint8_t> getId() = 0;
 
-  virtual void Enable() = 0;
-  virtual void Disable() = 0;
+  virtual void enable() = 0;
+  virtual void disable() = 0;
 
-  virtual bool sendAllActuatorAngle(std::vector<double> radian_vector) = 0;
-  virtual bool sendMultipleActuatorAngle(std::vector<uint8_t> id, std::vector<double> radian_vector) = 0;
-  virtual bool sendActuatorAngle(uint8_t actuator_id, double radian) = 0;
-  virtual bool sendActuatorSignal(uint8_t actuator_id, bool onoff) = 0;
-  virtual std::vector<double> receiveAllActuatorAngle(void) = 0;
+  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<Actuator> value_vector) = 0;
+  virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
+
+  bool findId(uint8_t actuator_id);
 };
 
-class Drawing
+class ToolActuator
 {
 public:
-  Drawing(){};
-  virtual ~Drawing(){};
+  ToolActuator(){};
+  virtual ~ToolActuator(){};
 
-  virtual void initDraw(const void *arg) = 0;
-  virtual void setRadius(double radius) = 0;
-  virtual void setStartPose(Pose start_pose) = 0;
-  virtual void setEndPose(Pose end_pose) = 0;
-  virtual void setAngularStartPosition(double start_position) = 0;
-  virtual Pose getPose(double tick) = 0;
+  virtual void init(uint8_t actuator_id, const void *arg) = 0;
+  virtual void setMode(const void *arg) = 0;
+  virtual uint8_t getId() = 0;
+
+  virtual void enable() = 0;
+  virtual void disable() = 0;
+
+  virtual bool sendToolActuatorValue(double value) = 0;
+  virtual double receiveToolActuatorValue() = 0;
+
+  bool findId(uint8_t actuator_id);
+};
+
+
+class DrawingTrajectory
+{
+private:
+  WayPointType output_way_point_type_;
+
+public:
+  DrawingTrajectory(){};
+  virtual ~DrawingTrajectory(){};
+
+  virtual void init(double move_time, double control_time, std::vector<WayPoint> start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void setOption(const void *arg) = 0;
+  virtual std::vector<WayPoint> getJointWayPoint(double tick) = 0;
+  virtual std::vector<WayPoint> getTaskWayPoint(double tick) = 0;
+
+  WayPointType getOutputWayPointType();
+  void setOutputWayPointType(WayPointType way_point_type);
 };
 
 } // namespace OPEN_MANIPULATOR
