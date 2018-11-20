@@ -1,5 +1,5 @@
 ﻿/*******************************************************************************
-* Copyright 2016 ROBOTIS CO., LTD.
+* Copyright 2018 ROBOTIS CO., LTD.
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
 * limitations under the License.
 *******************************************************************************/
 
-/* Authors: Darby Lim, Hye-Jong KIM */
+/* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
 #ifndef ROBOTIS_MANIPULATOR_H_
 #define ROBOTIS_MANIPULATOR_H_
@@ -23,6 +23,7 @@
 #include "robotis_manipulator_manager.h"
 #include "robotis_manipulator_trajectory_generator.h"
 #include "robotis_manipulator_math.h"
+#include "robotis_manipulator_debug.h"
 
 #include <algorithm> // for sort()
 
