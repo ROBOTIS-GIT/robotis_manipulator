@@ -33,6 +33,7 @@ find_package(Eigen3 REQUIRED)
 catkin_package(
   INCLUDE_DIRS include
   LIBRARIES robotis_manipulator
+  CATKIN_DEPENDS roscpp cmake_modules
   DEPENDS EIGEN3
 )
 
