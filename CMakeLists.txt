@@ -56,3 +56,20 @@ add_library(robotis_manipulator
 
 add_dependencies(robotis_manipulator ${catkin_EXPORTED_TARGETS})
 target_link_libraries(robotis_manipulator ${catkin_LIBRARIES})
+
+################################################################################
+# Install
+################################################################################
+install(TARGETS robotis_manipulator
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+install(DIRECTORY include/${PROJECT_NAME}/
+  DESTINATION ${CATKIN_PACKAGE_INCLUDE_DESTINATION}
+)
+
+################################################################################
+# Test
+################################################################################
