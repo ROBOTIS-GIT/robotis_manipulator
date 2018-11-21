@@ -27,13 +27,13 @@ void RM_LOG::PRINT(STRING str)
   printf("%s\n", str.c_str());
 #endif
 }
-void RM_LOG::PRINT(STRING str, double data)
+void RM_LOG::PRINT(STRING str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
-  printf("%s %.3lf\n", str.c_str(), data);
+  printf("%s %.*lf\n", str.c_str(), point, data);
 #endif
 }
 void RM_LOG::PRINT(const char* str)
@@ -44,13 +44,13 @@ void RM_LOG::PRINT(const char* str)
   printf("%s\n", str);
 #endif
 }
-void RM_LOG::PRINT(const char* str, double data)
+void RM_LOG::PRINT(const char* str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
-  printf("%s %.3lf\n", str, data);
+  printf("%s %.*lf\n", str, point, data);
 #endif
 }
 void RM_LOG::INFO(STRING str)
@@ -62,14 +62,14 @@ void RM_LOG::INFO(STRING str)
   printf("[INFO] %s\n", str.c_str());
 #endif
 }
-void RM_LOG::INFO(STRING str, double data)
+void RM_LOG::INFO(STRING str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
-  printf("[INFO] %s %.3lf\n", str.c_str(), data);
+  printf("[INFO] %s %.*lf\n", str.c_str(), point, data);
 #endif
 }
 void RM_LOG::INFO(const char* str)
@@ -81,14 +81,14 @@ void RM_LOG::INFO(const char* str)
   printf("[INFO] %s\n", str);
 #endif
 }
-void RM_LOG::INFO(const char* str, double data)
+void RM_LOG::INFO(const char* str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
-  printf("[INFO] %s %.3lf\n", str, data);
+  printf("[INFO] %s %.*lf\n", str, point, data);
 #endif
 }
 void RM_LOG::WARN(STRING str)
@@ -102,15 +102,15 @@ void RM_LOG::WARN(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::WARN(STRING str, double data)
+void RM_LOG::WARN(STRING str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
   printf(ANSI_COLOR_YELLOW);
-  printf("[WARN] %s %.3lf\n",str.c_str(), data);
+  printf("[WARN] %s %.*lf\n",str.c_str(), point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
@@ -125,15 +125,15 @@ void RM_LOG::WARN(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::WARN(const char* str, double data)
+void RM_LOG::WARN(const char* str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
   printf(ANSI_COLOR_YELLOW);
-  printf("[WARN] %s %.3lf\n",str, data);
+  printf("[WARN] %s %.*lf\n", str, point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
@@ -148,15 +148,15 @@ void RM_LOG::ERROR(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::ERROR(STRING str, double data)
+void RM_LOG::ERROR(STRING str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
   printf(ANSI_COLOR_RED);
-  printf("[ERROR] %s %.3lf\n",str.c_str(), data);
+  printf("[ERROR] %s %.*lf\n", str.c_str(), point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
@@ -172,15 +172,15 @@ void RM_LOG::ERROR(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::ERROR(const char* str, double data)
+void RM_LOG::ERROR(const char* str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
   DEBUG.print(str);
-  DEBUG.println(data, 3);
+  DEBUG.println(data, point);
 #else
   printf(ANSI_COLOR_RED);
-  printf("[ERROR] %s %.3lf\n",str, data);
+  printf("[ERROR] %s %.*lf\n", str, point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }

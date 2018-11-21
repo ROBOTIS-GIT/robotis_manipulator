@@ -46,30 +46,30 @@
 namespace RM_LOG
 {
   void PRINT(STRING str);
-  void PRINT(STRING str, double data);
+  void PRINT(STRING str, double data, uint8_t point = 3);
   void PRINT(const char* str);
-  void PRINT(const char* str, double data);
+  void PRINT(const char* str, double data, uint8_t point = 3);
   void INFO(STRING str);
-  void INFO(STRING str, double data);
+  void INFO(STRING str, double data, uint8_t point = 3);
   void INFO(const char* str);
-  void INFO(const char* str, double data);
+  void INFO(const char* str, double data, uint8_t point = 3);
   void WARN(STRING str);
-  void WARN(STRING str, double data);
+  void WARN(STRING str, double data, uint8_t point = 3);
   void WARN(const char* str);
-  void WARN(const char* str, double data);
+  void WARN(const char* str, double data, uint8_t point = 3);
   void ERROR(STRING str);
-  void ERROR(STRING str, double data);
+  void ERROR(STRING str, double data, uint8_t point = 3);
   void ERROR(const char* str);
-  void ERROR(const char* str, double data);
+  void ERROR(const char* str, double data, uint8_t point = 3);
 
   template <typename T>
-  void PRINT_VECTOR(std::vector<T> &vec)
+  void PRINT_VECTOR(std::vector<T> &vec, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
     DEBUG.print("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
-      DEBUG.print(vec.at(i), 3);
+      DEBUG.print(vec.at(i), point);
       DEBUG.print(",\t");
     }
     DEBUG.println(")");
@@ -77,7 +77,7 @@ namespace RM_LOG
     printf("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
-      printf("%.3lf", vec.at(i));
+      printf("%.*lf", point, vec.at(i));
       printf(",\t");
     }
     printf(")\n");
@@ -85,13 +85,13 @@ namespace RM_LOG
   }
 
   template <typename vector>
-  void PRINT_VECTOR(vector &vec)
+  void PRINT_VECTOR(vector &vec, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
     DEBUG.print("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
-      DEBUG.print(vec(i), 3);
+      DEBUG.print(vec(i), point);
       DEBUG.print(",\t");
     }
     DEBUG.println(")");
@@ -99,7 +99,7 @@ namespace RM_LOG
     printf("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
-      printf("%.3lf", vec(i));
+      printf("%.*lf", point, vec(i));
       printf(",\t");
     }
     printf(")\n");
@@ -108,7 +108,7 @@ namespace RM_LOG
 
 
   template <typename matrix>
-  void PRINT_MATRIX(matrix &m)
+  void PRINT_MATRIX(matrix &m, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
     DEBUG.print("(");
@@ -117,7 +117,7 @@ namespace RM_LOG
       DEBUG.print(" ");
       for (uint8_t j = 0; j < m.cols(); j++)
       {
-        DEBUG.print(m(i, j), 3);
+        DEBUG.print(m(i, j), point);
         DEBUG.print(",\t");
       }
       DEBUG.println();
@@ -130,7 +130,7 @@ namespace RM_LOG
       printf(" ");
       for (uint8_t j = 0; j < m.cols(); j++)
       {
-        printf("%.3lf", m(i, j));
+        printf("%.*lf", point, m(i, j));
         printf(",\t");
       }
       printf("\n");
