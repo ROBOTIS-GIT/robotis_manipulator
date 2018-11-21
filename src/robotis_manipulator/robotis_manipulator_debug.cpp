@@ -18,9 +18,8 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_debug.h"
 
-using namespace ROBOTIS_MANIPULATOR;
 
-void LOG::PRINT(STRING str)
+void RM_LOG::PRINT(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -28,7 +27,7 @@ void LOG::PRINT(STRING str)
   printf("%s\n", str.c_str());
 #endif
 }
-void LOG::PRINT(STRING str, double data)
+void RM_LOG::PRINT(STRING str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -37,7 +36,7 @@ void LOG::PRINT(STRING str, double data)
   printf("%s %.3lf\n", str.c_str(), data);
 #endif
 }
-void LOG::PRINT(const char* str)
+void RM_LOG::PRINT(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -45,7 +44,7 @@ void LOG::PRINT(const char* str)
   printf("%s\n", str);
 #endif
 }
-void LOG::PRINT(const char* str, double data)
+void RM_LOG::PRINT(const char* str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -54,7 +53,7 @@ void LOG::PRINT(const char* str, double data)
   printf("%s %.3lf\n", str, data);
 #endif
 }
-void LOG::INFO(STRING str)
+void RM_LOG::INFO(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -63,7 +62,7 @@ void LOG::INFO(STRING str)
   printf("[INFO] %s\n", str.c_str());
 #endif
 }
-void LOG::INFO(STRING str, double data)
+void RM_LOG::INFO(STRING str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -73,7 +72,7 @@ void LOG::INFO(STRING str, double data)
   printf("[INFO] %s %.3lf\n", str.c_str(), data);
 #endif
 }
-void LOG::INFO(const char* str)
+void RM_LOG::INFO(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -82,7 +81,7 @@ void LOG::INFO(const char* str)
   printf("[INFO] %s\n", str);
 #endif
 }
-void LOG::INFO(const char* str, double data)
+void RM_LOG::INFO(const char* str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -92,7 +91,7 @@ void LOG::INFO(const char* str, double data)
   printf("[INFO] %s %.3lf\n", str, data);
 #endif
 }
-void LOG::WARN(STRING str)
+void RM_LOG::WARN(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -103,7 +102,7 @@ void LOG::WARN(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::WARN(STRING str, double data)
+void RM_LOG::WARN(STRING str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -115,7 +114,7 @@ void LOG::WARN(STRING str, double data)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::WARN(const char* str)
+void RM_LOG::WARN(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -126,7 +125,7 @@ void LOG::WARN(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::WARN(const char* str, double data)
+void RM_LOG::WARN(const char* str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -138,7 +137,7 @@ void LOG::WARN(const char* str, double data)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::ERROR(STRING str)
+void RM_LOG::ERROR(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -149,7 +148,7 @@ void LOG::ERROR(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::ERROR(STRING str, double data)
+void RM_LOG::ERROR(STRING str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -162,7 +161,7 @@ void LOG::ERROR(STRING str, double data)
 #endif
 }
 
-void LOG::ERROR(const char* str)
+void RM_LOG::ERROR(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -173,7 +172,7 @@ void LOG::ERROR(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void LOG::ERROR(const char* str, double data)
+void RM_LOG::ERROR(const char* str, double data)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");

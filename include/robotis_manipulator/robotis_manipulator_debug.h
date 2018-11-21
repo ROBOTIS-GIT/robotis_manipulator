@@ -43,16 +43,8 @@
   #define ANSI_COLOR_CYAN    "\x1b[36m"
   #define ANSI_COLOR_RESET   "\x1b[0m"
 #endif
-namespace ROBOTIS_MANIPULATOR
+namespace RM_LOG
 {
-class LOG
-{
-private:
-
-public:
-  LOG() {};
-  virtual ~LOG() {};
-
   void PRINT(STRING str);
   void PRINT(STRING str, double data);
   void PRINT(const char* str);
@@ -74,19 +66,21 @@ public:
   void PRINT_VECTOR(std::vector<T> &vec)
   {
   #if defined(__OPENCR__)
+    DEBUG.print("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
       DEBUG.print(vec.at(i), 3);
-      DEBUG.print(", ");
+      DEBUG.print(",\t");
     }
-    DEBUG.println();
+    DEBUG.println(")");
   #else
+    printf("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
       printf("%.3lf", vec.at(i));
-      printf(", ");
+      printf(",\t");
     }
-    printf("\n");
+    printf(")\n");
   #endif
   }
 
@@ -94,19 +88,21 @@ public:
   void PRINT_VECTOR(vector &vec)
   {
   #if defined(__OPENCR__)
+    DEBUG.print("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
       DEBUG.print(vec(i), 3);
-      DEBUG.print(", ");
+      DEBUG.print(",\t");
     }
-    DEBUG.println();
+    DEBUG.println(")");
   #else
+    printf("(");
     for (uint8_t i = 0; i < vec.size(); i++)
     {
       printf("%.3lf", vec(i));
-      printf(", ");
+      printf(",\t");
     }
-    printf("\n");
+    printf(")\n");
   #endif
   }
 
@@ -115,34 +111,33 @@ public:
   void PRINT_MATRIX(matrix &m)
   {
   #if defined(__OPENCR__)
+    DEBUG.print("(");
     for (uint8_t i = 0; i < m.rows(); i++)
     {
       DEBUG.print(" ");
       for (uint8_t j = 0; j < m.cols(); j++)
       {
         DEBUG.print(m(i, j), 3);
-        DEBUG.print(", ");
+        DEBUG.print(",\t");
       }
       DEBUG.println();
     }
-    DEBUG.println();
+    DEBUG.println(")");
   #else
+    printf("(");
     for (uint8_t i = 0; i < m.rows(); i++)
     {
       printf(" ");
       for (uint8_t j = 0; j < m.cols(); j++)
       {
         printf("%.3lf", m(i, j));
-        printf(", ");
+        printf(",\t");
       }
       printf("\n");
     }
-    printf("\n");
+    printf(")\n");
   #endif
   }
-
-};
-
 }
 
 #endif // ROBOTIS_MANIPULATOR_DEBUG_H
