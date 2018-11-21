@@ -23,9 +23,12 @@
 #include <vector>
 
 #if defined(__OPENCR__)
+  #include <Eigen.h>
+  #include <WString.h>
+  #include "variant.h"
+
   typedef String		  STRING;
 
-  #define USB Serial
   #define DEBUG SerialBT2
 #else
   #include <string>
@@ -40,25 +43,20 @@
   #define ANSI_COLOR_CYAN    "\x1b[36m"
   #define ANSI_COLOR_RESET   "\x1b[0m"
 #endif
-
-
 namespace ROBOTIS_MANIPULATOR
 {
-
-class DEBUG
+class LOG
 {
 private:
 
 public:
-  DEBUG() {};
-  virtual ~DEBUG() {};
+  LOG() {};
+  virtual ~LOG() {};
 
-
-  void OpenDEBUGSerialPortInOpenCR();
-  void LOG(STRING str);
-  void LOG(STRING str, double data);
-  void LOG(const char* str);
-  void LOG(const char* str, double data);
+  void PRINT(STRING str);
+  void PRINT(STRING str, double data);
+  void PRINT(const char* str);
+  void PRINT(const char* str, double data);
   void INFO(STRING str);
   void INFO(STRING str, double data);
   void INFO(const char* str);
@@ -72,7 +70,7 @@ public:
   void ERROR(const char* str);
   void ERROR(const char* str, double data);
 
-template <typename T>
+  template <typename T>
   void PRINT_VECTOR(std::vector<T> &vec)
   {
   #if defined(__OPENCR__)
@@ -82,7 +80,6 @@ template <typename T>
       DEBUG.print(", ");
     }
     DEBUG.println();
-  }
   #else
     for (uint8_t i = 0; i < vec.size(); i++)
     {
@@ -93,62 +90,59 @@ template <typename T>
   #endif
   }
 
-template <typename vector>
-void PRINT_VECTOR(vector &vec)
-{
-#if defined(__OPENCR__)
-  for (uint8_t i = 0; i < vec.size(); i++)
+  template <typename vector>
+  void PRINT_VECTOR(vector &vec)
   {
-    DEBUG.print(vec(i), 3);
-    DEBUG.print(", ");
-  }
-  DEBUG.println();
-}
-#else
-  for (uint8_t i = 0; i < vec.size(); i++)
-  {
-    printf("%.3lf", vec(i));
-    printf(", ");
-  }
-  printf("\n");
-#endif
-}
-
-
-template <typename matrix>
-void PRINT_MATRIX(matrix &m)
-{
-#if defined(__OPENCR__)
-  for (uint8_t i = 0; i < m.rows(); i++)
-  {
-    DEBUG.print(" ");
-    for (uint8_t j = 0; j < m.cols(); j++)
+  #if defined(__OPENCR__)
+    for (uint8_t i = 0; i < vec.size(); i++)
     {
-      DEBUG.print(m(i, j), 3);
+      DEBUG.print(vec(i), 3);
       DEBUG.print(", ");
     }
     DEBUG.println();
-  }
-  DEBUG.println();
-#else
-  for (uint8_t i = 0; i < m.rows(); i++)
-  {
-    printf(" ");
-    for (uint8_t j = 0; j < m.cols(); j++)
+  #else
+    for (uint8_t i = 0; i < vec.size(); i++)
     {
-      printf("%.3lf", m(i, j));
+      printf("%.3lf", vec(i));
       printf(", ");
     }
     printf("\n");
+  #endif
   }
-  printf("\n");
-#endif
 
-}
+
+  template <typename matrix>
+  void PRINT_MATRIX(matrix &m)
+  {
+  #if defined(__OPENCR__)
+    for (uint8_t i = 0; i < m.rows(); i++)
+    {
+      DEBUG.print(" ");
+      for (uint8_t j = 0; j < m.cols(); j++)
+      {
+        DEBUG.print(m(i, j), 3);
+        DEBUG.print(", ");
+      }
+      DEBUG.println();
+    }
+    DEBUG.println();
+  #else
+    for (uint8_t i = 0; i < m.rows(); i++)
+    {
+      printf(" ");
+      for (uint8_t j = 0; j < m.cols(); j++)
+      {
+        printf("%.3lf", m(i, j));
+        printf(", ");
+      }
+      printf("\n");
+    }
+    printf("\n");
+  #endif
+  }
 
 };
 
 }
-
 
 #endif // ROBOTIS_MANIPULATOR_DEBUG_H
