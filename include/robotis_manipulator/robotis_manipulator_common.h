@@ -32,10 +32,16 @@
 #include <map>
 #include "robotis_manipulator_math.h"
 
+#if defined(__OPENCR__)
+  typedef String		  STRING;
+#else
+  typedef std::string STRING;
+#endif
+
 namespace ROBOTIS_MANIPULATOR
 {
 
-typedef int8_t Name;
+typedef STRING Name;
 
 /////////////////////Pose struct////////////////////////////
 

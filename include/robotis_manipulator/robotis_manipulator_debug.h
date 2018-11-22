@@ -21,19 +21,16 @@
 
 #include <unistd.h>
 #include <vector>
+#include "robotis_manipulator_common.h"
 
 #if defined(__OPENCR__)
   #include <Eigen.h>
   #include <WString.h>
   #include "variant.h"
 
-  typedef String		  STRING;
-
   #define DEBUG SerialBT2
 #else
   #include <string>
-
-  typedef std::string STRING;
 
   #define ANSI_COLOR_RED     "\x1b[31m"
   #define ANSI_COLOR_GREEN   "\x1b[32m"
