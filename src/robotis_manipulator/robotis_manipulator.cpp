@@ -748,7 +748,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
     startMoving();
   }
   else
-    RM_LOG::ERROR("[jointTrajectoryMove] Fail to solve IK");
+    RM_LOG::ERROR("[JOINT_TRAJECTORY] Fail to solve IK");
 }
 
 void RobotisManipulator::taskTrajectoryMoveToPresentPosition(Name tool_name, Eigen::Vector3d meter, double move_time)
@@ -907,19 +907,23 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
 {
   std::vector<WayPoint> joint_way_point_value;
 
+  ////////////////////////Joint Trajectory/////////////////////////
   if(trajectory_.checkTrajectoryType(JOINT_TRAJECTORY))
   {
     joint_way_point_value = trajectory_.getJointTrajectory().getJointWayPoint(tick_time);
     trajectory_.setPresentJointWayPoint(joint_way_point_value);
     trajectory_.UpdatePresentWayPoint(kinematics_);
   }
+  /////////////////////////////////////////////////////////////////
+  ///
+  /////////////////////////Task Trajectory/////////////////////////
   else if(trajectory_.checkTrajectoryType(TASK_TRAJECTORY))
   {
     std::vector<WayPoint> task_way_point_value;
     Pose goal_pose;
     std::vector<double> joint_value;
     task_way_point_value = trajectory_.getTaskTrajectory().getTaskWayPoint(tick_time);
-//      trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
+//    trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
 
     goal_pose.position[0] = task_way_point_value.at(0).value;
     goal_pose.position[1] = task_way_point_value.at(1).value;
@@ -940,10 +944,13 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     }
     else
     {
-      RM_LOG::ERROR("[TASK_TRAJECTORY]fail to solve IK");
+      RM_LOG::ERROR("[TASK_TRAJECTORY] fail to solve IK");
       moving_ = false;
     }
   }
+  /////////////////////////////////////////////////////////////////
+  ///
+  //////////////////////Drawing Trajectory/////////////////////////
   else if(trajectory_.checkTrajectoryType(DRAWING_TRAJECTORY))
   {
     if(trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getOutputWayPointType()==JOINT)
@@ -980,12 +987,12 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       }
       else
       {
-        RM_LOG::ERROR("[DRAWING_TRAJECTORY]fail to solve IK");
+        RM_LOG::ERROR("[DRAWING_TRAJECTORY] fail to solve IK");
         moving_ = false;
       }
     }
   }
-
+  /////////////////////////////////////////////////////////////////
   return joint_way_point_value;
 }
 
