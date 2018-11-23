@@ -76,6 +76,8 @@ typedef struct
 
 ////////////////////////////////////////////////////////////
 
+///////////////////////Point struct/////////////////////////
+
 typedef struct _Point
 {
   double value;
@@ -83,15 +85,27 @@ typedef struct _Point
   double effort;
 } Actuator, WayPoint;
 
+////////////////////////////////////////////////////////////
+
+///////////////////////Joint Limit struct/////////////////////////
+
+typedef struct _JointLimit
+{
+  double maximum;
+  double minimum;
+} JointLimit;
+
+////////////////////////////////////////////////////////////
+
 ///////////////////Trajectory struct////////////////////////
 
-enum TrajectoryType
+typedef enum _TrajectoryType
 {
   NONE = 0,
   JOINT_TRAJECTORY,
   TASK_TRAJECTORY,
   DRAWING_TRAJECTORY
-};
+}TrajectoryType;
 
 typedef enum _WayPointType
 {

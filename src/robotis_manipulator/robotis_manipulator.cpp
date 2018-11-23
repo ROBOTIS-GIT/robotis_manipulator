@@ -167,9 +167,9 @@ void RobotisManipulator::forward(Name first_component_name)
   return kinematics_->forward(&manipulator_, first_component_name);
 }
 
-std::vector<double> RobotisManipulator::inverse(Name tool_name, Pose goal_pose)
+bool RobotisManipulator::inverse(Name tool_name, Pose goal_pose, std::vector<double>* goal_joint_value)
 {
-  return kinematics_->inverse(&manipulator_, tool_name, goal_pose);
+  return kinematics_->inverse(&manipulator_, tool_name, goal_pose, goal_joint_value);
 }
 
 void RobotisManipulator::kinematicsSetOption(const void* arg)
@@ -725,27 +725,30 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
   trajectory_.setStartWayPoint(trajectory_.getPresentJointWayPoint());
 
   std::vector<double> goal_joint_angle;
-  goal_joint_angle = kinematics_->inverse(trajectory_.getTrajectoryManipulator(), tool_name, goal_pose);
-
-  WayPoint goal_way_point;
-  std::vector<WayPoint> goal_way_point_vector;
-  for (uint8_t index = 0; index < manipulator_.getDOF(); index++)
+  if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), tool_name, goal_pose, &goal_joint_angle))
   {
-    goal_way_point.value = goal_joint_angle.at(index);
-    goal_way_point.velocity = 0.0;
-    goal_way_point.effort = 0.0;
+    WayPoint goal_way_point;
+    std::vector<WayPoint> goal_way_point_vector;
+    for (uint8_t index = 0; index < manipulator_.getDOF(); index++)
+    {
+      goal_way_point.value = goal_joint_angle.at(index);
+      goal_way_point.velocity = 0.0;
+      goal_way_point.effort = 0.0;
 
-    goal_way_point_vector.push_back(goal_way_point);
-  }
-  trajectory_.setGoalWayPoint(goal_way_point_vector);
+      goal_way_point_vector.push_back(goal_way_point);
+    }
+    trajectory_.setGoalWayPoint(goal_way_point_vector);
 
-  if(isMoving())
-  {
-    moving_=false;
-    while(!step_moving_) ;
+    if(isMoving())
+    {
+      moving_=false;
+      while(!step_moving_) ;
+    }
+    trajectory_.makeJointTrajectory();
+    startMoving();
   }
-  trajectory_.makeJointTrajectory();
-  startMoving();
+  else
+    RM_LOG::ERROR("[jointTrajectoryMove] Fail to solve IK");
 }
 
 void RobotisManipulator::taskTrajectoryMoveToPresentPosition(Name tool_name, Eigen::Vector3d meter, double move_time)
@@ -916,22 +919,30 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     Pose goal_pose;
     std::vector<double> joint_value;
     task_way_point_value = trajectory_.getTaskTrajectory().getTaskWayPoint(tick_time);
-    trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
+//      trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
 
     goal_pose.position[0] = task_way_point_value.at(0).value;
     goal_pose.position[1] = task_way_point_value.at(1).value;
     goal_pose.position[2] = task_way_point_value.at(2).value;
     goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
-    joint_value = kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose);
-    joint_way_point_value.resize(joint_value.size());
-
-    for(int index = 0; index < joint_value.size(); index++)
+    if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
     {
-      joint_way_point_value.at(index).value = joint_value.at(index);
-      joint_way_point_value.at(index).velocity = 0.0;
-      joint_way_point_value.at(index).effort = 0.0;
+      trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
+      joint_way_point_value.resize(joint_value.size());
+
+      for(int index = 0; index < joint_value.size(); index++)
+      {
+        joint_way_point_value.at(index).value = joint_value.at(index);
+        joint_way_point_value.at(index).velocity = 0.0;
+        joint_way_point_value.at(index).effort = 0.0;
+      }
+      trajectory_.setPresentJointWayPoint(joint_way_point_value);
     }
-    trajectory_.setPresentJointWayPoint(joint_way_point_value);
+    else
+    {
+      RM_LOG::ERROR("[TASK_TRAJECTORY]fail to solve IK");
+      moving_ = false;
+    }
   }
   else if(trajectory_.checkTrajectoryType(DRAWING_TRAJECTORY))
   {
@@ -947,23 +958,31 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       Pose goal_pose;
       std::vector<double> joint_value;
       task_way_point_value = trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getTaskWayPoint(tick_time);
-      trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
+//      trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
 
       goal_pose.position[0] = task_way_point_value.at(0).value;
       goal_pose.position[1] = task_way_point_value.at(1).value;
       goal_pose.position[2] = task_way_point_value.at(2).value;
       goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
 
-      joint_value = kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose);
-      joint_way_point_value.resize(joint_value.size());
-
-      for(int index = 0; index < joint_value.size(); index++)
+      if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
       {
-        joint_way_point_value.at(index).value = joint_value.at(index);
-        joint_way_point_value.at(index).velocity = 0.0;
-        joint_way_point_value.at(index).effort = 0.0;
+        trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), task_way_point_value);
+        joint_way_point_value.resize(joint_value.size());
+
+        for(int index = 0; index < joint_value.size(); index++)
+        {
+          joint_way_point_value.at(index).value = joint_value.at(index);
+          joint_way_point_value.at(index).velocity = 0.0;
+          joint_way_point_value.at(index).effort = 0.0;
+        }
+        trajectory_.setPresentJointWayPoint(joint_way_point_value);
       }
-      trajectory_.setPresentJointWayPoint(joint_way_point_value);
+      else
+      {
+        RM_LOG::ERROR("[DRAWING_TRAJECTORY]fail to solve IK");
+        moving_ = false;
+      }
     }
   }
 
