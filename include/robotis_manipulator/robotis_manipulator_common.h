@@ -23,6 +23,7 @@
 #if defined(__OPENCR__)
   #include <Eigen.h>  // Calls main Eigen matrix class library
   #include <Eigen/LU> // Calls inverse, determinant, LU decomp., etc.
+  #include <WString.h>
 #else
   #include <eigen3/Eigen/Eigen>
   #include <eigen3/Eigen/LU>
