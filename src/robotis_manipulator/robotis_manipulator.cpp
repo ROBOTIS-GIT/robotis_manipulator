@@ -48,20 +48,20 @@ void RobotisManipulator::addWorld(Name world_name,
   manipulator_.addWorld(world_name, child_name, world_position, world_orientation);
 }
 
-void RobotisManipulator::addComponent(Name my_name,
+void RobotisManipulator::addJoint(Name my_name,
                                Name parent_name,
                                Name child_name,
                                Eigen::Vector3d relative_position,
                                Eigen::Matrix3d relative_orientation,
                                Eigen::Vector3d axis_of_rotation,
-                               int8_t joint_actuator_id,
+                               int8_t joint_actuator_id, double max_limit, double min_limit,
                                double coefficient,
                                double mass,
                                Eigen::Matrix3d inertia_tensor,
                                Eigen::Vector3d center_of_mass)
 {
-  manipulator_.addComponent(my_name, parent_name, child_name, relative_position, relative_orientation, axis_of_rotation,
-                            joint_actuator_id, coefficient, mass, inertia_tensor, center_of_mass);
+  manipulator_.addJoint(my_name, parent_name, child_name, relative_position, relative_orientation, axis_of_rotation,
+                            joint_actuator_id, max_limit, min_limit, coefficient, mass, inertia_tensor, center_of_mass);
 }
 
 void RobotisManipulator::addComponentChild(Name my_name, Name child_name)
@@ -73,20 +73,20 @@ void RobotisManipulator::addTool(Name my_name,
                           Name parent_name,
                           Eigen::Vector3d relative_position,
                           Eigen::Matrix3d relative_orientation,
-                          int8_t tool_id,
+                          int8_t tool_id, double max_limit, double min_limit,
                           double coefficient,
                           double mass,
                           Eigen::Matrix3d inertia_tensor,
                           Eigen::Vector3d center_of_mass)
 {
 
-  manipulator_.addTool(my_name, parent_name, relative_position, relative_orientation, tool_id, coefficient, mass,
+  manipulator_.addTool(my_name, parent_name, relative_position, relative_orientation, tool_id, coefficient, max_limit, min_limit, mass,
                        inertia_tensor, center_of_mass);
 }
 
 void RobotisManipulator::checkManipulatorSetting()
 {
-  //use debug
+  manipulator_.checkManipulatorSetting();
 }
 
 void RobotisManipulator::addKinematics(Kinematics *kinematics)
@@ -831,7 +831,7 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, Name tool_name
   trajectory_.setTrajectoryType(DRAWING_TRAJECTORY);
   trajectory_.setPresentControlToolName(tool_name);
 
-  trajectory_.getDrawingtrajectory(drawing_name)->setOutputWayPointType(TASK);
+  trajectory_.getDrawingtrajectory(drawing_name)->setOutputWayPointType(TASK_WAY_POINT);
   trajectory_.setPresentDrawingObjectName(drawing_name);
 
   trajectory_.clearStartWayPoint();
@@ -854,7 +854,7 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, const void *ar
 {
   trajectory_.setTrajectoryType(DRAWING_TRAJECTORY);
 
-  trajectory_.getDrawingtrajectory(drawing_name)->setOutputWayPointType(JOINT);
+  trajectory_.getDrawingtrajectory(drawing_name)->setOutputWayPointType(JOINT_WAY_POINT);
   trajectory_.setPresentDrawingObjectName(drawing_name);
 
   trajectory_.clearStartWayPoint();
@@ -953,13 +953,13 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
   //////////////////////Drawing Trajectory/////////////////////////
   else if(trajectory_.checkTrajectoryType(DRAWING_TRAJECTORY))
   {
-    if(trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getOutputWayPointType()==JOINT)
+    if(trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getOutputWayPointType()==JOINT_WAY_POINT)
     {
       joint_way_point_value = trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getJointWayPoint(tick_time);
       trajectory_.setPresentJointWayPoint(joint_way_point_value);
       trajectory_.UpdatePresentWayPoint(kinematics_);
     }
-    else if(trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getOutputWayPointType()==TASK)
+    else if(trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getOutputWayPointType()==TASK_WAY_POINT)
     {
       std::vector<WayPoint> task_way_point_value;
       Pose goal_pose;

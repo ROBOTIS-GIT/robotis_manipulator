@@ -32,20 +32,15 @@
 #include <vector>
 #include <map>
 #include "robotis_manipulator_math.h"
-
-#if defined(__OPENCR__)
-  typedef String		  STRING;
-#else
-  typedef std::string STRING;
-#endif
+#include "robotis_manipulator_debug.h"
 
 namespace ROBOTIS_MANIPULATOR
 {
 
 typedef STRING Name;
 
-/////////////////////Pose struct////////////////////////////
-
+///////////////////// date set//////////////////////////////
+//Pose struct
 typedef struct _Pose
 {
   Eigen::Vector3d position;
@@ -64,10 +59,7 @@ typedef struct _Dynamicpose
   Dynamicvector angular;
 } Dynamicpose;
 
-////////////////////////////////////////////////////////////
-
-/////////////////////Inertia struct/////////////////////////
-
+//Inertia struct
 typedef struct
 {
   double mass;
@@ -75,31 +67,26 @@ typedef struct
   Eigen::Vector3d center_of_mass;
 } Inertia;
 
-////////////////////////////////////////////////////////////
-
-///////////////////////Point struct/////////////////////////
-
-typedef struct _Point
-{
-  double value;
-  double velocity;
-  double effort;
-} Actuator, WayPoint;
-
-////////////////////////////////////////////////////////////
-
-///////////////////////Joint Limit struct/////////////////////////
-
-typedef struct _JointLimit
+//Actuator Value Limit struct
+typedef struct _AcutuatorLimit
 {
   double maximum;
   double minimum;
-} JointLimit;
-
+} Limit;
 ////////////////////////////////////////////////////////////
 
-///////////////////Trajectory struct////////////////////////
+/////////////////////////Time struct////////////////////////
+typedef struct _Time
+{
+  double total_move_time;
+  double control_loop_time;
+  double present_time;
+  double start_time;
+}Time;
+////////////////////////////////////////////////////////////
 
+////////////////////Trajectory set//////////////////////////
+//Trajectory struct
 typedef enum _TrajectoryType
 {
   NONE = 0,
@@ -110,40 +97,69 @@ typedef enum _TrajectoryType
 
 typedef enum _WayPointType
 {
-  JOINT = 0,
-  TASK
+  JOINT_WAY_POINT = 0,
+  TASK_WAY_POINT
 }WayPointType;
 
+//Point struct
+typedef struct _Point
+{
+  double value;
+  double velocity;
+  double acceleration;
+  double effort;
+} Actuator, WayPoint;
 ////////////////////////////////////////////////////////////
 
-/////////////////////Joint struct///////////////////////////
+//////////////////////Componet data/////////////////////////
+//Component Type
+typedef enum _ComponentType
+{
+  JOINT_COMPONET = 0,
+  TOOL_COMPONET
+}ComponentType;
 
-typedef struct _Joint
+//Constant data
+typedef struct _ChainigName
+{
+  Name parent;
+  std::vector<Name> child;
+} ChainigName;
+
+typedef struct _Relative
+{
+  Pose pose_from_parent;
+  Inertia inertia;
+} Relative;
+
+typedef struct _ActuatorConstant
 {
   int8_t id;
   Eigen::Vector3d axis;
-  double coefficient; //actuator angle to joint angle
+  double coefficient;       //actuator angle to joint angle
+  Limit limit;
+} ActuatorConstant;
+
+//Variable data
+typedef struct _ActuatorVariable
+{
   double value;
   double velocity;
+  double acceleration;
   double effort;
-} Joint;
+  double goal_value;       //m or rad and so on
+} ActuatorVariable;
 
-////////////////////////////////////////////////////////////
-
-/////////////////////Tool struct////////////////////////////
-
-typedef struct _Tool
+typedef struct _PoseVariable
 {
-  int8_t id;
-  double coefficient; //actuator value to tool value
-  double value;       //m or rad
-  double goal_value;       //m or rad
-} Tool;
+  Pose pose;
+  Dynamicpose dynamic_pose;
+} PoseVariable;
 
 ////////////////////////////////////////////////////////////
 
-/////////////////////World struct///////////////////////////
-
+//////////////////////Componet set//////////////////////////
+//World struct
 typedef struct _World
 {
   Name name;
@@ -152,39 +168,23 @@ typedef struct _World
   Dynamicpose dynamic_pose;
 } World;
 
-////////////////////////////////////////////////////////////
-
-/////////////////////Componet struct////////////////////////
-
+//component struct
 typedef struct _Component
 {
-  Name parent;
-  std::vector<Name> child;
-  Pose relative_to_parent;
-  Pose pose_to_world;
-  Dynamicpose dynamic_pose;
-  Joint joint;
-  Tool tool;
-  Inertia inertia;
+  //constant
+  ChainigName name;
+  ComponentType component_type;
+  Relative relative;
+  ActuatorConstant actuator_constant;
+  //variable
+  PoseVariable from_world;
+  ActuatorVariable actuator_variable;
+  //Actuator
   Name actuator_name;
 } Component;
-
-////////////////////////////////////////////////////////////
-
-/////////////////////////Time struct////////////////////////
-
-typedef struct _Time
-{
-  double total_move_time;
-  double control_loop_time;
-  double present_time;
-  double start_time;
-}Time;
-
 ////////////////////////////////////////////////////////////
 
 /////////////////////Manipulator class//////////////////////
-
 class Manipulator
 {
 private:
@@ -201,15 +201,13 @@ public:
                 Eigen::Vector3d world_position = Eigen::Vector3d::Zero(3),
                 Eigen::Matrix3d world_orientation = Eigen::Matrix3d::Identity());
 
-
-
-  void addComponent(Name my_name,
+  void addJoint(Name my_name,
                     Name parent_name,
                     Name child_name,
                     Eigen::Vector3d relative_position,
                     Eigen::Matrix3d relative_orientation,
                     Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1,
+                    int8_t joint_actuator_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
                     double coefficient = 1.0,
                     double mass = 0.0,
                     Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -219,7 +217,7 @@ public:
                Name parent_name,
                Eigen::Vector3d relative_position,
                Eigen::Matrix3d relative_orientation,
-               int8_t tool_id = -1,
+               int8_t tool_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
                double coefficient = 1.0,
                double mass = 0.0,
                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -245,20 +243,15 @@ public:
   void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
   void setJointValue(Name name, double joint_value);
   void setJointVelocity(Name name, double joint_velocity);
+  void setJointAcceleration(Name name, double joint_acceleration);
   void setJointEffort(Name name, double joint_effort);
   void setJointValue(Name name, WayPoint joint_value);
-//  void setJointValueFromId(int8_t joint_id, WayPoint joint_value);
   void setAllActiveJointValue(std::vector<double> joint_value_vector);
   void setAllActiveJointValue(std::vector<WayPoint> joint_way_point_vector);
   void setAllJointValue(std::vector<double> joint_value_vector);
   void setAllJointValue(std::vector<WayPoint> joint_way_point_vector);
-//  void setJointActuatorValue(Name name, Actuator actuator_value);
-//  void setAllJointActuatorValue(std::vector<Actuator> actuator_value_vector);
   void setToolValue(Name name, double tool_value);
   void setToolGoalValue(Name name, double tool_goal_value);
-
-//  void setToolValueFromId(int8_t tool_id, double tool_value);
-//  void setToolActuatorValue(Name name, double actuator_value);
 
   ///////////////////////////////Get function//////////////////////////////////
   int8_t getDOF();
@@ -283,28 +276,23 @@ public:
   Pose getComponentRelativePoseToParent(Name name);
   Eigen::Vector3d getComponentRelativePositionToParent(Name name);
   Eigen::Matrix3d getComponentRelativeOrientationToParent(Name name);
-  Joint getComponentJoint(Name name);
   int8_t getJointId(Name name);
   double getJointCoefficient(Name name);
-//  double getJointCoefficientFromId(int8_t id);
   Eigen::Vector3d getJointAxis(Name name);
   double getJointValue(Name name);
   double getJointVelocity(Name name);
+  double getJointAcceleration(Name name);
   double getJointEffort(Name name);
-//  Actuator getJointActuatorValue(Name name);
   int8_t getToolId(Name name);
   double getToolCoefficient(Name name);
-//  double getToolCoefficientFromId(int8_t id);
   double getToolValue(Name name);
   double getToolGoalValue(Name name);
-//  double getToolActuatorValue(Name name);
   double getComponentMass(Name name);
   Eigen::Matrix3d getComponentInertiaTensor(Name name);
   Eigen::Vector3d getComponentCenterOfMass(Name name);
   std::vector<double> getAllJointValue();
   std::vector<double> getAllActiveJointValue();
-  void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector);
-//  std::vector<Actuator> getAllJointActuatorValue();
+  void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector=NULL);
   std::vector<uint8_t> getAllJointID();
   std::vector<uint8_t> getAllActiveJointID();
 

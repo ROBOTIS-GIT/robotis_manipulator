@@ -21,7 +21,6 @@
 
 #include <unistd.h>
 #include <vector>
-#include "robotis_manipulator_common.h"
 
 #if defined(__OPENCR__)
   #include <Eigen.h>
@@ -40,6 +39,13 @@
   #define ANSI_COLOR_CYAN    "\x1b[36m"
   #define ANSI_COLOR_RESET   "\x1b[0m"
 #endif
+
+#if defined(__OPENCR__)
+  typedef String		  STRING;
+#else
+  typedef std::string STRING;
+#endif
+
 namespace RM_LOG
 {
   void PRINT(STRING str);
