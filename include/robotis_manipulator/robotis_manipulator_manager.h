@@ -31,7 +31,7 @@
 namespace ROBOTIS_MANIPULATOR
 {
 
-class Kinematics : public Manipulator
+class Kinematics
 {
 public:
   Kinematics(){};
