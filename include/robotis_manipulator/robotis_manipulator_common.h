@@ -50,7 +50,7 @@ typedef struct _Pose
 typedef struct _Dynamicvector
 {
   Eigen::Vector3d velocity;
-  Eigen::Vector3d effort;
+  Eigen::Vector3d acceleration;
 } Dynamicvector;
 
 typedef struct _Dynamicpose
@@ -115,8 +115,8 @@ typedef struct _Point
 //Component Type
 typedef enum _ComponentType
 {
-  JOINT_COMPONET = 0,
-  TOOL_COMPONET
+  JOINT_COMPONENT = 0,
+  TOOL_COMPONENT
 }ComponentType;
 
 //Constant data
@@ -207,7 +207,7 @@ public:
                     Eigen::Vector3d relative_position,
                     Eigen::Matrix3d relative_orientation,
                     Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
+                    int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
                     double coefficient = 1.0,
                     double mass = 0.0,
                     Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -217,7 +217,7 @@ public:
                Name parent_name,
                Eigen::Vector3d relative_position,
                Eigen::Matrix3d relative_orientation,
-               int8_t tool_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
+               int8_t tool_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
                double coefficient = 1.0,
                double mass = 0.0,
                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -233,8 +233,8 @@ public:
   void setWorldDynamicPose(Dynamicpose world_dynamic_pose);
   void setWorldLinearVelocity(Eigen::Vector3d world_linear_velocity);
   void setWorldAngularVelocity(Eigen::Vector3d world_angular_velocity);
-  void setWorldLinearEffort(Eigen::Vector3d world_angular_velocity);
-  void setWorldAngularEffort(Eigen::Vector3d world_angular_effort);
+  void setWorldLinearAcceleration(Eigen::Vector3d world_linear_acceleration);
+  void setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration);
   void setComponent(Name component_name, Component component);
   void setComponentActuatorName(Name component_name, Name actuator_name);
   void setComponentPoseToWorld(Name name, Pose pose_to_world);
@@ -295,6 +295,9 @@ public:
   void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector=NULL);
   std::vector<uint8_t> getAllJointID();
   std::vector<uint8_t> getAllActiveJointID();
+
+  ////////////////////////////Limit check function//////////////////////////////
+  bool checkActuatorLimit(Name Component_name, double value);
 
   ///////////////////////////////Find function//////////////////////////////////
   Name findJointComponentNameFromId(int8_t id);

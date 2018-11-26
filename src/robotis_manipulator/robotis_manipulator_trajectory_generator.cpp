@@ -46,11 +46,11 @@ void MinimumJerk::calcCoefficient(WayPoint start,
 
   coefficient_(0) = start.value;
   coefficient_(1) = start.velocity;
-  coefficient_(2) = 0.5 * start.effort;
+  coefficient_(2) = 0.5 * start.acceleration;
 
-  b << (goal.value - start.value - (start.velocity * move_time + 0.5 * start.effort * pow(move_time, 2))),
-      (goal.velocity - start.velocity - (start.effort * move_time)),
-      (goal.effort - start.effort);
+  b << (goal.value - start.value - (start.velocity * move_time + 0.5 * start.acceleration * pow(move_time, 2))),
+      (goal.velocity - start.velocity - (start.acceleration * move_time)),
+      (goal.acceleration - start.acceleration);
 
   Eigen::ColPivHouseholderQR<Eigen::Matrix3d> dec(A);
   x = dec.solve(b);
@@ -101,6 +101,7 @@ std::vector<WayPoint> JointTrajectory::getJointWayPoint(double tick)
     WayPoint single_joint_way_point;
     single_joint_way_point.value = 0.0;
     single_joint_way_point.velocity = 0.0;
+    single_joint_way_point.acceleration = 0.0;
     single_joint_way_point.effort = 0.0;
 
     single_joint_way_point.value = coefficient_(0, index) +
@@ -116,7 +117,7 @@ std::vector<WayPoint> JointTrajectory::getJointWayPoint(double tick)
              4 * coefficient_(4, index) * pow(tick, 3) +
              5 * coefficient_(5, index) * pow(tick, 4);
 
-    single_joint_way_point.effort = 2 * coefficient_(2, index) +
+    single_joint_way_point.acceleration = 2 * coefficient_(2, index) +
              6 * coefficient_(3, index) * pow(tick, 1) +
              12 * coefficient_(4, index) * pow(tick, 2) +
              20 * coefficient_(5, index) * pow(tick, 3);
@@ -303,6 +304,7 @@ void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present
   {
     joint_way_point.value = joint_value_vector.at(index);
     joint_way_point.velocity = 0.0;
+    joint_way_point.acceleration = 0.0;
     joint_way_point.effort = 0.0;
     joint_way_point_vector.push_back(joint_way_point);
   }
@@ -355,8 +357,8 @@ void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
       Dynamicpose dynamic_pose;
       dynamic_pose.linear.velocity = linear_velocity;
       dynamic_pose.angular.velocity = angular_velocity;
-      dynamic_pose.linear.effort = Eigen::Vector3d::Zero();
-      dynamic_pose.angular.effort = Eigen::Vector3d::Zero();
+      dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero();
+      dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero();
 
       manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
     }
@@ -374,6 +376,7 @@ void Trajectory::setPresentJointWayPoint(std::vector<WayPoint> joint_value_vecto
     {
       manipulator_.setJointValue(it->first, joint_value_vector.at(index).value);
       manipulator_.setJointVelocity(it->first, joint_value_vector.at(index).velocity);
+      manipulator_.setJointAcceleration(it->first, joint_value_vector.at(index).acceleration);
       manipulator_.setJointEffort(it->first, joint_value_vector.at(index).effort);
     }
     index++;
@@ -388,23 +391,23 @@ void Trajectory::setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> to
   {
     pose_to_world.position[pos_count] = tool_value_vector.at(pos_count).value;
     dynamic_pose.linear.velocity[pos_count] = tool_value_vector.at(pos_count).velocity;
-    dynamic_pose.linear.effort[pos_count] = tool_value_vector.at(pos_count).effort;
+    dynamic_pose.linear.acceleration[pos_count] = tool_value_vector.at(pos_count).acceleration;
   }
 
   Eigen::Vector3d orientation_value_vector;
   Eigen::Vector3d orientation_velocity_vector;
-  Eigen::Vector3d orientation_effort_vector;
+  Eigen::Vector3d orientation_acceleration_vector;
   for(int ori_count = 0; ori_count < 3; ori_count++)
   {
     orientation_value_vector[ori_count] = tool_value_vector.at(ori_count+3).value;
     orientation_velocity_vector[ori_count] = tool_value_vector.at(ori_count+3).velocity;
-    orientation_effort_vector[ori_count] = tool_value_vector.at(ori_count+3).effort;
+    orientation_acceleration_vector[ori_count] = tool_value_vector.at(ori_count+3).acceleration;
   }
   Eigen::Matrix3d orientation;
   orientation = RM_MATH::convertRPYToRotation(orientation_value_vector[0], orientation_value_vector[1], orientation_value_vector[2]);
   pose_to_world.orientation = orientation;
   dynamic_pose.angular.velocity = orientation_velocity_vector;
-  dynamic_pose.angular.effort = orientation_effort_vector;
+  dynamic_pose.angular.acceleration = orientation_acceleration_vector;
 
   manipulator_.setComponentPoseToWorld(tool_name, pose_to_world);
   manipulator_.setComponentDynamicPoseToWorld(tool_name, dynamic_pose);
@@ -423,8 +426,8 @@ std::vector<WayPoint> Trajectory::getPresentJointWayPoint()
       // Active
       result.value = manipulator_.getJointValue(it->first);
       result.velocity = manipulator_.getJointVelocity(it->first);
+      result.acceleration = manipulator_.getJointAcceleration(it->first);
       result.effort = manipulator_.getJointEffort(it->first);
-
       result_vector.push_back(result);
     }
   }
@@ -439,8 +442,8 @@ std::vector<WayPoint> Trajectory::getPresentTaskWayPoint(Name tool_name)
   {
     result.value = manipulator_.getComponentPoseToWorld(tool_name).position[pos_count];
     result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.velocity[pos_count];
-    result.effort = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.effort[pos_count];
-
+    result.acceleration = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.acceleration[pos_count];
+    result.effort = 0.0;
     result_vector.push_back(result);
   }
 
@@ -449,8 +452,8 @@ std::vector<WayPoint> Trajectory::getPresentTaskWayPoint(Name tool_name)
   {
     result.value = orientation_vector[ori_count];
     result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.velocity[ori_count];
-    result.effort = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.effort[ori_count];
-
+    result.acceleration = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.acceleration[ori_count];
+    result.effort = 0.0;
     result_vector.push_back(result);
   }
 

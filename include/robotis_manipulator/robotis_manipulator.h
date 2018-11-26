@@ -100,6 +100,7 @@ public:
   // MANIPULATOR
   Manipulator *getManipulator();
   void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
+  bool actuatorLimitCheck(Name Component_name, double value);
 
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();

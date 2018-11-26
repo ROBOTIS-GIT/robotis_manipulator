@@ -35,9 +35,9 @@ void Manipulator::addWorld(Name world_name,
   world_.pose.position = world_position;
   world_.pose.orientation = world_orientation;
   world_.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  world_.dynamic_pose.linear.effort = Eigen::Vector3d::Zero(3);
+  world_.dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero(3);
   world_.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  world_.dynamic_pose.angular.effort = Eigen::Vector3d::Zero(3);
+  world_.dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero(3);
 }
 
 void Manipulator::addJoint(Name my_name,
@@ -61,7 +61,7 @@ void Manipulator::addJoint(Name my_name,
 
   temp_component.name.parent = parent_name;
   temp_component.name.child.push_back(child_name);
-  temp_component.component_type = JOINT_COMPONET;
+  temp_component.component_type = JOINT_COMPONENT;
   temp_component.relative.pose_from_parent.position = relative_position;
   temp_component.relative.pose_from_parent.orientation = relative_orientation;
   temp_component.relative.inertia.mass = mass;
@@ -76,9 +76,9 @@ void Manipulator::addJoint(Name my_name,
   temp_component.from_world.pose.position = Eigen::Vector3d::Zero();
   temp_component.from_world.pose.orientation = Eigen::Matrix3d::Identity();
   temp_component.from_world.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.from_world.dynamic_pose.linear.effort = Eigen::Vector3d::Zero(3);
+  temp_component.from_world.dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero(3);
   temp_component.from_world.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.from_world.dynamic_pose.angular.effort = Eigen::Vector3d::Zero(3);
+  temp_component.from_world.dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero(3);
 
   temp_component.actuator_variable.value = 0.0;
   temp_component.actuator_variable.velocity = 0.0;
@@ -109,7 +109,7 @@ void Manipulator::addTool(Name my_name,
 
   temp_component.name.parent = parent_name;
   temp_component.name.child.resize(0);
-  temp_component.component_type = TOOL_COMPONET;
+  temp_component.component_type = TOOL_COMPONENT;
   temp_component.relative.pose_from_parent.position = relative_position;
   temp_component.relative.pose_from_parent.orientation = relative_orientation;
   temp_component.relative.inertia.mass = mass;
@@ -124,9 +124,9 @@ void Manipulator::addTool(Name my_name,
   temp_component.from_world.pose.position = Eigen::Vector3d::Zero();
   temp_component.from_world.pose.orientation = Eigen::Matrix3d::Identity();
   temp_component.from_world.dynamic_pose.linear.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.from_world.dynamic_pose.linear.effort = Eigen::Vector3d::Zero(3);
+  temp_component.from_world.dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero(3);
   temp_component.from_world.dynamic_pose.angular.velocity = Eigen::Vector3d::Zero(3);
-  temp_component.from_world.dynamic_pose.angular.effort = Eigen::Vector3d::Zero(3);
+  temp_component.from_world.dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero(3);
 
   temp_component.actuator_variable.value = 0.0;
   temp_component.actuator_variable.velocity = 0.0;
@@ -172,14 +172,14 @@ void Manipulator::setWorldAngularVelocity(Eigen::Vector3d world_angular_velocity
   world_.dynamic_pose.angular.velocity = world_angular_velocity;
 }
 
-void Manipulator::setWorldLinearEffort(Eigen::Vector3d world_linear_effort)
+void Manipulator::setWorldLinearAcceleration(Eigen::Vector3d world_linear_acceleration)
 {
-  world_.dynamic_pose.linear.effort = world_linear_effort;
+  world_.dynamic_pose.linear.acceleration = world_linear_acceleration;
 }
 
-void Manipulator::setWorldAngularEffort(Eigen::Vector3d world_angular_effort)
+void Manipulator::setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration)
 {
-  world_.dynamic_pose.angular.effort = world_angular_effort;
+  world_.dynamic_pose.angular.acceleration = world_angular_acceleration;
 }
 
 void Manipulator::setComponent(Name component_name, Component component)
@@ -242,9 +242,10 @@ void Manipulator::setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_
 
 void Manipulator::setJointValue(Name name, double joint_value)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
-    component_.at(name).actuator_variable.value = joint_value;
+    if(checkActuatorLimit(name, joint_value))
+      component_.at(name).actuator_variable.value = joint_value;
   }
   else
   {
@@ -254,7 +255,7 @@ void Manipulator::setJointValue(Name name, double joint_value)
 
 void Manipulator::setJointVelocity(Name name, double joint_velocity)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     component_.at(name).actuator_variable.velocity = joint_velocity;
   }
@@ -266,7 +267,7 @@ void Manipulator::setJointVelocity(Name name, double joint_velocity)
 
 void Manipulator::setJointAcceleration(Name name, double joint_acceleration)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     component_.at(name).actuator_variable.acceleration = joint_acceleration;
   }
@@ -278,7 +279,7 @@ void Manipulator::setJointAcceleration(Name name, double joint_acceleration)
 
 void Manipulator::setJointEffort(Name name, double joint_effort)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     component_.at(name).actuator_variable.effort = joint_effort;
   }
@@ -290,7 +291,7 @@ void Manipulator::setJointEffort(Name name, double joint_effort)
 
 void Manipulator::setJointValue(Name name, WayPoint joint_value)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     component_.at(name).actuator_variable.value = joint_value.value;
     component_.at(name).actuator_variable.velocity = joint_value.velocity;
@@ -310,7 +311,7 @@ void Manipulator::setAllActiveJointValue(std::vector<double> joint_value_vector)
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id != -1)
       {
@@ -328,7 +329,7 @@ void Manipulator::setAllActiveJointValue(std::vector<WayPoint> joint_way_point_v
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id != -1)
       {
@@ -349,7 +350,7 @@ void Manipulator::setAllJointValue(std::vector<double> joint_value_vector)
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       component_.at(it_component->first).actuator_variable.value = joint_value_vector.at(index);
       index++;
@@ -365,7 +366,7 @@ void Manipulator::setAllJointValue(std::vector<WayPoint> joint_way_point_vector)
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       component_.at(it_component->first).actuator_variable.value = joint_way_point_vector.at(index).value;
       component_.at(it_component->first).actuator_variable.velocity = joint_way_point_vector.at(index).velocity;
@@ -378,7 +379,7 @@ void Manipulator::setAllJointValue(std::vector<WayPoint> joint_way_point_vector)
 
 void Manipulator::setToolValue(Name name, double tool_value)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     component_.at(name).actuator_variable.value = tool_value;
   }
@@ -390,7 +391,7 @@ void Manipulator::setToolValue(Name name, double tool_value)
 
 void Manipulator::setToolGoalValue(Name name, double tool_goal_value)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     component_.at(name).actuator_variable.goal_value = tool_goal_value;
   }
@@ -515,91 +516,91 @@ Eigen::Matrix3d Manipulator::getComponentRelativeOrientationToParent(Name name)
 
 int8_t Manipulator::getJointId(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_constant.id;
   }
   else
   {
-    RM_LOG::ERROR("[getJointId] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointId] Input name is not joint name");
     return component_.at(name).actuator_constant.id;
   }
 }
 
 double Manipulator::getJointCoefficient(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_constant.coefficient;
   }
   else
   {
-    RM_LOG::ERROR("[getJointCoefficient] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointCoefficient] Input name is not joint name");
     return component_.at(name).actuator_constant.coefficient;
   }
 }
 
 Eigen::Vector3d Manipulator::getJointAxis(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_constant.axis;
   }
   else
   {
-    RM_LOG::ERROR("[getJointAxis] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointAxis] Input name is not joint name");
     return component_.at(name).actuator_constant.axis;
   }
 }
 
 double Manipulator::getJointValue(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_variable.value;
   }
   else
   {
-    RM_LOG::ERROR("[getJointValue] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointValue] Input name is not joint name");
     return component_.at(name).actuator_variable.value;
   }
 }
 
 double Manipulator::getJointVelocity(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_variable.velocity;
   }
   else
   {
-    RM_LOG::ERROR("[getJointVelocity] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointVelocity] Input name is not joint name");
     return component_.at(name).actuator_variable.velocity;
   }
 }
 
 double Manipulator::getJointAcceleration(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_variable.acceleration;
   }
   else
   {
-    RM_LOG::ERROR("[getJointAcceleration] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointAcceleration] Input name is not joint name");
     return component_.at(name).actuator_variable.acceleration;
   }
 }
 
 double Manipulator::getJointEffort(Name name)
 {
-  if (component_.at(name).component_type == JOINT_COMPONET)
+  if (component_.at(name).component_type == JOINT_COMPONENT)
   {
     return component_.at(name).actuator_variable.effort;
   }
   else
   {
-    RM_LOG::ERROR("[getJointEffort] Input name is not joint name");
+//    RM_LOG::ERROR("[getJointEffort] Input name is not joint name");
     return component_.at(name).actuator_variable.effort;
   }
 }
@@ -607,52 +608,52 @@ double Manipulator::getJointEffort(Name name)
 
 int8_t Manipulator::getToolId(Name name)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     return component_.at(name).actuator_constant.id;
   }
   else
   {
-    RM_LOG::ERROR("[getJointEffort] Input name is not tool name");
+//    RM_LOG::ERROR("[getJointEffort] Input name is not tool name");
     return component_.at(name).actuator_constant.id;
   }
 }
 
 double Manipulator::getToolCoefficient(Name name)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     return component_.at(name).actuator_constant.coefficient;
   }
   else
   {
-    RM_LOG::ERROR("[getToolCoefficient] Input name is not tool name");
+//    RM_LOG::ERROR("[getToolCoefficient] Input name is not tool name");
     return component_.at(name).actuator_constant.coefficient;
   }
 }
 
 double Manipulator::getToolValue(Name name)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     return component_.at(name).actuator_variable.value;
   }
   else
   {
-    RM_LOG::ERROR("[getToolValue] Input name is not tool name");
+//    RM_LOG::ERROR("[getToolValue] Input name is not tool name");
     return component_.at(name).actuator_variable.value;
   }
 }
 
 double Manipulator::getToolGoalValue(Name name)
 {
-  if (component_.at(name).component_type == TOOL_COMPONET)
+  if (component_.at(name).component_type == TOOL_COMPONENT)
   {
     return component_.at(name).actuator_variable.goal_value;
   }
   else
   {
-    RM_LOG::ERROR("[getToolValue] Input name is not tool name");
+//    RM_LOG::ERROR("[getToolValue] Input name is not tool name");
     return component_.at(name).actuator_variable.goal_value;
   }
 }
@@ -679,7 +680,7 @@ std::vector<double> Manipulator::getAllJointValue()
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       result_vector.push_back(component_.at(it_component->first).actuator_variable.value);
     }
@@ -694,7 +695,7 @@ std::vector<double> Manipulator::getAllActiveJointValue()
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id != -1) // Check whether Active or Passive
       {
@@ -716,7 +717,7 @@ void Manipulator::getAllActiveJointValue(std::vector<double> *joint_value_vector
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id != -1) // Check whether Active or Passive
       {
@@ -736,7 +737,7 @@ std::vector<uint8_t> Manipulator::getAllJointID()
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       joint_id.push_back(component_.at(it_component->first).actuator_constant.id);
     }
@@ -751,7 +752,7 @@ std::vector<uint8_t> Manipulator::getAllActiveJointID()
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id != -1) // Check whether Active or Passive
       {
@@ -762,6 +763,13 @@ std::vector<uint8_t> Manipulator::getAllActiveJointID()
   return active_joint_id;
 }
 
+bool Manipulator::checkActuatorLimit(Name component_name, double value)
+{
+  if(component_.at(component_name).actuator_constant.limit.maximum < value && component_.at(component_name).actuator_constant.limit.minimum > value)        //in
+    return true;
+  else
+    return false;
+}
 
 Name Manipulator::findJointComponentNameFromId(int8_t id)
 {
@@ -769,7 +777,7 @@ Name Manipulator::findJointComponentNameFromId(int8_t id)
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == JOINT_COMPONET)
+    if (component_.at(it_component->first).component_type == JOINT_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id == id)
       {
@@ -784,7 +792,7 @@ Name Manipulator::findToolComponentNameFromId(int8_t id)
   std::map<Name, Component>::iterator it_component;
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).component_type == TOOL_COMPONET)
+    if (component_.at(it_component->first).component_type == TOOL_COMPONENT)
     {
       if (component_.at(it_component->first).actuator_constant.id == id)
       {
