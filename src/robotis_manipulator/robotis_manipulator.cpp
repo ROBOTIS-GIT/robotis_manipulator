@@ -1089,10 +1089,7 @@ std::vector<double> RobotisManipulator::getToolGoalValue()
   return result_vector;
 }
 
-
-
-
-std::vector<WayPoint> RobotisManipulator::jointTrajectoryControllerLoop(double present_time)
+std::vector<WayPoint> RobotisManipulator::getJointGoalValueFromTrajectory(double present_time)
 {
   trajectory_.setPresentTime(present_time);
 
@@ -1111,9 +1108,4 @@ std::vector<WayPoint> RobotisManipulator::jointTrajectoryControllerLoop(double p
     return joint_goal_way_point;
   }
   return {};
-}
-
-std::vector<double> RobotisManipulator::toolControllerLoop()
-{
-  return getToolGoalValue();
 }

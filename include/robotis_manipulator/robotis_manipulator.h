@@ -56,8 +56,6 @@ private:
 
   std::vector<Actuator> getTrajectoryJointValue(double tick_time);
   std::vector<Actuator> TrajectoryTimeCounter();
-  std::vector<double> getToolGoalValue();
-
 
 public:
   RobotisManipulator();
@@ -174,8 +172,8 @@ public:
   void TrajectoryWait(double wait_time);
 
   // Additional Functions
-  std::vector<WayPoint> jointTrajectoryControllerLoop(double present_time);
-  std::vector<double> toolControllerLoop();
+  std::vector<WayPoint> getJointGoalValueFromTrajectory(double present_time);
+  std::vector<double> getToolGoalValue();
 };
 } // namespace OPEN_MANIPULATOR
 
