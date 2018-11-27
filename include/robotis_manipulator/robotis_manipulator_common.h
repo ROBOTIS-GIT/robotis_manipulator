@@ -148,7 +148,6 @@ typedef struct _ActuatorVariable
   double velocity;
   double acceleration;
   double effort;
-  double goal_value;       //m or rad and so on
 } ActuatorVariable;
 
 typedef struct _PoseVariable
@@ -243,17 +242,18 @@ public:
   void setComponentOrientationToWorld(Name name, Eigen::Matrix3d orientation_to_wolrd);
   void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
 
-  void setValue(Name name, double joint_value);
-  void setVelocity(Name name, double joint_velocity);
-  void setAcceleration(Name name, double joint_acceleration);
-  void setEffort(Name name, double joint_effort);
-  void setJointValue(Name name, WayPoint joint_value);
+  void setValue(Name name, double value);
+  void setVelocity(Name name, double velocity);
+  void setAcceleration(Name name, double acceleration);
+  void setEffort(Name name, double effort);
+  void setJointValue(Name name, WayPoint way_point);
 
   void setAllActiveJointValue(std::vector<double> joint_value_vector);
   void setAllActiveJointValue(std::vector<WayPoint> joint_way_point_vector);
   void setAllJointValue(std::vector<double> joint_value_vector);
   void setAllJointValue(std::vector<WayPoint> joint_way_point_vector);
-  void setToolGoalValue(Name name, double tool_goal_value);
+
+  void setAllToolValue(std::vector<double> tool_value_vector);
 
   ///////////////////////////////Get function//////////////////////////////////
   int8_t getDOF();
@@ -286,16 +286,22 @@ public:
   double getVelocity(Name name);
   double getAcceleration(Name name);
   double getEffort(Name name);
-  double getToolGoalValue(Name name);
 
   double getComponentMass(Name name);
   Eigen::Matrix3d getComponentInertiaTensor(Name name);
   Eigen::Vector3d getComponentCenterOfMass(Name name);
+
   std::vector<double> getAllJointValue();
   std::vector<double> getAllActiveJointValue();
+  std::vector<WayPoint> getAllActiveJointWayPoint();
   void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector=NULL);
+
+  std::vector<double> getAllToolValue();
+
   std::vector<uint8_t> getAllJointID();
   std::vector<uint8_t> getAllActiveJointID();
+  std::vector<Name> getAllToolComponentName();
+  std::vector<Name> getAllActiveJointComponentName();
 
   ////////////////////////////////check function////////////////////////////////
   bool checkActuatorLimit(Name Component_name, double value);

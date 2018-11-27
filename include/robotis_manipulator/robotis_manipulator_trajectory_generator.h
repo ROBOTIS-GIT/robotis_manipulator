@@ -173,6 +173,10 @@ public:
   void makeJointTrajectory();
   void makeTaskTrajectory();
   void makeDrawingTrajectory(Name drawing_name, const void *arg);
+
+  //tool
+  void setToolGoalValue(Name name, double tool_goal_value);
+  double getToolGoalValue(Name name);
 };
 
 

@@ -140,10 +140,27 @@ Manipulator *RobotisManipulator::getManipulator()
   return &manipulator_;
 }
 
-void RobotisManipulator::setAllActiveJointValue(std::vector<WayPoint> joint_value_vector)
+void RobotisManipulator::setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector)
 {
   manipulator_.setAllActiveJointValue(joint_value_vector);
 }
+
+std::vector<WayPoint> RobotisManipulator::getAllActiveJointWayPoint()
+{
+  return manipulator_.getAllActiveJointWayPoint();
+}
+
+void RobotisManipulator::setAllToolValue(std::vector<double> tool_value_vector)
+{
+  manipulator_.setAllToolValue(tool_value_vector);
+}
+
+std::vector<double> RobotisManipulator::getAllToolValue()
+{
+  return manipulator_.getAllToolValue();
+}
+
+
 
 bool RobotisManipulator::actuatorLimitCheck(Name Component_name, double value)
 {
@@ -576,13 +593,40 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
 bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, double value)
 {
-  manipulator_.setToolGoalValue(tool_component_name, value / manipulator_.getCoefficient(tool_component_name));
   if(using_platform_)
   {
     return tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))
         ->sendToolActuatorValue(value / manipulator_.getCoefficient(tool_component_name));
   }
 }
+
+bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector)
+{
+  if(using_platform_)
+  {
+    for (int index = 0; index < tool_component_name.size(); index++)
+    {
+      tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getCoefficient(tool_component_name.at(index)));
+    }
+    return true;
+  }
+}
+
+bool RobotisManipulator::sendAllToolActuatorValue(std::vector<double> value_vector)
+{
+  if(using_platform_)
+  {
+    std::vector<Name> tool_component_name;
+    tool_component_name = manipulator_.getAllToolComponentName();
+    for (int index = 0; index < tool_component_name.size(); index++)
+    {
+      trajectory_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getCoefficient(tool_component_name.at(index)));
+      tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getCoefficient(tool_component_name.at(index)));
+    }
+    return true;
+  }
+}
+
 
 double RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
 {
@@ -597,22 +641,7 @@ double RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
   }
 }
 
-bool RobotisManipulator::sendAllToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector)
-{
-  for (int index = 0; index < tool_component_name.size(); index++)
-    manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getCoefficient(tool_component_name.at(index)));
-  if(using_platform_)
-  {
-    for (int index = 0; index < tool_component_name.size(); index++)
-    {
-      manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index));
-      tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getCoefficient(tool_component_name.at(index)));
-    }
-    return true;
-  }
-}
-
-std::vector<double> RobotisManipulator::receiveAllToolActuatorValue(std::vector<Name> tool_component_name)
+std::vector<double> RobotisManipulator::receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name)
 {
   if(using_platform_)
   {
@@ -628,6 +657,23 @@ std::vector<double> RobotisManipulator::receiveAllToolActuatorValue(std::vector<
   }
 }
 
+std::vector<double> RobotisManipulator::receiveAllToolActuatorValue()
+{
+  if(using_platform_)
+  {
+    std::vector<Name> tool_component_name;
+    tool_component_name = manipulator_.getAllToolComponentName();
+    std::vector<double> result_vector;
+    double result;
+    for (int index = 0; index < tool_component_name.size(); index++)
+    {
+      result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue() * manipulator_.getCoefficient(tool_component_name.at(index));
+      manipulator_.setValue(tool_component_name.at(index), result);
+      result_vector.push_back(result);
+    }
+    return result_vector;
+  }
+}
 
 ////////
 // TIME
@@ -886,6 +932,11 @@ void RobotisManipulator::drawingTrajectoryMove(Name drawing_name, const void *ar
   startMoving();
 }
 
+void RobotisManipulator::toolMove(Name tool_name, double tool_value)
+{
+  trajectory_.setToolGoalValue(tool_name, tool_value);
+}
+
 void RobotisManipulator::TrajectoryWait(double wait_time)
 {
   trajectory_.setTrajectoryType(JOINT_TRAJECTORY);
@@ -1012,7 +1063,6 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
   return joint_way_point_value;
 }
 
-
 std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
 {
   double tick_time = trajectory_.getTickTime();
@@ -1029,8 +1079,21 @@ std::vector<Actuator> RobotisManipulator::TrajectoryTimeCounter()
   }
 }
 
+std::vector<double> RobotisManipulator::getToolGoalValue()
+{
+  std::vector<double> result_vector;
+  std::vector<Name> tool_component_name = manipulator_.getAllToolComponentName();
+  for(int index =0; index<tool_component_name.size();index++)
+  {
+    result_vector.push_back(trajectory_.getToolGoalValue(tool_component_name.at(index)));
+  }
+  return result_vector;
+}
 
-std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double present_time)
+
+
+
+std::vector<WayPoint> RobotisManipulator::jointTrajectoryControllerLoop(double present_time)
 {
   trajectory_.setPresentTime(present_time);
 
@@ -1051,14 +1114,7 @@ std::vector<WayPoint> RobotisManipulator::trajectoryControllerLoop(double presen
   return {};
 }
 
-void RobotisManipulator::toolMove(Name tool_name, double tool_value)
+std::vector<double> RobotisManipulator::toolControllerLoop()
 {
-  manipulator_.setToolGoalValue(tool_name, tool_value);
-  if(using_platform_)
-  {
-    tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))
-        ->sendToolActuatorValue(tool_value / manipulator_.getCoefficient(tool_name));
-  }
+  return getToolGoalValue();
 }
-
-

@@ -491,6 +491,7 @@ std::vector<WayPoint> Trajectory::getGoalWayPoint()
 }
 
 
+//Trajectory
 void Trajectory::setTrajectoryType(TrajectoryType trajectory_type)
 {
   trajectory_type_ = trajectory_type;
@@ -504,8 +505,6 @@ bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
     return false;
 }
 
-
-//Trajectory
 void Trajectory::makeJointTrajectory()
 {
   joint_.setJointNum(manipulator_.getDOF());
@@ -523,9 +522,16 @@ void Trajectory::makeDrawingTrajectory(Name drawing_name, const void *arg)
 }
 
 
+//tool
+void Trajectory::setToolGoalValue(Name name, double tool_goal_value)
+{
+  manipulator_.setValue(name, tool_goal_value);
+}
 
-
-
+double Trajectory::getToolGoalValue(Name name)
+{
+  manipulator_.getValue(name);
+}
 
 
 

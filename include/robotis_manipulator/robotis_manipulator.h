@@ -56,6 +56,8 @@ private:
 
   std::vector<Actuator> getTrajectoryJointValue(double tick_time);
   std::vector<Actuator> TrajectoryTimeCounter();
+  std::vector<double> getToolGoalValue();
+
 
 public:
   RobotisManipulator();
@@ -99,7 +101,10 @@ public:
 
   // MANIPULATOR
   Manipulator *getManipulator();
-  void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
+  void setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector);
+  std::vector<WayPoint> getAllActiveJointWayPoint();
+  void setAllToolValue(std::vector<double> tool_value_vector);
+  std::vector<double> getAllToolValue();
   bool actuatorLimitCheck(Name Component_name, double value);
 
   // KINEMATICS (INCLUDES VIRTUAL)
@@ -127,7 +132,7 @@ public:
   void allActuatorDisable();
 
   bool sendJointActuatorValue(Name joint_component_name, WayPoint value);
-  bool sendMultipleJointActuatorValue(std::vector<Name> tool_component_name, std::vector<WayPoint> value_vector);
+  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<WayPoint> value_vector);
   bool sendAllJointActuatorValue(std::vector<WayPoint> value_vector);
 
   WayPoint receiveJointActuatorValue(Name joint_component_name);
@@ -135,10 +140,12 @@ public:
   std::vector<WayPoint> receiveAllJointActuatorValue();
 
   bool sendToolActuatorValue(Name tool_component_name, double value);
-  double receiveToolActuatorValue(Name tool_component_name);
+  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector);
+  bool sendAllToolActuatorValue(std::vector<double> value_vector);
 
-  bool sendAllToolActuatorValue(std::vector<Name> joint_component_name, std::vector<double> value_vector);
-  std::vector<double> receiveAllToolActuatorValue(std::vector<Name> tool_component_name);
+  double receiveToolActuatorValue(Name tool_component_name);
+  std::vector<double> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
+  std::vector<double> receiveAllToolActuatorValue();
 
   // time
   void setTrajectoryControlTime(double trajectory_control_time);
@@ -161,12 +168,14 @@ public:
   void drawingTrajectorysetOption(Name drawing_name, const void* arg);
   void drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time);
   void drawingTrajectoryMove(Name drawing_name, const void *arg, double move_time);
+
+  void toolMove(Name tool_name, double tool_value);
+
   void TrajectoryWait(double wait_time);
 
   // Additional Functions
-  std::vector<WayPoint> trajectoryControllerLoop(double present_time);
-  void toolMove(Name tool_name, double tool_value);
-
+  std::vector<WayPoint> jointTrajectoryControllerLoop(double present_time);
+  std::vector<double> toolControllerLoop();
 };
 } // namespace OPEN_MANIPULATOR
 
