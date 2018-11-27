@@ -107,7 +107,7 @@ void RobotisManipulator::addJointActuator(Name actuator_name, JointActuator *joi
   }
   for(int index = 0; index < id_array.size(); index++)
   {
-    manipulator_.setComponentActuatorName(manipulator_.findJointComponentNameFromId(id_array.at(index)),actuator_name);
+    manipulator_.setComponentActuatorName(manipulator_.findComponentNameFromId(id_array.at(index)),actuator_name);
   }
   using_platform_ = true;
 }
@@ -123,7 +123,7 @@ void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_
   {
     //error
   }
-  manipulator_.setComponentActuatorName(manipulator_.findToolComponentNameFromId(id),actuator_name);
+  manipulator_.setComponentActuatorName(manipulator_.findComponentNameFromId(id),actuator_name);
   using_platform_ = true;
 }
 
@@ -372,14 +372,14 @@ bool RobotisManipulator::sendJointActuatorValue(Name joint_component_name, WayPo
   if(using_platform_)
   {
     double coefficient;
-    coefficient = manipulator_.getJointCoefficient(joint_component_name);
+    coefficient = manipulator_.getCoefficient(joint_component_name);
     value.value = value.value / coefficient;
     value.velocity = value.velocity / coefficient;
     value.effort = value.effort / coefficient;
 
     std::vector<uint8_t> id;
     std::vector<WayPoint> value_vector;
-    id.push_back(manipulator_.getJointId(joint_component_name));
+    id.push_back(manipulator_.getId(joint_component_name));
     value_vector.push_back(value);
     return joint_actuator_.at(manipulator_.getComponentActuatorName(joint_component_name))->sendJointActuatorValue(id, value_vector);
   }
@@ -395,11 +395,11 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
     std::vector<int8_t> joint_id;
     for(int index = 0; index < value_vector.size(); index++)
     {
-      value_vector.at(index).value = value_vector.at(index).value / manipulator_.getJointCoefficient(joint_component_name.at(index));
-      value_vector.at(index).velocity = value_vector.at(index).velocity / manipulator_.getJointCoefficient(joint_component_name.at(index));
-      value_vector.at(index).acceleration = value_vector.at(index).acceleration / manipulator_.getJointCoefficient(joint_component_name.at(index));
-      value_vector.at(index).effort = value_vector.at(index).effort / manipulator_.getJointCoefficient(joint_component_name.at(index));
-      joint_id.push_back(manipulator_.getJointId(joint_component_name.at(index)));
+      value_vector.at(index).value = value_vector.at(index).value / manipulator_.getCoefficient(joint_component_name.at(index));
+      value_vector.at(index).velocity = value_vector.at(index).velocity / manipulator_.getCoefficient(joint_component_name.at(index));
+      value_vector.at(index).acceleration = value_vector.at(index).acceleration / manipulator_.getCoefficient(joint_component_name.at(index));
+      value_vector.at(index).effort = value_vector.at(index).effort / manipulator_.getCoefficient(joint_component_name.at(index));
+      joint_id.push_back(manipulator_.getId(joint_component_name.at(index)));
     }
 
     std::vector<uint8_t> single_actuator_id;
@@ -432,13 +432,13 @@ bool RobotisManipulator::sendAllJointActuatorValue(std::vector<WayPoint> value_v
     int index = 0;
     for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
     {
-      if(manipulator_.getJointId(it->first) != -1)
+      if(manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT))
       {
-        value_vector.at(index).value = value_vector.at(index).value / manipulator_.getJointCoefficient(it->first);
-        value_vector.at(index).velocity = value_vector.at(index).velocity / manipulator_.getJointCoefficient(it->first);
-        value_vector.at(index).acceleration = value_vector.at(index).acceleration / manipulator_.getJointCoefficient(it->first);
-        value_vector.at(index).effort = value_vector.at(index).effort / manipulator_.getJointCoefficient(it->first);
-        joint_id.push_back(manipulator_.getJointId(it->first));
+        value_vector.at(index).value = value_vector.at(index).value / manipulator_.getCoefficient(it->first);
+        value_vector.at(index).velocity = value_vector.at(index).velocity / manipulator_.getCoefficient(it->first);
+        value_vector.at(index).acceleration = value_vector.at(index).acceleration / manipulator_.getCoefficient(it->first);
+        value_vector.at(index).effort = value_vector.at(index).effort / manipulator_.getCoefficient(it->first);
+        joint_id.push_back(manipulator_.getId(it->first));
         index++;
       }
     }
@@ -472,14 +472,14 @@ WayPoint RobotisManipulator::receiveJointActuatorValue(Name joint_component_name
     std::vector<uint8_t> actuator_id;
     std::vector<WayPoint> result;
 
-    actuator_id.push_back(manipulator_.getJointId(joint_component_name));
+    actuator_id.push_back(manipulator_.getId(joint_component_name));
 
     result = joint_actuator_.at(manipulator_.getComponentActuatorName(joint_component_name))->receiveJointActuatorValue(actuator_id);
 
-    result.at(0).value = result.at(0).value * manipulator_.getJointCoefficient(joint_component_name);
-    result.at(0).velocity = result.at(0).velocity * manipulator_.getJointCoefficient(joint_component_name);
-    result.at(0).acceleration = result.at(0).acceleration * manipulator_.getJointCoefficient(joint_component_name);
-    result.at(0).effort = result.at(0).effort * manipulator_.getJointCoefficient(joint_component_name);
+    result.at(0).value = result.at(0).value * manipulator_.getCoefficient(joint_component_name);
+    result.at(0).velocity = result.at(0).velocity * manipulator_.getCoefficient(joint_component_name);
+    result.at(0).acceleration = result.at(0).acceleration * manipulator_.getCoefficient(joint_component_name);
+    result.at(0).effort = result.at(0).effort * manipulator_.getCoefficient(joint_component_name);
 
     manipulator_.setJointValue(joint_component_name, result.at(0));
     return result.at(0);
@@ -513,12 +513,12 @@ std::vector<WayPoint> RobotisManipulator::receiveMultipleJointActuatorValue(std:
     {
       for(int index2 = 0; index2 < get_actuator_id.size(); index2++)
       {
-        if(manipulator_.getJointId(joint_component_name.at(index)) == get_actuator_id.at(index2))
+        if(manipulator_.getId(joint_component_name.at(index)) == get_actuator_id.at(index2))
         {
-          result.value = get_value_vector.at(index2).value * manipulator_.getJointCoefficient(joint_component_name.at(index));
-          result.velocity = get_value_vector.at(index2).velocity * manipulator_.getJointCoefficient(joint_component_name.at(index));
-          result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getJointCoefficient(joint_component_name.at(index));
-          result.effort = get_value_vector.at(index2).effort * manipulator_.getJointCoefficient(joint_component_name.at(index));
+          result.value = get_value_vector.at(index2).value * manipulator_.getCoefficient(joint_component_name.at(index));
+          result.velocity = get_value_vector.at(index2).velocity * manipulator_.getCoefficient(joint_component_name.at(index));
+          result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getCoefficient(joint_component_name.at(index));
+          result.effort = get_value_vector.at(index2).effort * manipulator_.getCoefficient(joint_component_name.at(index));
           manipulator_.setJointValue(joint_component_name.at(index), result);
           result_vector.push_back(result);
         }
@@ -557,12 +557,12 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
     {
       for(int index2 = 0; index2 < get_actuator_id.size(); index2++)
       {
-        if(manipulator_.getJointId(it->first) == get_actuator_id.at(index2))
+        if(manipulator_.checkComponentType(it->first,ACTIVE_JOINT_COMPONENT) && manipulator_.getId(it->first) == get_actuator_id.at(index2))
         {
-          result.value = get_value_vector.at(index2).value * manipulator_.getJointCoefficient(it->first);
-          result.velocity = get_value_vector.at(index2).velocity * manipulator_.getJointCoefficient(it->first);
-          result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getJointCoefficient(it->first);
-          result.effort = get_value_vector.at(index2).effort * manipulator_.getJointCoefficient(it->first);
+          result.value = get_value_vector.at(index2).value * manipulator_.getCoefficient(it->first);
+          result.velocity = get_value_vector.at(index2).velocity * manipulator_.getCoefficient(it->first);
+          result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getCoefficient(it->first);
+          result.effort = get_value_vector.at(index2).effort * manipulator_.getCoefficient(it->first);
           manipulator_.setJointValue(it->first, result);
           result_vector.push_back(result);
         }
@@ -576,11 +576,11 @@ std::vector<WayPoint> RobotisManipulator::receiveAllJointActuatorValue()
 
 bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, double value)
 {
-  manipulator_.setToolGoalValue(tool_component_name, value / manipulator_.getToolCoefficient(tool_component_name));
+  manipulator_.setToolGoalValue(tool_component_name, value / manipulator_.getCoefficient(tool_component_name));
   if(using_platform_)
   {
     return tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))
-        ->sendToolActuatorValue(value / manipulator_.getToolCoefficient(tool_component_name));
+        ->sendToolActuatorValue(value / manipulator_.getCoefficient(tool_component_name));
   }
 }
 
@@ -589,10 +589,10 @@ double RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
   if(using_platform_)
   {
     double result;
-    result =  manipulator_.getToolCoefficient(tool_component_name) * tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))
+    result =  manipulator_.getCoefficient(tool_component_name) * tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))
           ->receiveToolActuatorValue();
 
-    manipulator_.setToolValue(tool_component_name, result);
+    manipulator_.setValue(tool_component_name, result);
     return result;
   }
 }
@@ -600,14 +600,13 @@ double RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
 bool RobotisManipulator::sendAllToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector)
 {
   for (int index = 0; index < tool_component_name.size(); index++)
-    manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getToolCoefficient(tool_component_name.at(index)));
-
+    manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getCoefficient(tool_component_name.at(index)));
   if(using_platform_)
   {
     for (int index = 0; index < tool_component_name.size(); index++)
     {
       manipulator_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index));
-      tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getToolCoefficient(tool_component_name.at(index)));
+      tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getCoefficient(tool_component_name.at(index)));
     }
     return true;
   }
@@ -621,8 +620,8 @@ std::vector<double> RobotisManipulator::receiveAllToolActuatorValue(std::vector<
     double result;
     for (int index = 0; index < tool_component_name.size(); index++)
     {
-      result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue() * manipulator_.getToolCoefficient(tool_component_name.at(index));
-      manipulator_.setToolValue(tool_component_name.at(index), result);
+      result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue() * manipulator_.getCoefficient(tool_component_name.at(index));
+      manipulator_.setValue(tool_component_name.at(index), result);
       result_vector.push_back(result);
     }
     return result_vector;
@@ -1058,7 +1057,7 @@ void RobotisManipulator::toolMove(Name tool_name, double tool_value)
   if(using_platform_)
   {
     tool_actuator_.at(manipulator_.getComponentActuatorName(tool_name))
-        ->sendToolActuatorValue(tool_value / manipulator_.getToolCoefficient(tool_name));
+        ->sendToolActuatorValue(tool_value / manipulator_.getCoefficient(tool_name));
   }
 }
 

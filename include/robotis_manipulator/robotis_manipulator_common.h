@@ -115,7 +115,8 @@ typedef struct _Point
 //Component Type
 typedef enum _ComponentType
 {
-  JOINT_COMPONENT = 0,
+  PASSIVE_JOINT_COMPONENT = 0,
+  ACTIVE_JOINT_COMPONENT,
   TOOL_COMPONENT
 }ComponentType;
 
@@ -241,16 +242,17 @@ public:
   void setComponentPositionToWorld(Name name, Eigen::Vector3d position_to_world);
   void setComponentOrientationToWorld(Name name, Eigen::Matrix3d orientation_to_wolrd);
   void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
-  void setJointValue(Name name, double joint_value);
-  void setJointVelocity(Name name, double joint_velocity);
-  void setJointAcceleration(Name name, double joint_acceleration);
-  void setJointEffort(Name name, double joint_effort);
+
+  void setValue(Name name, double joint_value);
+  void setVelocity(Name name, double joint_velocity);
+  void setAcceleration(Name name, double joint_acceleration);
+  void setEffort(Name name, double joint_effort);
   void setJointValue(Name name, WayPoint joint_value);
+
   void setAllActiveJointValue(std::vector<double> joint_value_vector);
   void setAllActiveJointValue(std::vector<WayPoint> joint_way_point_vector);
   void setAllJointValue(std::vector<double> joint_value_vector);
   void setAllJointValue(std::vector<WayPoint> joint_way_point_vector);
-  void setToolValue(Name name, double tool_value);
   void setToolGoalValue(Name name, double tool_goal_value);
 
   ///////////////////////////////Get function//////////////////////////////////
@@ -276,17 +278,16 @@ public:
   Pose getComponentRelativePoseToParent(Name name);
   Eigen::Vector3d getComponentRelativePositionToParent(Name name);
   Eigen::Matrix3d getComponentRelativeOrientationToParent(Name name);
-  int8_t getJointId(Name name);
-  double getJointCoefficient(Name name);
-  Eigen::Vector3d getJointAxis(Name name);
-  double getJointValue(Name name);
-  double getJointVelocity(Name name);
-  double getJointAcceleration(Name name);
-  double getJointEffort(Name name);
-  int8_t getToolId(Name name);
-  double getToolCoefficient(Name name);
-  double getToolValue(Name name);
+
+  int8_t getId(Name name);
+  double getCoefficient(Name name);
+  Eigen::Vector3d getAxis(Name name);
+  double getValue(Name name);
+  double getVelocity(Name name);
+  double getAcceleration(Name name);
+  double getEffort(Name name);
   double getToolGoalValue(Name name);
+
   double getComponentMass(Name name);
   Eigen::Matrix3d getComponentInertiaTensor(Name name);
   Eigen::Vector3d getComponentCenterOfMass(Name name);
@@ -296,12 +297,12 @@ public:
   std::vector<uint8_t> getAllJointID();
   std::vector<uint8_t> getAllActiveJointID();
 
-  ////////////////////////////Limit check function//////////////////////////////
+  ////////////////////////////////check function////////////////////////////////
   bool checkActuatorLimit(Name Component_name, double value);
+  bool checkComponentType(Name component_name, ComponentType component_type);
 
   ///////////////////////////////Find function//////////////////////////////////
-  Name findJointComponentNameFromId(int8_t id);
-  Name findToolComponentNameFromId(int8_t id);
+  Name findComponentNameFromId(int8_t id);
 };
 
 ////////////////////////////////////////////////////////////

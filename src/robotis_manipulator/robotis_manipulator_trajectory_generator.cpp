@@ -331,21 +331,21 @@ void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
   int8_t index = 0;
   for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
   {
-    if (manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
+    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT)) // Check whether Active or Passive
     {
       // Active
-      joint_velocity[index] = manipulator_.getJointVelocity(it->first);
+      joint_velocity[index] = manipulator_.getVelocity(it->first);
       index++;
     }
   }
 
   for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
   {
-    if (manipulator_.getJointId(it->first) != -1)
+    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT))
     {
       for(int index2 = 0; index2 < manipulator_.getDOF(); index2++)
       {
-        joint_velocity[index2] =manipulator_.getJointVelocity(it->first);
+        joint_velocity[index2] =manipulator_.getVelocity(it->first);
       }
       pose_velocity = kinematics->jacobian(&manipulator_, it->first)*joint_velocity;
       linear_velocity[0] = pose_velocity[0];
@@ -372,12 +372,12 @@ void Trajectory::setPresentJointWayPoint(std::vector<WayPoint> joint_value_vecto
 
   for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
   {
-    if (manipulator_.getJointId(it->first) != -1)
+    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT))
     {
-      manipulator_.setJointValue(it->first, joint_value_vector.at(index).value);
-      manipulator_.setJointVelocity(it->first, joint_value_vector.at(index).velocity);
-      manipulator_.setJointAcceleration(it->first, joint_value_vector.at(index).acceleration);
-      manipulator_.setJointEffort(it->first, joint_value_vector.at(index).effort);
+      manipulator_.setValue(it->first, joint_value_vector.at(index).value);
+      manipulator_.setVelocity(it->first, joint_value_vector.at(index).velocity);
+      manipulator_.setAcceleration(it->first, joint_value_vector.at(index).acceleration);
+      manipulator_.setEffort(it->first, joint_value_vector.at(index).effort);
     }
     index++;
   }
@@ -421,13 +421,13 @@ std::vector<WayPoint> Trajectory::getPresentJointWayPoint()
 
   for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
   {
-    if (manipulator_.getJointId(it->first) != -1) // Check whether Active or Passive
+    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT)) // Check whether Active or Passive
     {
       // Active
-      result.value = manipulator_.getJointValue(it->first);
-      result.velocity = manipulator_.getJointVelocity(it->first);
-      result.acceleration = manipulator_.getJointAcceleration(it->first);
-      result.effort = manipulator_.getJointEffort(it->first);
+      result.value = manipulator_.getValue(it->first);
+      result.velocity = manipulator_.getVelocity(it->first);
+      result.acceleration = manipulator_.getAcceleration(it->first);
+      result.effort = manipulator_.getEffort(it->first);
       result_vector.push_back(result);
     }
   }
