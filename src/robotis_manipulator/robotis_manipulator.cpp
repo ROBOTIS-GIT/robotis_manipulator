@@ -620,7 +620,6 @@ bool RobotisManipulator::sendAllToolActuatorValue(std::vector<double> value_vect
     tool_component_name = manipulator_.getAllToolComponentName();
     for (int index = 0; index < tool_component_name.size(); index++)
     {
-      trajectory_.setToolGoalValue(tool_component_name.at(index), value_vector.at(index) / manipulator_.getCoefficient(tool_component_name.at(index)));
       tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->sendToolActuatorValue(value_vector.at(index)/manipulator_.getCoefficient(tool_component_name.at(index)));
     }
     return true;
@@ -1083,7 +1082,7 @@ std::vector<double> RobotisManipulator::getToolGoalValue()
 {
   std::vector<double> result_vector;
   std::vector<Name> tool_component_name = manipulator_.getAllToolComponentName();
-  for(int index =0; index<tool_component_name.size();index++)
+  for(int index =0; index<tool_component_name.size(); index++)
   {
     result_vector.push_back(trajectory_.getToolGoalValue(tool_component_name.at(index)));
   }
