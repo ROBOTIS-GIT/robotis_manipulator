@@ -530,7 +530,7 @@ void Trajectory::setToolGoalValue(Name name, double tool_goal_value)
 
 double Trajectory::getToolGoalValue(Name name)
 {
-  manipulator_.getValue(name);
+  return manipulator_.getValue(name);
 }
 
 
