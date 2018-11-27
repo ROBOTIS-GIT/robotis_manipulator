@@ -202,16 +202,16 @@ public:
                 Eigen::Matrix3d world_orientation = Eigen::Matrix3d::Identity());
 
   void addJoint(Name my_name,
-                    Name parent_name,
-                    Name child_name,
-                    Eigen::Vector3d relative_position,
-                    Eigen::Matrix3d relative_orientation,
-                    Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
-                    double coefficient = 1.0,
-                    double mass = 0.0,
-                    Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
-                    Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+                Name parent_name,
+                Name child_name,
+                Eigen::Vector3d relative_position,
+                Eigen::Matrix3d relative_orientation,
+                Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
+                int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
+                double coefficient = 1.0,
+                double mass = 0.0,
+                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
+                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
 
   void addTool(Name my_name,
                Name parent_name,
@@ -304,7 +304,7 @@ public:
   std::vector<Name> getAllActiveJointComponentName();
 
   ////////////////////////////////check function////////////////////////////////
-  bool checkActuatorLimit(Name Component_name, double value);
+  bool checkLimit(Name Component_name, double value);
   bool checkComponentType(Name component_name, ComponentType component_type);
 
   ///////////////////////////////Find function//////////////////////////////////

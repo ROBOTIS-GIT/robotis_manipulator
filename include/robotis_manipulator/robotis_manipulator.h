@@ -73,7 +73,7 @@ public:
                     Eigen::Vector3d relative_position,
                     Eigen::Matrix3d relative_orientation,
                     Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
+                    int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
                     double coefficient = 1.0,
                     double mass = 0.0,
                     Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -83,7 +83,7 @@ public:
                Name parent_name,
                Eigen::Vector3d relative_position,
                Eigen::Matrix3d relative_orientation,
-               int8_t tool_id = -1, double max_limit = 2*M_PI, double min_limit = -2*M_PI,
+               int8_t tool_id = -1, double max_limit =M_PI, double min_limit = -M_PI,
                double coefficient = 1.0,
                double mass = 0.0,
                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -103,7 +103,10 @@ public:
   std::vector<WayPoint> getAllActiveJointWayPoint();
   void setAllToolValue(std::vector<double> tool_value_vector);
   std::vector<double> getAllToolValue();
-  bool actuatorLimitCheck(Name Component_name, double value);
+  bool checkLimit(Name component_name, double value);
+  bool checkLimit(Name component_name, WayPoint value);
+  bool checkLimit(std::vector<Name> component_name, std::vector<double> value);
+  bool checkLimit(std::vector<Name> component_name, std::vector<WayPoint> value);
 
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();

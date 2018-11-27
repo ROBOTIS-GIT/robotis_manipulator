@@ -665,12 +665,14 @@ std::vector<Name> Manipulator::getAllActiveJointComponentName()
 
 
 
-bool Manipulator::checkActuatorLimit(Name component_name, double value)
+bool Manipulator::checkLimit(Name component_name, double value)
 {
-  if(component_.at(component_name).actuator_constant.limit.maximum < value && component_.at(component_name).actuator_constant.limit.minimum > value)        //in
-    return true;
-  else
+  if(component_.at(component_name).actuator_constant.limit.maximum < value)
     return false;
+  else if(component_.at(component_name).actuator_constant.limit.minimum > value)
+    return false;
+  else
+    return true;
 }
 
 bool Manipulator::checkComponentType(Name component_name, ComponentType component_type)
