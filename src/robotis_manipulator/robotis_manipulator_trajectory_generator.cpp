@@ -490,6 +490,17 @@ std::vector<WayPoint> Trajectory::getGoalWayPoint()
   return goal_way_point_;
 }
 
+std::vector<WayPoint> Trajectory::removeWayPointDynamicData(std::vector<WayPoint> value)
+{
+  for(int index =0; index < value.size(); index++)
+  {
+    value.at(index).velocity = 0.0;
+    value.at(index).acceleration = 0.0;
+    value.at(index).effort = 0.0;
+  }
+  return value;
+}
+
 
 //Trajectory
 void Trajectory::setTrajectoryType(TrajectoryType trajectory_type)

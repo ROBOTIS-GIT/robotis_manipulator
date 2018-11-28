@@ -166,7 +166,7 @@ bool RobotisManipulator::checkLimit(Name component_name, double value)
     return true;
   else
   {
-    RM_LOG::ERROR("[checkLimit] input value is over the limit." );
+    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit. The moving stop.");
     return false;
   }
 }
@@ -177,7 +177,7 @@ bool RobotisManipulator::checkLimit(Name component_name, WayPoint value)
     return true;
   else
   {
-    RM_LOG::ERROR("[checkLimit] input value is over the limit." );
+    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit. The moving stop.");
     return false;
   }
 }
@@ -188,7 +188,7 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
   {
     if(!manipulator_.checkLimit(component_name.at(index), value.at(index)))
     {
-      RM_LOG::ERROR("[checkLimit] goal value is over the limit, stop the moving.");
+      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit. The moving stop.");
       return false;
     }
   }
@@ -201,7 +201,7 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
   {
     if(!manipulator_.checkLimit(component_name.at(index), value.at(index).value))
     {
-      RM_LOG::ERROR("[checkLimit] goal value is over the limit, stop the moving.");
+      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit. The moving stop.");
       return false;
     }
   }
@@ -977,7 +977,6 @@ void RobotisManipulator::toolMove(Name tool_name, double tool_value)
 {
   if(checkLimit(tool_name, tool_value))
   {
-    RM_LOG::INFO("good tool range)");
     trajectory_.setToolGoalValue(tool_name, tool_value);
   }
 }
@@ -1021,17 +1020,19 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
   if(trajectory_.checkTrajectoryType(JOINT_TRAJECTORY))
   {
     joint_way_point_value = trajectory_.getJointTrajectory().getJointWayPoint(tick_time);
+
     if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_way_point_value))
     {
+      joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
       moving_ = false;
-      return trajectory_.getPresentJointWayPoint();
+      trajectory_.setPresentJointWayPoint(joint_way_point_value);
+      trajectory_.UpdatePresentWayPoint(kinematics_);
     }
     else
     {
       trajectory_.setPresentJointWayPoint(joint_way_point_value);
       trajectory_.UpdatePresentWayPoint(kinematics_);
     }
-
   }
   /////////////////////////////////////////////////////////////////
   ///
@@ -1051,8 +1052,10 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     {
       if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
       {
+        joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
-        return trajectory_.getPresentJointWayPoint();
+        trajectory_.setPresentJointWayPoint(joint_way_point_value);
+        trajectory_.UpdatePresentWayPoint(kinematics_);
       }
       else
       {
@@ -1085,8 +1088,10 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       joint_way_point_value = trajectory_.getDrawingtrajectory(trajectory_.getPresentDrawingObjectName())->getJointWayPoint(tick_time);
       if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_way_point_value))
       {
+        joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
-        return trajectory_.getPresentJointWayPoint();
+        trajectory_.setPresentJointWayPoint(joint_way_point_value);
+        trajectory_.UpdatePresentWayPoint(kinematics_);
       }
       else
       {
@@ -1110,8 +1115,9 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       {
         if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
         {
+          joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
           moving_ = false;
-          return trajectory_.getPresentJointWayPoint();
+          trajectory_.setPresentJointWayPoint(joint_way_point_value);
         }
         else
         {

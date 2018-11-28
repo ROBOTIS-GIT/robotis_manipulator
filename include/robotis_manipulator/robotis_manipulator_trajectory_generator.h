@@ -167,6 +167,8 @@ public:
   std::vector<WayPoint> getStartWayPoint();
   std::vector<WayPoint> getGoalWayPoint();
 
+  std::vector<WayPoint> removeWayPointDynamicData(std::vector<WayPoint> value);
+
   //Trajectory
   void setTrajectoryType(TrajectoryType trajectory_type);
   bool checkTrajectoryType(TrajectoryType trajectory_type);
