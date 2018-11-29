@@ -221,17 +221,17 @@ Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
   return kinematics_->jacobian(&manipulator_, tool_name);
 }
 
-void RobotisManipulator::forward()
+void RobotisManipulator::forwardKienmatics()
 {
   return kinematics_->forward(&manipulator_);
 }
 
-void RobotisManipulator::forward(Name first_component_name)
+void RobotisManipulator::forwardKienmatics(Name first_component_name)
 {
   return kinematics_->forward(&manipulator_, first_component_name);
 }
 
-bool RobotisManipulator::inverse(Name tool_name, Pose goal_pose, std::vector<double>* goal_joint_value)
+bool RobotisManipulator::inverseKinemtics(Name tool_name, Pose goal_pose, std::vector<double>* goal_joint_value)
 {
   return kinematics_->inverse(&manipulator_, tool_name, goal_pose, goal_joint_value);
 }
