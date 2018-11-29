@@ -140,24 +140,51 @@ Manipulator *RobotisManipulator::getManipulator()
   return &manipulator_;
 }
 
-void RobotisManipulator::setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector)
+WayPoint RobotisManipulator::getJointValue(Name joint_name)
 {
-  manipulator_.setAllActiveJointValue(joint_value_vector);
+  WayPoint result;
+  result.value = manipulator_.getValue(joint_name);
+  result.velocity = manipulator_.getValue(joint_name);
+  result.acceleration = manipulator_.getValue(joint_name);
+  result.effort = manipulator_.getValue(joint_name);
+
+  return result;
 }
 
-std::vector<WayPoint> RobotisManipulator::getAllActiveJointWayPoint()
+double RobotisManipulator::getToolValue(Name tool_name)
+{
+  return manipulator_.getValue(tool_name);
+}
+
+std::vector<WayPoint> RobotisManipulator::getAllActiveJointValue()
 {
   return manipulator_.getAllActiveJointWayPoint();
 }
 
-void RobotisManipulator::setAllToolValue(std::vector<double> tool_value_vector)
+std::vector<WayPoint> RobotisManipulator::getAllJointValue()
 {
-  manipulator_.setAllToolValue(tool_value_vector);
+  return manipulator_.getAllJointWayPoint();
 }
 
 std::vector<double> RobotisManipulator::getAllToolValue()
 {
   return manipulator_.getAllToolValue();
+}
+
+Pose RobotisManipulator::getPose(Name component_name)
+{
+  return manipulator_.getComponentPoseFromWorld(component_name);
+}
+
+//Directly set component value for simulation
+void RobotisManipulator::setAllActiveJointValue(std::vector<WayPoint> joint_value_vector)
+{
+  manipulator_.setAllActiveJointValue(joint_value_vector);
+}
+
+void RobotisManipulator::setAllToolValue(std::vector<double> tool_value_vector)
+{
+  manipulator_.setAllToolValue(tool_value_vector);
 }
 
 bool RobotisManipulator::checkLimit(Name component_name, double value)
@@ -171,6 +198,7 @@ bool RobotisManipulator::checkLimit(Name component_name, double value)
   }
 }
 
+//Joint limit
 bool RobotisManipulator::checkLimit(Name component_name, WayPoint value)
 {
   if(manipulator_.checkLimit(component_name, value.value))
@@ -254,7 +282,7 @@ void RobotisManipulator::jointActuatorSetMode(Name actuator_name, std::vector<ui
     }
     else
     {
-      //error
+      RM_LOG::ERROR("[jointActuatorSetMode] Worng Actuator Name.");
     }
   }
 }
@@ -423,6 +451,26 @@ void RobotisManipulator::allActuatorDisable()
     }
   }
 }
+
+bool RobotisManipulator::isEnabled(Name actuator_name)
+{
+  if(using_platform_)
+  {
+    if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
+    {
+      return joint_actuator_.at(actuator_name)->isEnabled();
+    }
+    else if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
+    {
+      return tool_actuator_.at(actuator_name)->isEnabled();
+    }
+    else
+    {
+      //error
+    }
+  }
+}
+
 
 ////send
 

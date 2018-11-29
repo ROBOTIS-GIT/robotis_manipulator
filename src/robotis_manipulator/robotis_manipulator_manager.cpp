@@ -31,6 +31,11 @@ bool JointActuator::findId(uint8_t actuator_id)
   return false;
 }
 
+bool JointActuator::isEnabled()
+{
+  return enable_state_;
+}
+
 
 bool ToolActuator::findId(uint8_t actuator_id)
 {
@@ -41,6 +46,10 @@ bool ToolActuator::findId(uint8_t actuator_id)
   return false;
 }
 
+bool ToolActuator::isEnabled()
+{
+  return enable_state_;
+}
 
 WayPointType DrawingTrajectory::getOutputWayPointType()
 {
@@ -52,3 +61,5 @@ void DrawingTrajectory::setOutputWayPointType(WayPointType way_point_type)
 {
   output_way_point_type_ = way_point_type;
 }
+
+

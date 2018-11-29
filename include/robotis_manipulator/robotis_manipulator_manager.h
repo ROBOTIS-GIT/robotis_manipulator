@@ -47,8 +47,10 @@ public:
 
 class JointActuator
 {
+private:
+  bool enable_state_;
 public:
-  JointActuator(){};
+  JointActuator():enable_state_(false){};
   virtual ~JointActuator(){};
 
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
@@ -62,12 +64,15 @@ public:
   virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
   bool findId(uint8_t actuator_id);
+  bool isEnabled();
 };
 
 class ToolActuator
 {
+private:
+  bool enable_state_;
 public:
-  ToolActuator(){};
+  ToolActuator():enable_state_(false){};
   virtual ~ToolActuator(){};
 
   virtual void init(uint8_t actuator_id, const void *arg) = 0;
@@ -81,6 +86,7 @@ public:
   virtual double receiveToolActuatorValue() = 0;
 
   bool findId(uint8_t actuator_id);
+  bool isEnabled();
 };
 
 

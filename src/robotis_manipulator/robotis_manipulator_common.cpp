@@ -602,6 +602,25 @@ std::vector<double> Manipulator::getAllJointValue()
   return result_vector;
 }
 
+std::vector<WayPoint> Manipulator::getAllJointWayPoint()
+{
+  WayPoint result;
+  std::vector<WayPoint> result_vector;
+  std::map<Name, Component>::iterator it_component;
+
+  for (it_component = component_.begin(); it_component != component_.end(); it_component++)
+  {
+    if (checkComponentType(it_component->first, ACTIVE_JOINT_COMPONENT) || checkComponentType(it_component->first, PASSIVE_JOINT_COMPONENT))
+    {
+      result.value = component_.at(it_component->first).actuator_variable.value;
+      result.velocity = component_.at(it_component->first).actuator_variable.velocity;
+      result.acceleration = component_.at(it_component->first).actuator_variable.acceleration;
+      result.effort = component_.at(it_component->first).actuator_variable.effort;
+    }
+  }
+  return result_vector;
+}
+
 std::vector<double> Manipulator::getAllActiveJointValue()
 {
   std::vector<double> result_vector;
@@ -637,26 +656,26 @@ std::vector<WayPoint> Manipulator::getAllActiveJointWayPoint()
   return result_vector;
 }
 
-void Manipulator::getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector)
-{
-  std::map<Name, Component>::iterator it_component;
+//void Manipulator::getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector)
+//{
+//  std::map<Name, Component>::iterator it_component;
 
-  joint_value_vector->clear();
-  joint_velocity_vector->clear();
-  joint_accelerarion_vector->clear();
-  joint_effort_vector->clear();
+//  joint_value_vector->clear();
+//  joint_velocity_vector->clear();
+//  joint_accelerarion_vector->clear();
+//  joint_effort_vector->clear();
 
-  for (it_component = component_.begin(); it_component != component_.end(); it_component++)
-  {
-    if (checkComponentType(it_component->first, ACTIVE_JOINT_COMPONENT))
-    {
-      joint_value_vector->push_back(component_.at(it_component->first).actuator_variable.value);
-      joint_velocity_vector->push_back(component_.at(it_component->first).actuator_variable.velocity);
-      joint_accelerarion_vector->push_back(component_.at(it_component->first).actuator_variable.acceleration);
-      joint_effort_vector->push_back(component_.at(it_component->first).actuator_variable.effort);
-    }
-  }
-}
+//  for (it_component = component_.begin(); it_component != component_.end(); it_component++)
+//  {
+//    if (checkComponentType(it_component->first, ACTIVE_JOINT_COMPONENT))
+//    {
+//      joint_value_vector->push_back(component_.at(it_component->first).actuator_variable.value);
+//      joint_velocity_vector->push_back(component_.at(it_component->first).actuator_variable.velocity);
+//      joint_accelerarion_vector->push_back(component_.at(it_component->first).actuator_variable.acceleration);
+//      joint_effort_vector->push_back(component_.at(it_component->first).actuator_variable.effort);
+//    }
+//  }
+//}
 
 std::vector<double> Manipulator::getAllToolValue()
 {

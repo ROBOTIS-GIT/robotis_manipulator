@@ -292,9 +292,10 @@ public:
   Eigen::Vector3d getComponentCenterOfMass(Name name);
 
   std::vector<double> getAllJointValue();
+  std::vector<WayPoint> getAllJointWayPoint();
   std::vector<double> getAllActiveJointValue();
   std::vector<WayPoint> getAllActiveJointWayPoint();
-  void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector=NULL);
+//  void getAllActiveJointValue(std::vector<double> *joint_value_vector, std::vector<double> *joint_velocity_vector, std::vector<double> *joint_accelerarion_vector, std::vector<double> *joint_effort_vector=NULL);
 
   std::vector<double> getAllToolValue();
 
