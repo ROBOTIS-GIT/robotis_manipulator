@@ -193,7 +193,7 @@ bool RobotisManipulator::checkLimit(Name component_name, double value)
     return true;
   else
   {
-    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name) + ". The moving stop.");
+    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
     return false;
   }
 }
@@ -205,7 +205,7 @@ bool RobotisManipulator::checkLimit(Name component_name, WayPoint value)
     return true;
   else
   {
-    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name) + ". The moving stop.");
+    RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
     return false;
   }
 }
@@ -216,7 +216,7 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
   {
     if(!manipulator_.checkLimit(component_name.at(index), value.at(index)))
     {
-      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ". The moving stop.");
+      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
       return false;
     }
   }
@@ -229,7 +229,7 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
   {
     if(!manipulator_.checkLimit(component_name.at(index), value.at(index).value))
     {
-      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ". The moving stop.");
+      RM_LOG::ERROR("[checkLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
       return false;
     }
   }

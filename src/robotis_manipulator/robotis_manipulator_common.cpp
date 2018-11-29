@@ -153,7 +153,7 @@ void Manipulator::checkManipulatorSetting()
   RM_LOG::PRINTLN("Position : ");
   RM_LOG::PRINT_VECTOR(world_.pose.position);
   RM_LOG::PRINTLN("Orientation : ");
-  RM_LOG::PRINT_VECTOR(world_.pose.orientation);
+  RM_LOG::PRINT_MATRIX(world_.pose.orientation);
   RM_LOG::PRINTLN("[Dynamic Pose]");
   RM_LOG::PRINTLN("Linear Velocity : ");
   RM_LOG::PRINT_VECTOR(world_.dynamic_pose.linear.velocity);
@@ -182,19 +182,56 @@ void Manipulator::checkManipulatorSetting()
     RM_LOG::PRINT("Parent Name : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
     for(int index = 0; index < component_.at(it_component->first).name.child.size(); index++)
     {
-      RM_LOG::PRINT("Child Name ",index);
+      RM_LOG::PRINT("Child Name ",index+1,0);
       RM_LOG::PRINT(" : ");
       RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.child.at(index)));
     }
-    RM_LOG::PRINT("[Relative PositionParent] : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
+    RM_LOG::PRINTLN("[Actuator]");
+    RM_LOG::PRINTLN("Actuator Name : ");
+    RM_LOG::PRINTLN(STRING(component_.at(it_component->first).actuator_name));
+    RM_LOG::PRINTLN("ID : ");
+    RM_LOG::PRINTLN("", component_.at(it_component->first).actuator_constant.id);
+    RM_LOG::PRINTLN("Joint Axis : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).actuator_constant.axis);
+    RM_LOG::PRINTLN("Coefficient : ");
+    RM_LOG::PRINTLN("", component_.at(it_component->first).actuator_constant.coefficient);
+    RM_LOG::PRINTLN("Limit : ");
+    RM_LOG::PRINT("Maximum :", component_.at(it_component->first).actuator_constant.limit.maximum);
+    RM_LOG::PRINTLN(", Minimum :", component_.at(it_component->first).actuator_constant.limit.minimum);
 
+    RM_LOG::PRINTLN("[Actuator Value]");
+    RM_LOG::PRINTLN("Value : ", component_.at(it_component->first).actuator_variable.value);
+    RM_LOG::PRINTLN("Velocity : ", component_.at(it_component->first).actuator_variable.velocity);
+    RM_LOG::PRINTLN("Acceleration : ", component_.at(it_component->first).actuator_variable.acceleration);
+    RM_LOG::PRINTLN("Effort : ", component_.at(it_component->first).actuator_variable.effort);
 
+    RM_LOG::PRINTLN("[Constant]");
+    RM_LOG::PRINTLN("Relative Position from parent component : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).relative.pose_from_parent.position);
+    RM_LOG::PRINTLN("Relative Orientation from parent component : ");
+    RM_LOG::PRINT_MATRIX(component_.at(it_component->first).relative.pose_from_parent.orientation);
+    RM_LOG::PRINTLN("Mass : ");
+    RM_LOG::PRINTLN("", component_.at(it_component->first).relative.inertia.mass);
+    RM_LOG::PRINTLN("Inertia Tensor : ");
+    RM_LOG::PRINT_MATRIX(component_.at(it_component->first).relative.inertia.inertia_tensor);
+    RM_LOG::PRINTLN("Center of Mass : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).relative.inertia.center_of_mass);
 
-
-
-
+    RM_LOG::PRINTLN("[Variable]");
+    RM_LOG::PRINTLN("Position : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).from_world.pose.position);
+    RM_LOG::PRINTLN("Orientation : ");
+    RM_LOG::PRINT_MATRIX(component_.at(it_component->first).from_world.pose.orientation);
+    RM_LOG::PRINTLN("Linear Velocity : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).from_world.dynamic_pose.linear.velocity);
+    RM_LOG::PRINTLN("Linear acceleration : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).from_world.dynamic_pose.linear.acceleration);
+    RM_LOG::PRINTLN("Angular Velocity : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).from_world.dynamic_pose.angular.velocity);
+    RM_LOG::PRINTLN("Angular acceleration : ");
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).from_world.dynamic_pose.angular.acceleration);
   }
-
+  RM_LOG::PRINTLN("---------------------------------------------");
 
 
 //  USB.println("Degree of freedom : " + String(dof_));
