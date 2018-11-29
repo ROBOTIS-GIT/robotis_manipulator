@@ -221,12 +221,12 @@ Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
   return kinematics_->jacobian(&manipulator_, tool_name);
 }
 
-void RobotisManipulator::forwardKienmatics()
+void RobotisManipulator::forwardKinematics()
 {
   return kinematics_->forward(&manipulator_);
 }
 
-void RobotisManipulator::forwardKienmatics(Name first_component_name)
+void RobotisManipulator::forwardKinematics(Name first_component_name)
 {
   return kinematics_->forward(&manipulator_, first_component_name);
 }

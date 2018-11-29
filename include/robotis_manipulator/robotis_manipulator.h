@@ -111,8 +111,8 @@ public:
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();
   Eigen::MatrixXd jacobian(Name tool_name);
-  void forwardKienmatics();
-  void forwardKienmatics(Name first_component_name);
+  void forwardKinematics();
+  void forwardKinematics(Name first_component_name);
   bool inverseKinemtics(Name tool_name, Pose goal_pose, std::vector<double> *goal_joint_value);
   void kinematicsSetOption(const void* arg);
 
