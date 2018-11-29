@@ -251,12 +251,12 @@ Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
 
 void RobotisManipulator::forwardKinematics()
 {
-  return kinematics_->forward(&manipulator_);
+  return kinematics_->forwardKinematics(&manipulator_);
 }
 
 bool RobotisManipulator::inverseKinemtics(Name tool_name, Pose goal_pose, std::vector<double>* goal_joint_value)
 {
-  return kinematics_->inverse(&manipulator_, tool_name, goal_pose, goal_joint_value);
+  return kinematics_->inverseKinematics(&manipulator_, tool_name, goal_pose, goal_joint_value);
 }
 
 void RobotisManipulator::kinematicsSetOption(const void* arg)
@@ -865,7 +865,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
   trajectory_.setStartWayPoint(trajectory_.getPresentJointWayPoint());
 
   std::vector<double> goal_joint_angle;
-  if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), tool_name, goal_pose, &goal_joint_angle))
+  if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), tool_name, goal_pose, &goal_joint_angle))
   {
     WayPoint goal_way_point;
     std::vector<WayPoint> goal_way_point_vector;
@@ -1091,7 +1091,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     goal_pose.position[1] = task_way_point_value.at(1).value;
     goal_pose.position[2] = task_way_point_value.at(2).value;
     goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
-    if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
+    if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
     {
       if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
       {
@@ -1154,7 +1154,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       goal_pose.position[2] = task_way_point_value.at(2).value;
       goal_pose.orientation = RM_MATH::convertRPYToRotation(task_way_point_value.at(3).value, task_way_point_value.at(4).value, task_way_point_value.at(5).value);
 
-      if(kinematics_->inverse(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
+      if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), goal_pose, &joint_value))
       {
         if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
         {

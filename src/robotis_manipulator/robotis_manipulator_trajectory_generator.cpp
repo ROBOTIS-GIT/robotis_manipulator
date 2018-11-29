@@ -318,7 +318,7 @@ void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
 {
   //kinematics (position)
   kinematics->updatePassiveJointValue(&manipulator_);
-  kinematics->forward(&manipulator_);
+  kinematics->forwardKinematics(&manipulator_);
 
   //dynamics (velocity)
   std::map<Name, Component>::iterator it;

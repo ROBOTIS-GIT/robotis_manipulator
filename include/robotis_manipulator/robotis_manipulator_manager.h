@@ -40,8 +40,8 @@ public:
   virtual void setOption(const void *arg) = 0;
   virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  virtual void forward(Manipulator *manipulator) = 0;
-  virtual bool inverse(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
+  virtual void forwardKinematics(Manipulator *manipulator) = 0;
+  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
 };
 
 class JointActuator

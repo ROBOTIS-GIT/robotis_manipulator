@@ -186,7 +186,7 @@ void Manipulator::checkManipulatorSetting()
       RM_LOG::PRINT(" : ");
       RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.child.at(index)));
     }
-    RM_LOG::PRINT("[Relative PositionParent Name] : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
+    RM_LOG::PRINT("[Relative PositionParent] : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
 
 
 
