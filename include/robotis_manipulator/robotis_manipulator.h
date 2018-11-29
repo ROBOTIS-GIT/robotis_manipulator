@@ -109,7 +109,7 @@ public:
   Pose getPose(Name component_name);
 
   //Directly set component value for simulation
-  void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
+  void setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector);
   void setAllToolValue(std::vector<double> tool_value_vector);
 
   //Joint limit
