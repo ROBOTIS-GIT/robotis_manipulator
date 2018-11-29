@@ -360,7 +360,7 @@ void Trajectory::UpdatePresentWayPoint(Kinematics* kinematics)
       dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero();
       dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero();
 
-      manipulator_.setComponentDynamicPoseToWorld(it->first, dynamic_pose);
+      manipulator_.setComponentDynamicPoseFromWorld(it->first, dynamic_pose);
     }
   }
 }
@@ -409,8 +409,8 @@ void Trajectory::setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> to
   dynamic_pose.angular.velocity = orientation_velocity_vector;
   dynamic_pose.angular.acceleration = orientation_acceleration_vector;
 
-  manipulator_.setComponentPoseToWorld(tool_name, pose_to_world);
-  manipulator_.setComponentDynamicPoseToWorld(tool_name, dynamic_pose);
+  manipulator_.setComponentPoseFromWorld(tool_name, pose_to_world);
+  manipulator_.setComponentDynamicPoseFromWorld(tool_name, dynamic_pose);
 }
 
 std::vector<WayPoint> Trajectory::getPresentJointWayPoint()
@@ -440,19 +440,19 @@ std::vector<WayPoint> Trajectory::getPresentTaskWayPoint(Name tool_name)
   WayPoint result;
   for(int pos_count = 0; pos_count < 3; pos_count++)
   {
-    result.value = manipulator_.getComponentPoseToWorld(tool_name).position[pos_count];
-    result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.velocity[pos_count];
-    result.acceleration = manipulator_.getComponentDynamicPoseToWorld(tool_name).linear.acceleration[pos_count];
+    result.value = manipulator_.getComponentPoseFromWorld(tool_name).position[pos_count];
+    result.velocity = manipulator_.getComponentDynamicPoseFromWorld(tool_name).linear.velocity[pos_count];
+    result.acceleration = manipulator_.getComponentDynamicPoseFromWorld(tool_name).linear.acceleration[pos_count];
     result.effort = 0.0;
     result_vector.push_back(result);
   }
 
-  Eigen::Vector3d orientation_vector =  RM_MATH::convertRotationToRPY(manipulator_.getComponentPoseToWorld(tool_name).orientation);
+  Eigen::Vector3d orientation_vector =  RM_MATH::convertRotationToRPY(manipulator_.getComponentPoseFromWorld(tool_name).orientation);
   for(int ori_count = 0; ori_count < 3; ori_count++)
   {
     result.value = orientation_vector[ori_count];
-    result.velocity = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.velocity[ori_count];
-    result.acceleration = manipulator_.getComponentDynamicPoseToWorld(tool_name).angular.acceleration[ori_count];
+    result.velocity = manipulator_.getComponentDynamicPoseFromWorld(tool_name).angular.velocity[ori_count];
+    result.acceleration = manipulator_.getComponentDynamicPoseFromWorld(tool_name).angular.acceleration[ori_count];
     result.effort = 0.0;
     result_vector.push_back(result);
   }

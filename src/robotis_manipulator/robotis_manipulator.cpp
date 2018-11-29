@@ -797,7 +797,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Eigen::Vector3d goa
   Pose goal_pose;
 
   goal_pose.position = goal_position;
-  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationToWorld(tool_name);
+  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
   jointTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
@@ -805,7 +805,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Eigen::Matrix3d goa
 {
   Pose goal_pose;
 
-  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionToWorld(tool_name);
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name);
   goal_pose.orientation = goal_orientation;
   jointTrajectoryMove(tool_name, goal_pose, move_time);
 }
@@ -853,8 +853,8 @@ void RobotisManipulator::taskTrajectoryMoveToPresentPosition(Name tool_name, Eig
 {
   Pose goal_pose;
 
-  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionToWorld(tool_name) + meter;
-  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationToWorld(tool_name);
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name) + meter;
+  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
@@ -863,7 +863,7 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal
   Pose goal_pose;
 
   goal_pose.position = goal_position;
-  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationToWorld(tool_name);
+  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
@@ -871,7 +871,7 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal
 {
   Pose goal_pose;
 
-  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionToWorld(tool_name);
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name);
   goal_pose.orientation = goal_orientation;
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }

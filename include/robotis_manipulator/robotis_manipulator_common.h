@@ -237,10 +237,10 @@ public:
   void setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration);
   void setComponent(Name component_name, Component component);
   void setComponentActuatorName(Name component_name, Name actuator_name);
-  void setComponentPoseToWorld(Name name, Pose pose_to_world);
-  void setComponentPositionToWorld(Name name, Eigen::Vector3d position_to_world);
-  void setComponentOrientationToWorld(Name name, Eigen::Matrix3d orientation_to_wolrd);
-  void setComponentDynamicPoseToWorld(Name name, Dynamicpose dynamic_pose);
+  void setComponentPoseFromWorld(Name name, Pose pose_to_world);
+  void setComponentPositionFromWorld(Name name, Eigen::Vector3d position_to_world);
+  void setComponentOrientationFromWorld(Name name, Eigen::Matrix3d orientation_to_wolrd);
+  void setComponentDynamicPoseFromWorld(Name name, Dynamicpose dynamic_pose);
 
   void setValue(Name name, double value);
   void setVelocity(Name name, double velocity);
@@ -271,13 +271,13 @@ public:
   Name getComponentActuatorName(Name component_name);
   Name getComponentParentName(Name name);
   std::vector<Name> getComponentChildName(Name name);
-  Pose getComponentPoseToWorld(Name name);
-  Eigen::Vector3d getComponentPositionToWorld(Name name);
-  Eigen::Matrix3d getComponentOrientationToWorld(Name name);
-  Dynamicpose getComponentDynamicPoseToWorld(Name name);
-  Pose getComponentRelativePoseToParent(Name name);
-  Eigen::Vector3d getComponentRelativePositionToParent(Name name);
-  Eigen::Matrix3d getComponentRelativeOrientationToParent(Name name);
+  Pose getComponentPoseFromWorld(Name name);
+  Eigen::Vector3d getComponentPositionFromWorld(Name name);
+  Eigen::Matrix3d getComponentOrientationFromWorld(Name name);
+  Dynamicpose getComponentDynamicPoseFromWorld(Name name);
+  Pose getComponentRelativePoseFromParent(Name name);
+  Eigen::Vector3d getComponentRelativePositionFromParent(Name name);
+  Eigen::Matrix3d getComponentRelativeOrientationFromParent(Name name);
 
   int8_t getId(Name name);
   double getCoefficient(Name name);
