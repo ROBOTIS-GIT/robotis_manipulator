@@ -22,12 +22,48 @@
 void RM_LOG::PRINT(STRING str)
 {
 #if defined(__OPENCR__)
+  DEBUG.print(str);
+#else
+  printf("%s", str.c_str());
+#endif
+}
+void RM_LOG::PRINT(STRING str, double data, uint8_t point)
+{
+#if defined(__OPENCR__)
+  DEBUG.print(str);
+  DEBUG.print(data, point);
+#else
+  printf("%s %.*lf", str.c_str(), point, data);
+#endif
+}
+void RM_LOG::PRINT(const char* str)
+{
+#if defined(__OPENCR__)
+  DEBUG.print(str);
+#else
+  printf("%s", str);
+#endif
+}
+void RM_LOG::PRINT(const char* str, double data, uint8_t point)
+{
+#if defined(__OPENCR__)
+  DEBUG.print(str);
+  DEBUG.print(data, point);
+#else
+  printf("%s %.*lf", str, point, data);
+#endif
+}
+
+
+void RM_LOG::PRINTLN(STRING str)
+{
+#if defined(__OPENCR__)
   DEBUG.println(str);
 #else
   printf("%s\n", str.c_str());
 #endif
 }
-void RM_LOG::PRINT(STRING str, double data, uint8_t point)
+void RM_LOG::PRINTLN(STRING str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -36,7 +72,7 @@ void RM_LOG::PRINT(STRING str, double data, uint8_t point)
   printf("%s %.*lf\n", str.c_str(), point, data);
 #endif
 }
-void RM_LOG::PRINT(const char* str)
+void RM_LOG::PRINTLN(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -44,7 +80,7 @@ void RM_LOG::PRINT(const char* str)
   printf("%s\n", str);
 #endif
 }
-void RM_LOG::PRINT(const char* str, double data, uint8_t point)
+void RM_LOG::PRINTLN(const char* str, double data, uint8_t point)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -53,6 +89,7 @@ void RM_LOG::PRINT(const char* str, double data, uint8_t point)
   printf("%s %.*lf\n", str, point, data);
 #endif
 }
+
 void RM_LOG::INFO(STRING str)
 {
 #if defined(__OPENCR__)

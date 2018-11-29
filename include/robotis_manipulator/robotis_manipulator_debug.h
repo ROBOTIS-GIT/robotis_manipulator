@@ -52,6 +52,12 @@ namespace RM_LOG
   void PRINT(STRING str, double data, uint8_t point = 3);
   void PRINT(const char* str);
   void PRINT(const char* str, double data, uint8_t point = 3);
+
+  void PRINTLN(STRING str);
+  void PRINTLN(STRING str, double data, uint8_t point = 3);
+  void PRINTLN(const char* str);
+  void PRINTLN(const char* str, double data, uint8_t point = 3);
+
   void INFO(STRING str);
   void INFO(STRING str, double data, uint8_t point = 3);
   void INFO(const char* str);
