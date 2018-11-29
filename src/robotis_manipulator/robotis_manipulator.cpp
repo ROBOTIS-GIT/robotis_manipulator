@@ -177,7 +177,7 @@ Pose RobotisManipulator::getPose(Name component_name)
 }
 
 //Directly set component value for simulation
-void RobotisManipulator::setAllActiveJointValue(std::vector<WayPoint> joint_value_vector)
+void RobotisManipulator::setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector)
 {
   manipulator_.setAllActiveJointValue(joint_value_vector);
 }

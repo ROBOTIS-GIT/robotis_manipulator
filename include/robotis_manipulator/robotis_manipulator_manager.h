@@ -47,9 +47,9 @@ public:
 
 class JointActuator
 {
-private:
-  bool enable_state_;
 public:
+  bool enable_state_;
+
   JointActuator():enable_state_(false){};
   virtual ~JointActuator(){};
 
@@ -69,9 +69,9 @@ public:
 
 class ToolActuator
 {
-private:
-  bool enable_state_;
 public:
+  bool enable_state_;
+
   ToolActuator():enable_state_(false){};
   virtual ~ToolActuator(){};
 
