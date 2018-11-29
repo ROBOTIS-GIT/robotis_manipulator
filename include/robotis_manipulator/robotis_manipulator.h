@@ -27,7 +27,6 @@
 
 #include <algorithm> // for sort()
 
-
 namespace ROBOTIS_MANIPULATOR
 {
 
@@ -105,7 +104,6 @@ public:
   std::vector<WayPoint> getAllActiveJointValue();
   std::vector<WayPoint> getAllJointValue();
   std::vector<double> getAllToolValue();
-
   Pose getPose(Name component_name);
 
   //Directly set component value for simulation

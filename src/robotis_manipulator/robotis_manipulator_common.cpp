@@ -141,7 +141,60 @@ void Manipulator::addTool(Name my_name,
 
 void Manipulator::checkManipulatorSetting()
 {
-  RM_LOG::INFO("<Manipulator Description>");
+  RM_LOG::PRINTLN("----------<Manipulator Description>----------");
+  RM_LOG::PRINTLN("<Degree of freedom>\n", dof_);
+  RM_LOG::PRINTLN("<Size of Components>\n", component_.size());
+  RM_LOG::PRINTLN("");
+  RM_LOG::PRINTLN("<Configuration of world>");
+  RM_LOG::PRINTLN("[Name]");
+  RM_LOG::PRINT("World Name : "); RM_LOG::PRINTLN(STRING(world_.name));
+  RM_LOG::PRINT("Child Name : "); RM_LOG::PRINTLN(STRING(world_.child));
+  RM_LOG::PRINTLN("[Static Pose]");
+  RM_LOG::PRINTLN("Position : ");
+  RM_LOG::PRINT_VECTOR(world_.pose.position);
+  RM_LOG::PRINTLN("Orientation : ");
+  RM_LOG::PRINT_VECTOR(world_.pose.orientation);
+  RM_LOG::PRINTLN("[Dynamic Pose]");
+  RM_LOG::PRINTLN("Linear Velocity : ");
+  RM_LOG::PRINT_VECTOR(world_.dynamic_pose.linear.velocity);
+  RM_LOG::PRINTLN("Linear acceleration : ");
+  RM_LOG::PRINT_VECTOR(world_.dynamic_pose.linear.acceleration);
+  RM_LOG::PRINTLN("Angular Velocity : ");
+  RM_LOG::PRINT_VECTOR(world_.dynamic_pose.angular.velocity);
+  RM_LOG::PRINTLN("Angular acceleration : ");
+  RM_LOG::PRINT_VECTOR(world_.dynamic_pose.angular.acceleration);
+
+
+  std::vector<double> result_vector;
+  std::map<Name, Component>::iterator it_component;
+
+  for (it_component = component_.begin(); it_component != component_.end(); it_component++)
+  {
+    RM_LOG::PRINTLN("");
+    RM_LOG::PRINT("<Configuration of "); RM_LOG::PRINT(STRING(it_component->first)); RM_LOG::PRINTLN(">");
+    if(component_.at(it_component->first).component_type == ACTIVE_JOINT_COMPONENT)
+      RM_LOG::PRINTLN("[Component Type]\nActive Joint");
+    else if(component_.at(it_component->first).component_type == PASSIVE_JOINT_COMPONENT)
+      RM_LOG::PRINTLN("[Component Type]\nPassive Joint");
+    else if(component_.at(it_component->first).component_type == TOOL_COMPONENT)
+      RM_LOG::PRINTLN("[Component Type]\nTool");
+    RM_LOG::PRINTLN("[Name]");
+    RM_LOG::PRINT("Parent Name : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
+    for(int index = 0; index < component_.at(it_component->first).name.child.size(); index++)
+    {
+      RM_LOG::PRINT("Child Name ",index);
+      RM_LOG::PRINT(" : ");
+      RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.child.at(index)));
+    }
+    RM_LOG::PRINT("[Relative PositionParent Name] : "); RM_LOG::PRINTLN(STRING(component_.at(it_component->first).name.parent));
+
+
+
+
+
+
+  }
+
 
 
 //  USB.println("Degree of freedom : " + String(dof_));
