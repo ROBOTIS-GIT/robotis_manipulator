@@ -254,11 +254,6 @@ void RobotisManipulator::forwardKinematics()
   return kinematics_->forward(&manipulator_);
 }
 
-void RobotisManipulator::forwardKinematics(Name first_component_name)
-{
-  return kinematics_->forward(&manipulator_, first_component_name);
-}
-
 bool RobotisManipulator::inverseKinemtics(Name tool_name, Pose goal_pose, std::vector<double>* goal_joint_value)
 {
   return kinematics_->inverse(&manipulator_, tool_name, goal_pose, goal_joint_value);
