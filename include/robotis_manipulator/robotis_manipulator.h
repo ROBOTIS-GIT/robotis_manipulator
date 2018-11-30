@@ -121,7 +121,7 @@ public:
   Eigen::MatrixXd jacobian(Name tool_name);
   void forwardKinematics();
 //  void forwardKinematics(Name first_component_name);
-  bool inverseKinemtics(Name tool_name, Pose goal_pose, std::vector<double> *goal_joint_value);
+  bool inverseKinematics(Name tool_name, Pose goal_pose, std::vector<double> *goal_joint_value);
   void kinematicsSetOption(const void* arg);
 
   // ACTUATOR (INCLUDES VIRTUAL)
