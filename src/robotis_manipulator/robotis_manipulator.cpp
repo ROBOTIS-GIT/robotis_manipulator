@@ -1105,6 +1105,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     {
       if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
       {
+        trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), trajectory_.removeWayPointDynamicData(trajectory_.getPresentTaskWayPoint(trajectory_.getPresentControlToolName())));
         joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
         trajectory_.setPresentJointWayPoint(joint_way_point_value);
@@ -1168,9 +1169,11 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       {
         if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
         {
+          trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), trajectory_.removeWayPointDynamicData(trajectory_.getPresentTaskWayPoint(trajectory_.getPresentControlToolName())));
           joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
           moving_ = false;
           trajectory_.setPresentJointWayPoint(joint_way_point_value);
+          trajectory_.UpdatePresentWayPoint(kinematics_);
         }
         else
         {
