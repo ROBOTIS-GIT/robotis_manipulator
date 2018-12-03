@@ -27,7 +27,6 @@
 
 #include <algorithm> // for sort()
 
-
 namespace ROBOTIS_MANIPULATOR
 {
 
@@ -67,13 +66,13 @@ public:
                 Eigen::Vector3d world_position = Eigen::Vector3d::Zero(3),
                 Eigen::Matrix3d world_orientation = Eigen::Matrix3d::Identity());
 
-  void addComponent(Name my_name,
+  void addJoint(Name my_name,
                     Name parent_name,
                     Name child_name,
                     Eigen::Vector3d relative_position,
                     Eigen::Matrix3d relative_orientation,
                     Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1,
+                    int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
                     double coefficient = 1.0,
                     double mass = 0.0,
                     Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -83,7 +82,7 @@ public:
                Name parent_name,
                Eigen::Vector3d relative_position,
                Eigen::Matrix3d relative_orientation,
-               int8_t tool_id = -1,
+               int8_t tool_id = -1, double max_limit =M_PI, double min_limit = -M_PI,
                double coefficient = 1.0,
                double mass = 0.0,
                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
@@ -99,14 +98,30 @@ public:
 
   // MANIPULATOR
   Manipulator *getManipulator();
-  void setAllActiveJointValue(std::vector<WayPoint> joint_value_vector);
+
+  WayPoint getJointValue(Name joint_name);
+  double getToolValue(Name tool_name);
+  std::vector<WayPoint> getAllActiveJointValue();
+  std::vector<WayPoint> getAllJointValue();
+  std::vector<double> getAllToolValue();
+  Pose getPose(Name component_name);
+
+  //Directly set component value for simulation
+  void setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector);
+  void setAllToolValue(std::vector<double> tool_value_vector);
+
+  //Joint limit
+  bool checkLimit(Name component_name, double value);
+  bool checkLimit(Name component_name, WayPoint value);
+  bool checkLimit(std::vector<Name> component_name, std::vector<double> value);
+  bool checkLimit(std::vector<Name> component_name, std::vector<WayPoint> value);
 
   // KINEMATICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();
   Eigen::MatrixXd jacobian(Name tool_name);
-  void forward();
-  void forward(Name first_component_name);
-  std::vector<double> inverse(Name tool_name, Pose goal_pose);
+  void forwardKinematics();
+//  void forwardKinematics(Name first_component_name);
+  bool inverseKinematics(Name tool_name, Pose goal_pose, std::vector<double> *goal_joint_value);
   void kinematicsSetOption(const void* arg);
 
   // ACTUATOR (INCLUDES VIRTUAL)
@@ -125,8 +140,10 @@ public:
   void allActuatorEnable();
   void allActuatorDisable();
 
+  bool isEnabled(Name actuator_name);
+
   bool sendJointActuatorValue(Name joint_component_name, WayPoint value);
-  bool sendMultipleJointActuatorValue(std::vector<Name> tool_component_name, std::vector<WayPoint> value_vector);
+  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<WayPoint> value_vector);
   bool sendAllJointActuatorValue(std::vector<WayPoint> value_vector);
 
   WayPoint receiveJointActuatorValue(Name joint_component_name);
@@ -134,10 +151,12 @@ public:
   std::vector<WayPoint> receiveAllJointActuatorValue();
 
   bool sendToolActuatorValue(Name tool_component_name, double value);
-  double receiveToolActuatorValue(Name tool_component_name);
+  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector);
+  bool sendAllToolActuatorValue(std::vector<double> value_vector);
 
-  bool sendAllToolActuatorValue(std::vector<Name> joint_component_name, std::vector<double> value_vector);
-  std::vector<double> receiveAllToolActuatorValue(std::vector<Name> tool_component_name);
+  double receiveToolActuatorValue(Name tool_component_name);
+  std::vector<double> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
+  std::vector<double> receiveAllToolActuatorValue();
 
   // time
   void setTrajectoryControlTime(double trajectory_control_time);
@@ -160,12 +179,14 @@ public:
   void drawingTrajectorysetOption(Name drawing_name, const void* arg);
   void drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time);
   void drawingTrajectoryMove(Name drawing_name, const void *arg, double move_time);
+
+  void toolMove(Name tool_name, double tool_value);
+
   void TrajectoryWait(double wait_time);
 
   // Additional Functions
-  std::vector<WayPoint> trajectoryControllerLoop(double present_time);
-  void toolMove(Name tool_name, double tool_value);
-
+  std::vector<WayPoint> getJointGoalValueFromTrajectory(double present_time);
+  std::vector<double> getToolGoalValue();
 };
 } // namespace OPEN_MANIPULATOR
 

@@ -31,7 +31,7 @@
 namespace ROBOTIS_MANIPULATOR
 {
 
-class Kinematics : public Manipulator
+class Kinematics
 {
 public:
   Kinematics(){};
@@ -40,15 +40,16 @@ public:
   virtual void setOption(const void *arg) = 0;
   virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  virtual void forward(Manipulator *manipulator) = 0;
-  virtual void forward(Manipulator *manipulator, Name component_name) = 0;
-  virtual std::vector<double> inverse(Manipulator *manipulator, Name tool_name, Pose target_pose) = 0;
+  virtual void forwardKinematics(Manipulator *manipulator) = 0;
+  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
 };
 
 class JointActuator
 {
 public:
-  JointActuator(){};
+  bool enable_state_;
+
+  JointActuator():enable_state_(false){};
   virtual ~JointActuator(){};
 
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
@@ -62,12 +63,15 @@ public:
   virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
   bool findId(uint8_t actuator_id);
+  bool isEnabled();
 };
 
 class ToolActuator
 {
 public:
-  ToolActuator(){};
+  bool enable_state_;
+
+  ToolActuator():enable_state_(false){};
   virtual ~ToolActuator(){};
 
   virtual void init(uint8_t actuator_id, const void *arg) = 0;
@@ -81,6 +85,7 @@ public:
   virtual double receiveToolActuatorValue() = 0;
 
   bool findId(uint8_t actuator_id);
+  bool isEnabled();
 };
 
 

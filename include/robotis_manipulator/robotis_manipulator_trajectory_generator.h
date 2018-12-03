@@ -167,12 +167,18 @@ public:
   std::vector<WayPoint> getStartWayPoint();
   std::vector<WayPoint> getGoalWayPoint();
 
+  std::vector<WayPoint> removeWayPointDynamicData(std::vector<WayPoint> value);
+
   //Trajectory
   void setTrajectoryType(TrajectoryType trajectory_type);
   bool checkTrajectoryType(TrajectoryType trajectory_type);
   void makeJointTrajectory();
   void makeTaskTrajectory();
   void makeDrawingTrajectory(Name drawing_name, const void *arg);
+
+  //tool
+  void setToolGoalValue(Name name, double tool_goal_value);
+  double getToolGoalValue(Name name);
 };
 
 
