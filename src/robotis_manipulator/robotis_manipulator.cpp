@@ -298,13 +298,11 @@ void RobotisManipulator::toolActuatorSetMode(Name actuator_name, const void *arg
 
 std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 {
-  std::vector<uint8_t> result_vector;
-
   if(using_platform_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
-      return result_vector = joint_actuator_.at(actuator_name)->getId();
+      return joint_actuator_.at(actuator_name)->getId();
     }
     else
     {
@@ -316,13 +314,11 @@ std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 
 uint8_t RobotisManipulator::getToolActuatorId(Name actuator_name)
 {
-  uint8_t result;
-
   if(using_platform_)
   {
     if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
     {
-      return result = tool_actuator_.at(actuator_name)->getId();
+      return tool_actuator_.at(actuator_name)->getId();
     }
     else
     {
