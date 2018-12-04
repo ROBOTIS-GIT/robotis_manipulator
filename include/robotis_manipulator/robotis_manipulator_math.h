@@ -58,10 +58,10 @@ Eigen::Matrix4d getTranslation4D(double position_x, double position_y, double po
 
 Eigen::Vector3d convertRotationToRPY(const Eigen::Matrix3d& rotation);
 Eigen::Matrix3d convertRPYToRotation(double roll, double pitch, double yaw);
-// Eigen::Quaterniond convertRPYToQuaternion(double roll, double pitch, double yaw);
-// Eigen::Quaterniond convertRotationToQuaternion(const Eigen::Matrix3d& rotation);
-// Eigen::Vector3d convertQuaternionToRPY(const Eigen::Quaterniond& quaternion);
-// Eigen::Matrix3d convertQuaternionToRotation(const Eigen::Quaterniond& quaternion);
+Eigen::Quaterniond convertRPYToQuaternion(double roll, double pitch, double yaw);
+Eigen::Quaterniond convertRotationToQuaternion(const Eigen::Matrix3d& rotation);
+Eigen::Vector3d convertQuaternionToRPY(const Eigen::Quaterniond& quaternion);
+Eigen::Matrix3d convertQuaternionToRotation(const Eigen::Quaterniond& quaternion);
 Eigen::Vector3d convertRotToOmega(const Eigen::Matrix3d& rotation_matrix);
 
 Eigen::Vector3d matrixLogarithm(Eigen::Matrix3d rotation_matrix);
