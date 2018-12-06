@@ -839,7 +839,7 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
   if(isMoving())
   {
     moving_=false;
-    while(!step_moving_) ;
+    while(!step_moving_);
   }
   trajectory_.makeJointTrajectory();
   startMoving();
