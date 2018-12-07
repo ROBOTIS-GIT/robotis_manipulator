@@ -1216,10 +1216,6 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     }
   }
   /////////////////////////////////////////////////////////////////
-  for(uint32_t index = 0; index < joint_way_point_value.size(); index++)
-  {
-      RM_LOG::INFO("position22 : ", joint_way_point_value.at(index).value);
-  }
   return joint_way_point_value;
 }
 
