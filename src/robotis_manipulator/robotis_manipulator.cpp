@@ -902,6 +902,24 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
     RM_LOG::ERROR("[JOINT_TRAJECTORY] Fail to solve IK");
 }
 
+void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name) + position_meter;
+  goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
+void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name);
+  goal_pose.orientation = orientation_meter * trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
 void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Pose goal_pose_delta, double move_time)
 {
   Pose goal_pose;
