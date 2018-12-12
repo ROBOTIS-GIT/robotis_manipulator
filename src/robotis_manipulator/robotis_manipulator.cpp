@@ -298,13 +298,11 @@ void RobotisManipulator::toolActuatorSetMode(Name actuator_name, const void *arg
 
 std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 {
-  std::vector<uint8_t> result_vector;
-
   if(using_platform_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
-      return result_vector = joint_actuator_.at(actuator_name)->getId();
+      return joint_actuator_.at(actuator_name)->getId();
     }
     else
     {
@@ -316,13 +314,11 @@ std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 
 uint8_t RobotisManipulator::getToolActuatorId(Name actuator_name)
 {
-  uint8_t result;
-
   if(using_platform_)
   {
     if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
     {
-      return result = tool_actuator_.at(actuator_name)->getId();
+      return tool_actuator_.at(actuator_name)->getId();
     }
     else
     {
@@ -843,7 +839,30 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_angl
   if(isMoving())
   {
     moving_=false;
-    while(!step_moving_) ;
+    while(!step_moving_);
+  }
+  trajectory_.makeJointTrajectory();
+  startMoving();
+}
+
+void RobotisManipulator::jointTrajectoryMove(std::vector<WayPoint> goal_joint_waypoint, double move_time)
+{
+  trajectory_.setTrajectoryType(JOINT_TRAJECTORY);
+
+  trajectory_.clearStartWayPoint();
+  trajectory_.clearGoalWayPoint();
+
+  trajectory_.setMoveTime(move_time);
+
+  std::vector<WayPoint> temp = trajectory_.getPresentJointWayPoint();
+  trajectory_.setStartWayPoint(temp);
+
+  trajectory_.setGoalWayPoint(goal_joint_waypoint);
+
+  if(isMoving())
+  {
+    moving_=false;
+    while(!step_moving_);
   }
   trajectory_.makeJointTrajectory();
   startMoving();
@@ -906,12 +925,30 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, Pose goal_pose, dou
     RM_LOG::ERROR("[JOINT_TRAJECTORY] Fail to solve IK");
 }
 
-void RobotisManipulator::taskTrajectoryMoveToPresentPosition(Name tool_name, Eigen::Vector3d meter, double move_time)
+void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time)
 {
   Pose goal_pose;
 
-  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name) + meter;
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name) + position_meter;
   goal_pose.orientation = trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
+void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name);
+  goal_pose.orientation = orientation_meter * trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
+  taskTrajectoryMove(tool_name, goal_pose, move_time);
+}
+
+void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Pose goal_pose_delta, double move_time)
+{
+  Pose goal_pose;
+
+  goal_pose.position = trajectory_.getTrajectoryManipulator()->getComponentPositionFromWorld(tool_name) + goal_pose_delta.position;
+  goal_pose.orientation = goal_pose_delta.orientation * trajectory_.getTrajectoryManipulator()->getComponentOrientationFromWorld(tool_name);
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
@@ -1109,6 +1146,7 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
     {
       if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
       {
+        trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), trajectory_.removeWayPointDynamicData(trajectory_.getPresentTaskWayPoint(trajectory_.getPresentControlToolName())));
         joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
         trajectory_.setPresentJointWayPoint(joint_way_point_value);
@@ -1172,9 +1210,11 @@ std::vector<Actuator> RobotisManipulator::getTrajectoryJointValue(double tick_ti
       {
         if(!checkLimit(manipulator_.getAllActiveJointComponentName(), joint_value))
         {
+          trajectory_.setPresentTaskWayPoint(trajectory_.getPresentControlToolName(), trajectory_.removeWayPointDynamicData(trajectory_.getPresentTaskWayPoint(trajectory_.getPresentControlToolName())));
           joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
           moving_ = false;
           trajectory_.setPresentJointWayPoint(joint_way_point_value);
+          trajectory_.UpdatePresentWayPoint(kinematics_);
         }
         else
         {

@@ -167,11 +167,14 @@ public:
   //Trajectory Control Fuction
   void jointTrajectoryMoveToPresentValue(std::vector<double> goal_joint_angle, double move_time);
   void jointTrajectoryMove(std::vector<double> goal_joint_angle, double move_time);
+  void jointTrajectoryMove(std::vector<WayPoint> goal_joint_waypoint, double move_time);
   void jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);
   void jointTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time);
   void jointTrajectoryMove(Name tool_name, Pose goal_pose, double move_time);
 
-  void taskTrajectoryMoveToPresentPosition(Name tool_name, Eigen::Vector3d meter, double move_time);
+  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time);
+  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time);
+  void taskTrajectoryMoveToPresentPose(Name tool_name, Pose goal_pose_delta, double move_time);
   void taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);
   void taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time);
   void taskTrajectoryMove(Name tool_name, Pose goal_pose, double move_time);
