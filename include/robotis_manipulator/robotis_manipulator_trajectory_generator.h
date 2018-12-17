@@ -153,8 +153,8 @@ public:
   Name getPresentControlToolName();
 
   //Way Point
-  void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics *kinematics);
-  void UpdatePresentWayPoint(Kinematics* kinematics); //forward kinematics,dynamics
+  void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, KinematicsDynamics *kinematics);
+  void UpdatePresentWayPoint(KinematicsDynamics* kinematics); //forward kinematics,dynamics
   void setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector);
   void setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_position_value_vector);
   std::vector<WayPoint> getPresentJointWayPoint();

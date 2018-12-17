@@ -38,12 +38,9 @@ private:
   bool trajectory_initialization;
 
   std::map<Name, JointActuator *> joint_actuator_;
-  std::map<Name, JointActuator *>::iterator it_joint_actuator_;
-
   std::map<Name, ToolActuator *> tool_actuator_;
-  std::map<Name, ToolActuator *>::iterator it_tool_actuator_;
 
-  Kinematics *kinematics_;
+  KinematicsDynamics *kinematics_;
 
 //  Time manipulation_time_;
   bool using_platform_;
@@ -91,7 +88,7 @@ public:
   void addComponentChild(Name my_name, Name child_name);
   void checkManipulatorSetting();
 
-  void addKinematics(Kinematics *kinematics);
+  void addKinematics(KinematicsDynamics *kinematics);
   void addJointActuator(Name actuator_name, JointActuator *joint_actuator, std::vector<uint8_t> id_array, const void *arg);
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
   void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);

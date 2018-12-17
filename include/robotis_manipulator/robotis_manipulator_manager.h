@@ -31,17 +31,37 @@
 namespace ROBOTIS_MANIPULATOR
 {
 
-class Kinematics
+class KinematicsDynamics
 {
 public:
-  Kinematics(){};
-  virtual ~Kinematics(){};
+  KinematicsDynamics(){}
+  ~KinematicsDynamics(){}
 
   virtual void setOption(const void *arg) = 0;
   virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
   virtual void forwardKinematics(Manipulator *manipulator) = 0;
   virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
+
+  virtual bool forwardDynamics(Manipulator *manipulator) = 0;
+  virtual bool inverseDynamics(Manipulator *manipulator, Name tool_name, std::vector<WayPoint> tool_way_point, std::vector<WayPoint>* active_joint_way_point) = 0;
+};
+
+class Kinematics : public ROBOTIS_MANIPULATOR::KinematicsDynamics
+{
+public:
+  Kinematics(){}
+  ~Kinematics(){}
+
+  virtual void setOption(const void *arg) = 0;
+  virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
+  virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
+  virtual void forwardKinematics(Manipulator *manipulator) = 0;
+  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
+
+  //Already defined
+  virtual bool forwardDynamics(Manipulator *manipulator);
+  virtual bool inverseDynamics(Manipulator *manipulator, Name tool_name, std::vector<WayPoint> tool_way_point, std::vector<WayPoint>* active_joint_way_point);
 };
 
 class JointActuator
@@ -49,8 +69,8 @@ class JointActuator
 public:
   bool enable_state_;
 
-  JointActuator():enable_state_(false){};
-  virtual ~JointActuator(){};
+  JointActuator():enable_state_(false){}
+  virtual ~JointActuator(){}
 
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
   virtual void setMode(std::vector<uint8_t> actuator_id, const void *arg) = 0;
@@ -71,8 +91,8 @@ class ToolActuator
 public:
   bool enable_state_;
 
-  ToolActuator():enable_state_(false){};
-  virtual ~ToolActuator(){};
+  ToolActuator():enable_state_(false){}
+  virtual ~ToolActuator(){}
 
   virtual void init(uint8_t actuator_id, const void *arg) = 0;
   virtual void setMode(const void *arg) = 0;
@@ -95,8 +115,8 @@ private:
   WayPointType output_way_point_type_;
 
 public:
-  DrawingTrajectory(){};
-  virtual ~DrawingTrajectory(){};
+  DrawingTrajectory(){}
+  virtual ~DrawingTrajectory(){}
 
   virtual void init(double move_time, double control_time, std::vector<WayPoint> start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
   virtual void setOption(const void *arg) = 0;

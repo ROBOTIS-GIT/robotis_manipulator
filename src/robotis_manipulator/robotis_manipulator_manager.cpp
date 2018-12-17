@@ -20,6 +20,15 @@
 
 using namespace ROBOTIS_MANIPULATOR;
 
+bool Kinematics::forwardDynamics(Manipulator *manipulator)
+{
+  return false;
+}
+bool Kinematics::inverseDynamics(Manipulator *manipulator, Name tool_name, std::vector<WayPoint> tool_way_point, std::vector<WayPoint>* active_joint_way_point)
+{
+  return false;
+}
+
 bool JointActuator::findId(uint8_t actuator_id)
 {
   std::vector<uint8_t> id = getId();
