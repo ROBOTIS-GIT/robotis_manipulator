@@ -47,8 +47,8 @@ public:
   MinimumJerk();
   virtual ~MinimumJerk();
 
-  void calcCoefficient(WayPoint start,
-                       WayPoint goal,
+  void calcCoefficient(Point start,
+                       Point goal,
                        double move_time,
                        double control_time);
 
@@ -58,11 +58,9 @@ public:
 class JointTrajectory
 {
 private:
+  uint8_t coefficient_size_;
   MinimumJerk trajectory_generator_;
-
-  uint8_t joint_num_;
   Eigen::MatrixXd coefficient_;
-  std::vector<WayPoint> joint_way_point_;
 
 public:
   JointTrajectory();
@@ -71,23 +69,19 @@ public:
   void setJointNum(uint8_t joint_num);
   void init(double move_time,
             double control_time,
-            std::vector<WayPoint> start,
-            std::vector<WayPoint> goal
+            JointWayPoint start,
+            JointWayPoint goal
             );
-
-  std::vector<WayPoint> getJointWayPoint(double tick);
-
   Eigen::MatrixXd getCoefficient();
+  JointWayPoint getJointWayPoint(double tick);
 };
 
 class TaskTrajectory
 {
 private:
+  uint8_t coefficient_size_;
   MinimumJerk trajectory_generator_;
-
-  uint8_t dof_;
-  Eigen::MatrixXd position_coefficient_;
-  std::vector<WayPoint> task_position_way_point_;
+  Eigen::MatrixXd coefficient_;
 
 public:
   TaskTrajectory();
@@ -95,11 +89,11 @@ public:
 
   void init(double move_time,
             double control_time,
-            std::vector<WayPoint> start,
-            std::vector<WayPoint> goal
+            TaskWayPoint start,
+            TaskWayPoint goal
             );
-  std::vector<WayPoint> getTaskWayPoint(double tick);
   Eigen::MatrixXd getCoefficient();
+  TaskWayPoint getTaskWayPoint(double tick);
 };
 
 
@@ -107,18 +101,16 @@ class Trajectory
 {
 private:
   TrajectoryType trajectory_type_;
+  Time trajectory_time_;
   Manipulator manipulator_;
-
-  std::vector<WayPoint> start_way_point_;
-  std::vector<WayPoint> goal_way_point_;
 
   JointTrajectory joint_;
   TaskTrajectory task_;
-  std::map<Name, DrawingTrajectory *> drawing_;
-  Name present_drawing_object_name_;
-  Name present_control_tool_name_;
+  std::map<Name, CustomJointTrajectory *> cus_joint_;
+  std::map<Name, CustomTaskTrajectory *> cus_task_;
 
-  Time trajectory_time_;
+  Name present_custom_trajectory_name_;
+  Name present_control_tool_name_;
 
 public:
   Trajectory() {}
@@ -137,48 +129,47 @@ public:
   void setTrajectoryManipulator(Manipulator manipulator);
   Manipulator* getTrajectoryManipulator();
 
-  //Joint
+  //get Trajectory
   JointTrajectory getJointTrajectory();
-
-  //Task
   TaskTrajectory getTaskTrajectory();
+  CustomJointTrajectory* getCustomJointTrajectory(Name name);
+  CustomTaskTrajectory* getCustomTaskTrajectory(Name name);
 
-  //Drawing
-  void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
-  DrawingTrajectory* getDrawingtrajectory(Name name);
-  void setDrawingOption(Name name, const void* arg);
-  void setPresentDrawingObjectName(Name present_drawing_object_name);
+  //Custom Trajectory Setting
+  void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
+  void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
+  void setCustomTrajectoryOption(Name trajectory_name, const void* arg);
   void setPresentControlToolName(Name present_control_tool_name);
-  Name getPresentDrawingObjectName();
+  Name getPresentCustomTrajectoryName();
   Name getPresentControlToolName();
 
-  //Way Point
+  //First Way Point
   void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, KinematicsDynamics *kinematics);
-  void UpdatePresentWayPoint(KinematicsDynamics* kinematics); //forward kinematics,dynamics
-  void setPresentJointWayPoint(std::vector<WayPoint> joint_value_vector);
-  void setPresentTaskWayPoint(Name tool_name, std::vector<WayPoint> tool_position_value_vector);
-  std::vector<WayPoint> getPresentJointWayPoint();
-  std::vector<WayPoint> getPresentTaskWayPoint(Name tool_name);
 
-  void setStartWayPoint(std::vector<WayPoint> start_way_point);
-  void setGoalWayPoint(std::vector<WayPoint> goal_way_point);
-  void clearStartWayPoint();
-  void clearGoalWayPoint();
-  std::vector<WayPoint> getStartWayPoint();
-  std::vector<WayPoint> getGoalWayPoint();
+  //Present Way Point
+  void UpdatePresentWayPoint(KinematicsDynamics* kinematics_dynamics); //forward kinematics,dynamics
+  void setPresentJointWayPoint(JointWayPoint joint_value_vector);
+  void setPresentTaskWayPoint(Name tool_name, TaskWayPoint tool_position_value_vector);
+  JointWayPoint getPresentJointWayPoint();
+  TaskWayPoint getPresentTaskWayPoint(Name tool_name);
 
-  std::vector<WayPoint> removeWayPointDynamicData(std::vector<WayPoint> value);
+  JointWayPoint removeWayPointDynamicData(JointWayPoint value);
+  TaskWayPoint removeWayPointDynamicData(TaskWayPoint value);
 
   //Trajectory
   void setTrajectoryType(TrajectoryType trajectory_type);
   bool checkTrajectoryType(TrajectoryType trajectory_type);
-  void makeJointTrajectory();
-  void makeTaskTrajectory();
-  void makeDrawingTrajectory(Name drawing_name, const void *arg);
+  void makeJointTrajectory(JointWayPoint start_way_point, JointWayPoint goal_way_point);
+  void makeTaskTrajectory(TaskWayPoint start_way_point, TaskWayPoint goal_way_point);
+  void makeCustomTrajectory(Name trajectory_name, JointWayPoint start_way_point, const void *arg);
+  void makeCustomTrajectory(Name trajectory_name, TaskWayPoint start_way_point, const void *arg);
 
   //tool
-  void setToolGoalValue(Name name, double tool_goal_value);
-  double getToolGoalValue(Name name);
+  void setToolGoalPosition(Name tool_name, double tool_goal_position);
+  void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
+  double getToolGoalPosition(Name tool_name);
+  JointValue getToolGoalValue(Name tool_name);
+
 };
 
 

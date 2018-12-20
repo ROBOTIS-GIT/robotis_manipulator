@@ -22,11 +22,22 @@ using namespace ROBOTIS_MANIPULATOR;
 
 bool Kinematics::forwardDynamics(Manipulator *manipulator)
 {
-  return false;
+  forwardKinematics(manipulator);
+  return true;
 }
-bool Kinematics::inverseDynamics(Manipulator *manipulator, Name tool_name, std::vector<WayPoint> tool_way_point, std::vector<WayPoint>* active_joint_way_point)
+bool Kinematics::inverseDynamics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue> *active_joint_way_point)
 {
-  return false;
+  std::vector<double> goal_joint_position;
+  if(!inverseKinematics(manipulator, tool_name, target_pose.kinematic, &goal_joint_position))
+    return false;
+  for(uint8_t index = 0; index < active_joint_way_point->size(); index++)
+  {
+    active_joint_way_point->at(index).position = goal_joint_position.at(index);
+    active_joint_way_point->at(index).velocity = 0.0;
+    active_joint_way_point->at(index).acceleration = 0.0;
+    active_joint_way_point->at(index).effort = 0.0;
+  }
+  return true;
 }
 
 bool JointActuator::findId(uint8_t actuator_id)
@@ -58,17 +69,6 @@ bool ToolActuator::findId(uint8_t actuator_id)
 bool ToolActuator::isEnabled()
 {
   return enable_state_;
-}
-
-WayPointType DrawingTrajectory::getOutputWayPointType()
-{
-  return output_way_point_type_;
-}
-
-
-void DrawingTrajectory::setOutputWayPointType(WayPointType way_point_type)
-{
-  output_way_point_type_ = way_point_type;
 }
 
 

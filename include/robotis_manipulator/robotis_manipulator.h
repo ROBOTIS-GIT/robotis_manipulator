@@ -40,7 +40,7 @@ private:
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, ToolActuator *> tool_actuator_;
 
-  KinematicsDynamics *kinematics_;
+  KinematicsDynamics *kinematics_dynamics_;
 
 //  Time manipulation_time_;
   bool using_platform_;
@@ -50,8 +50,8 @@ private:
 private:
   void startMoving();
 
-  std::vector<Actuator> getTrajectoryJointValue(double tick_time);
-  std::vector<Actuator> TrajectoryTimeCounter();
+  JointWayPoint getTrajectoryJointValue(double tick_time);
+  JointWayPoint TrajectoryTimeCounter();
 
 public:
   RobotisManipulator();
@@ -91,35 +91,30 @@ public:
   void addKinematics(KinematicsDynamics *kinematics);
   void addJointActuator(Name actuator_name, JointActuator *joint_actuator, std::vector<uint8_t> id_array, const void *arg);
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
-  void addDrawingTrajectory(Name name, DrawingTrajectory *drawing);
+  void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
+  void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
 
   // MANIPULATOR
   Manipulator *getManipulator();
 
-  WayPoint getJointValue(Name joint_name);
-  double getToolValue(Name tool_name);
-  std::vector<WayPoint> getAllActiveJointValue();
-  std::vector<WayPoint> getAllJointValue();
-  std::vector<double> getAllToolValue();
-  Pose getPose(Name component_name);
+  JointValue getJointValue(Name joint_name);
+  JointValue getToolValue(Name tool_name);
+  std::vector<JointValue> getAllActiveJointValue();
+  std::vector<JointValue> getAllJointValue();
+  std::vector<double> getAllToolPosition();
+  std::vector<JointValue> getAllToolValue();
+  KinematicPose getKinematicPose(Name component_name);
+  DynamicPose getDynamicPose(Name component_name);
+  PoseValue getPoseValue(Name component_name);
 
-  //Directly set component value for simulation
-  void setAllActiveJointWayPoint(std::vector<WayPoint> joint_value_vector);
-  void setAllToolValue(std::vector<double> tool_value_vector);
-
-  //Joint limit
-  bool checkLimit(Name component_name, double value);
-  bool checkLimit(Name component_name, WayPoint value);
-  bool checkLimit(std::vector<Name> component_name, std::vector<double> value);
-  bool checkLimit(std::vector<Name> component_name, std::vector<WayPoint> value);
-
-  // KINEMATICS (INCLUDES VIRTUAL)
+  // KINEMATICS_DYNAMICS (INCLUDES VIRTUAL)
   void updatePassiveJointValue();
   Eigen::MatrixXd jacobian(Name tool_name);
   void forwardKinematics();
-//  void forwardKinematics(Name first_component_name);
-  bool inverseKinematics(Name tool_name, Pose goal_pose, std::vector<double> *goal_joint_value);
+  bool inverseKinematics(Name tool_name, KinematicPose goal_pose, std::vector<double> *goal_joint_value);
   void kinematicsSetOption(const void* arg);
+  bool forwardDynamics();
+  bool inverseDynamics(Name tool_name, PoseValue goal_pose, std::vector<JointValue> *goal_joint_value);
 
   // ACTUATOR (INCLUDES VIRTUAL)
   void jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
@@ -139,21 +134,21 @@ public:
 
   bool isEnabled(Name actuator_name);
 
-  bool sendJointActuatorValue(Name joint_component_name, WayPoint value);
-  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<WayPoint> value_vector);
-  bool sendAllJointActuatorValue(std::vector<WayPoint> value_vector);
+  bool sendJointActuatorValue(Name joint_component_name, JointValue value);
+  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<JointValue> value_vector);
+  bool sendAllJointActuatorValue(std::vector<JointValue> value_vector);
+  JointValue receiveJointActuatorValue(Name joint_component_name);
+  std::vector<JointValue> receiveMultipleJointActuatorValue(std::vector<Name> joint_component_name);
+  std::vector<JointValue> receiveAllJointActuatorValue();
 
-  WayPoint receiveJointActuatorValue(Name joint_component_name);
-  std::vector<WayPoint> receiveMultipleJointActuatorValue(std::vector<Name> joint_component_name);
-  std::vector<WayPoint> receiveAllJointActuatorValue();
+  bool sendToolActuatorValue(Name tool_component_name, JointValue value);
+  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector);
+  bool sendAllToolActuatorValue(std::vector<JointValue> value_vector);
+  JointValue receiveToolActuatorValue(Name tool_component_name);
+  std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
+  std::vector<JointValue> receiveAllToolActuatorValue();
 
-  bool sendToolActuatorValue(Name tool_component_name, double value);
-  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<double> value_vector);
-  bool sendAllToolActuatorValue(std::vector<double> value_vector);
-
-  double receiveToolActuatorValue(Name tool_component_name);
-  std::vector<double> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
-  std::vector<double> receiveAllToolActuatorValue();
+  ////////////////////////////////////////tra/
 
   // time
   void setTrajectoryControlTime(double trajectory_control_time);
@@ -161,32 +156,37 @@ public:
   double getTrajectoryControlTime();
   bool isMoving();
 
-  //Trajectory Control Fuction
-  void jointTrajectoryMoveToPresentValue(std::vector<double> goal_joint_angle, double move_time);
-  void jointTrajectoryMove(std::vector<double> goal_joint_angle, double move_time);
-  void jointTrajectoryMove(std::vector<WayPoint> goal_joint_waypoint, double move_time);
-  void jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);
-  void jointTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time);
-  void jointTrajectoryMove(Name tool_name, Pose goal_pose, double move_time);
+  //Joint limit (Check as Trajectory Manipulator)
+  bool checkLimit(Name component_name, double position);
+  bool checkLimit(Name component_name, JointValue value);
+  bool checkLimit(std::vector<Name> component_name, std::vector<double> position_vector);
+  bool checkLimit(std::vector<Name> component_name, std::vector<JointValue> value_vector);
 
-  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time);
-  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time);
-  void taskTrajectoryMoveToPresentPose(Name tool_name, Pose goal_pose_delta, double move_time);
-  void taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time);
-  void taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time);
-  void taskTrajectoryMove(Name tool_name, Pose goal_pose, double move_time);
+  //Trajectory Control Move Fuction
+  void jointTrajectoryMoveToPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  void jointTrajectoryMove(std::vector<double> goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  void jointTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  void jointTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
+  void jointTrajectoryMove(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
 
-  void drawingTrajectorysetOption(Name drawing_name, const void* arg);
-  void drawingTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time);
-  void drawingTrajectoryMove(Name drawing_name, const void *arg, double move_time);
+  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value = {});
+  void taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time, std::vector<JointValue> present_joint_value = {});
+  void taskTrajectoryMoveToPresentPose(Name tool_name, KinematicPose goal_pose_delta, double move_time, std::vector<JointValue> present_joint_value = {});
+  void taskTrajectoryMove(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  void taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
+  void taskTrajectoryMove(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
 
-  void toolMove(Name tool_name, double tool_value);
+  void customTrajectorysetOption(Name drawing_name, const void* arg);
+  void customTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
+  void customTrajectoryMove(Name drawing_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
 
-  void TrajectoryWait(double wait_time);
+  void toolMove(Name tool_name, double tool_goal_position);
+
+  void TrajectoryWait(double wait_time, std::vector<JointValue> present_joint_value = {});
 
   // Additional Functions
-  std::vector<WayPoint> getJointGoalValueFromTrajectory(double present_time);
-  std::vector<double> getToolGoalValue();
+  std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
+  std::vector<JointValue> getToolGoalValue();
 };
 } // namespace OPEN_MANIPULATOR
 
