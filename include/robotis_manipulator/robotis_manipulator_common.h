@@ -232,7 +232,8 @@ public:
   void setWorldAngularAcceleration(Eigen::Vector3d world_angular_acceleration);
   void setComponent(Name component_name, Component component);
   void setComponentActuatorName(Name component_name, Name actuator_name);
-  void setComponentPoseFromWorld(Name component_name, KinematicPose pose_to_world);
+  void setComponentPoseFromWorld(Name component_name, PoseValue pose_to_world);
+  void setComponentKinematicPoseFromWorld(Name component_name, KinematicPose pose_to_world);
   void setComponentPositionFromWorld(Name component_name, Eigen::Vector3d position_to_world);
   void setComponentOrientationFromWorld(Name component_name, Eigen::Matrix3d orientation_to_wolrd);
   void setComponentDynamicPoseFromWorld(Name component_name, DynamicPose dynamic_pose);
@@ -267,7 +268,8 @@ public:
   Name getComponentActuatorName(Name component_name);
   Name getComponentParentName(Name name);
   std::vector<Name> getComponentChildName(Name name);
-  KinematicPose getComponentPoseFromWorld(Name name);
+  PoseValue getComponentPoseFromWorld(Name name);
+  KinematicPose getComponentKinematicPoseFromWorld(Name name);
   Eigen::Vector3d getComponentPositionFromWorld(Name name);
   Eigen::Matrix3d getComponentOrientationFromWorld(Name name);
   DynamicPose getComponentDynamicPoseFromWorld(Name name);

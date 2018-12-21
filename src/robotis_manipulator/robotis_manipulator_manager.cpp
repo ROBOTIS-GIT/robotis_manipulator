@@ -20,26 +20,6 @@
 
 using namespace ROBOTIS_MANIPULATOR;
 
-bool Kinematics::forwardDynamics(Manipulator *manipulator)
-{
-  forwardKinematics(manipulator);
-  return true;
-}
-bool Kinematics::inverseDynamics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue> *active_joint_way_point)
-{
-  std::vector<double> goal_joint_position;
-  if(!inverseKinematics(manipulator, tool_name, target_pose.kinematic, &goal_joint_position))
-    return false;
-  for(uint8_t index = 0; index < active_joint_way_point->size(); index++)
-  {
-    active_joint_way_point->at(index).position = goal_joint_position.at(index);
-    active_joint_way_point->at(index).velocity = 0.0;
-    active_joint_way_point->at(index).acceleration = 0.0;
-    active_joint_way_point->at(index).effort = 0.0;
-  }
-  return true;
-}
-
 bool JointActuator::findId(uint8_t actuator_id)
 {
   std::vector<uint8_t> id = getId();

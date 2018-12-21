@@ -66,7 +66,6 @@ public:
   JointTrajectory();
   virtual ~JointTrajectory();
 
-  void setJointNum(uint8_t joint_num);
   void init(double move_time,
             double control_time,
             JointWayPoint start,
@@ -144,10 +143,10 @@ public:
   Name getPresentControlToolName();
 
   //First Way Point
-  void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, KinematicsDynamics *kinematics);
+  void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics *kinematics);
 
   //Present Way Point
-  void UpdatePresentWayPoint(KinematicsDynamics* kinematics_dynamics); //forward kinematics,dynamics
+  void UpdatePresentWayPoint(Kinematics* kinematics); //forward kinematics,dynamics
   void setPresentJointWayPoint(JointWayPoint joint_value_vector);
   void setPresentTaskWayPoint(Name tool_name, TaskWayPoint tool_position_value_vector);
   JointWayPoint getPresentJointWayPoint();
@@ -175,7 +174,6 @@ public:
 
 } // namespace RM_TRAJECTORY
 #endif // RMTRAJECTORY_H_
-
 
 
 

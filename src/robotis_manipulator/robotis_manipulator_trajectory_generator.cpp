@@ -142,56 +142,76 @@ void TaskTrajectory::init(double move_time,
   std::vector<Point> start_way_point;
   std::vector<Point> goal_way_point;
 
-  //position
-  for(uint8_t i = 0; i < 3; i++)
+  ////////////////////////////////////position////////////////////////////////////
+  std::vector<Point> start_way_point_position;
+  std::vector<Point> goal_way_point_position;
+  for(uint8_t i = 0; i < 3; i++)      //x, y, z
   {
     Point position_temp;
     position_temp.position = start.kinematic.position[i];
     position_temp.velocity = start.dynamic.linear.velocity[i];
     position_temp.acceleration = start.dynamic.linear.acceleration[i];
     position_temp.effort = 0.0;
-    start_way_point.push_back(position_temp);
+    start_way_point_position.push_back(position_temp);
 
     position_temp.position = goal.kinematic.position[i];
     position_temp.velocity = goal.dynamic.linear.velocity[i];
     position_temp.acceleration = goal.dynamic.linear.acceleration[i];
     position_temp.effort = 0.0;
-    goal_way_point.push_back(position_temp);
+    goal_way_point_position.push_back(position_temp);
   }
-  //orientation
-  for(uint8_t i = 0; i < 3; i++)
+  ////////////////////////////////////////////////////////////////////////////////
+
+  //////////////////////////////////orientation///////////////////////////////////
+  std::vector<Point> start_way_point_orientation;
+  std::vector<Point> goal_way_point_orientation;
+
+  Eigen::Vector3d start_orientation_rpy;
+  Eigen::Vector3d start_ang_vel_rpy;
+  Eigen::Vector3d start_ang_acc_rpy;
+
+  start_orientation_rpy = RM_MATH::convertRotationToRPY(start.kinematic.orientation);
+  start_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
+                                                    *start.kinematic.orientation);
+  start_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.acceleration)
+                                                    *RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
+                                                    *start.kinematic.orientation);
+
+  Eigen::Vector3d goal_orientation_rpy;
+  Eigen::Vector3d goal_ang_vel_rpy;
+  Eigen::Vector3d goal_ang_acc_rpy;
+
+  goal_orientation_rpy = RM_MATH::convertRotationToRPY(goal.kinematic.orientation);
+  goal_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
+                                                    *goal.kinematic.orientation);
+  goal_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.acceleration)
+                                                    *RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
+                                                    *goal.kinematic.orientation);
+
+  for(uint8_t i = 0; i < 3; i++)    //roll, pitch, yaw
   {
-    Point position_temp;
+    start_way_point_orientation.at(i).position = start_orientation_rpy[i];
+    start_way_point_orientation.at(i).velocity = start_ang_vel_rpy[i];
+    start_way_point_orientation.at(i).acceleration = start_ang_acc_rpy[i];
+    start_way_point_orientation.at(i).effort = 0.0;
 
-
-    position_temp.position = start.kinematic.position[i];
-    position_temp.velocity = start.dynamic.linear.velocity[i];
-    position_temp.acceleration = start.dynamic.linear.acceleration[i];
-    position_temp.effort = 0.0;
-    start_way_point.push_back(position_temp);
-
-    position_temp.position = goal.kinematic.position[i];
-    position_temp.velocity = goal.dynamic.linear.velocity[i];
-    position_temp.acceleration = goal.dynamic.linear.acceleration[i];
-    position_temp.effort = 0.0;
-    goal_way_point.push_back(position_temp);
+    goal_way_point_orientation.at(i).position = goal_orientation_rpy[i];
+    goal_way_point_orientation.at(i).velocity = goal_ang_vel_rpy[i];
+    goal_way_point_orientation.at(i).acceleration = goal_ang_acc_rpy[i];
+    goal_way_point_orientation.at(i).effort = 0.0;
   }
+  ////////////////////////////////////////////////////////////////////////////////
+
+  start_way_point.reserve(start_way_point_position.size() + start_way_point_orientation.size());
+  start_way_point.insert(start_way_point_position.end(),
+                         start_way_point_orientation.begin(),
+                         start_way_point_orientation.end());
+  goal_way_point.reserve(goal_way_point_position.size() + goal_way_point_orientation.size());
+  goal_way_point.insert(goal_way_point_position.end(),
+                         goal_way_point_orientation.begin(),
+                         goal_way_point_orientation.end());
 
 
-
-//  Point orientation_temp;
-
-//  orientation_temp.position = RM_MATH::convertRotToOmega(start.kinematic.orientation).norm();
-//  orientation_temp.velocity = start.dynamic.angular.velocity.norm();
-//  orientation_temp.acceleration = start.dynamic.angular.acceleration.norm();
-//  orientation_temp.effort = 0.0;
-//  start_way_point.push_back(orientation_temp);
-
-//  orientation_temp.position = RM_MATH::convertRotToOmega(goal.kinematic.orientation).norm();
-//  orientation_temp.velocity = goal.dynamic.angular.velocity.norm();
-//  orientation_temp.acceleration = goal.dynamic.angular.acceleration.norm();
-//  orientation_temp.effort = 0.0;
-//  goal_way_point.push_back(orientation_temp);
   coefficient_size_ = start_way_point.size();
   coefficient_.resize(6,coefficient_size_);
   for (uint8_t index = 0; index < coefficient_size_; index++)
@@ -236,18 +256,34 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
   }
 
   TaskWayPoint task_way_point;
-  //position
+  ////////////////////////////////////position////////////////////////////////////
   for(uint8_t i = 0; i < 3; i++)        //x ,y ,z
   {
     task_way_point.kinematic.position[i] = result_point.at(i).position;
     task_way_point.dynamic.linear.velocity[i] = result_point.at(i).velocity;
     task_way_point.dynamic.linear.acceleration[i] = result_point.at(i).acceleration;
   }
+  ////////////////////////////////////////////////////////////////////////////////
 
-//  //orientation
-//  task_way_point.kinematic.orientation = 0.0;
-//  task_way_point.dynamic.angular.velocity = 0.0;
-//  task_way_point.dynamic.angular.acceleration = 0.0;
+  //////////////////////////////////orientation///////////////////////////////////
+  task_way_point.kinematic.orientation = RM_MATH::convertRPYToRotation(result_point.at(3).position,   //roll
+                                                                       result_point.at(4).position,   //pitch
+                                                                       result_point.at(5).position);   //yaw
+
+  task_way_point.dynamic.angular.velocity = RM_MATH::matrixLogarithm(
+        RM_MATH::convertRPYToRotation(result_point.at(3).velocity,
+                                      result_point.at(4).velocity,
+                                      result_point.at(5).velocity)
+        * task_way_point.kinematic.orientation.transpose()
+        );
+  task_way_point.dynamic.angular.acceleration = RM_MATH::matrixLogarithm(
+        RM_MATH::convertRPYToRotation(result_point.at(3).acceleration,
+                                      result_point.at(4).acceleration,
+                                      result_point.at(5).acceleration)
+        * task_way_point.kinematic.orientation.transpose()
+        * RM_MATH::skewSymmetricMatrix(task_way_point.dynamic.angular.velocity).transpose()
+        );
+  ////////////////////////////////////////////////////////////////////////////////
 
   return task_way_point;
 }
@@ -363,7 +399,7 @@ Name Trajectory::getPresentControlToolName()
  return present_control_tool_name_;
 }
 
-void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, KinematicsDynamics* kinematics)
+void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics *kinematics)
 {
   setTrajectoryManipulator(present_real_manipulator);
   JointWayPoint joint_way_point_vector;
@@ -374,48 +410,48 @@ void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present
   setPresentTime(present_time);
 }
 
-void Trajectory::UpdatePresentWayPoint(KinematicsDynamics *kinematics_dynamics)
+void Trajectory::UpdatePresentWayPoint(Kinematics *kinematics)
 {
   //kinematics (position)
-  kinematics_dynamics->updatePassiveJointValue(&manipulator_);
-  kinematics_dynamics->forwardKinematics(&manipulator_);
+  kinematics->updatePassiveJointValue(&manipulator_);
+  kinematics->forwardKinematics(&manipulator_);
 
-  //dynamics (velocity)
-  std::map<Name, Component>::iterator it;
-  Eigen::VectorXd joint_velocity(manipulator_.getDOF());
+//  //dynamics (velocity)
+//  std::map<Name, Component>::iterator it;
+//  Eigen::VectorXd joint_velocity(manipulator_.getDOF());
 
-  Eigen::VectorXd pose_velocity(6);
-  Eigen::Vector3d linear_velocity;
-  Eigen::Vector3d angular_velocity;
+//  Eigen::VectorXd pose_velocity(6);
+//  Eigen::Vector3d linear_velocity;
+//  Eigen::Vector3d angular_velocity;
 
-  int8_t index = 0;
-  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
-  {
-    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT)) // Check whether Active or Passive
-    {
-      // Active
-      joint_velocity[index] = manipulator_.getJointVelocity(it->first);
-      index++;
-    }
-  }
+//  int8_t index = 0;
+//  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+//  {
+//    if (manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT)) // Check whether Active or Passive
+//    {
+//      // Active
+//      joint_velocity[index] = manipulator_.getJointVelocity(it->first);
+//      index++;
+//    }
+//  }
 
-  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
-  {
-    pose_velocity = kinematics_dynamics->jacobian(&manipulator_, it->first)*joint_velocity;
-    linear_velocity[0] = pose_velocity[0];
-    linear_velocity[1] = pose_velocity[1];
-    linear_velocity[2] = pose_velocity[2];
-    angular_velocity[0] = pose_velocity[3];
-    angular_velocity[1] = pose_velocity[4];
-    angular_velocity[2] = pose_velocity[5];
-    DynamicPose dynamic_pose;
-    dynamic_pose.linear.velocity = linear_velocity;
-    dynamic_pose.angular.velocity = angular_velocity;
-    dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero();
-    dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero();
+//  for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
+//  {
+//    pose_velocity = kinematics_dynamics->jacobian(&manipulator_, it->first)*joint_velocity;
+//    linear_velocity[0] = pose_velocity[0];
+//    linear_velocity[1] = pose_velocity[1];
+//    linear_velocity[2] = pose_velocity[2];
+//    angular_velocity[0] = pose_velocity[3];
+//    angular_velocity[1] = pose_velocity[4];
+//    angular_velocity[2] = pose_velocity[5];
+//    DynamicPose dynamic_pose;
+//    dynamic_pose.linear.velocity = linear_velocity;
+//    dynamic_pose.angular.velocity = angular_velocity;
+//    dynamic_pose.linear.acceleration = Eigen::Vector3d::Zero();
+//    dynamic_pose.angular.acceleration = Eigen::Vector3d::Zero();
 
-    manipulator_.setComponentDynamicPoseFromWorld(it->first, dynamic_pose);
-  }
+//    manipulator_.setComponentDynamicPoseFromWorld(it->first, dynamic_pose);
+//  }
 }
 
 void Trajectory::setPresentJointWayPoint(JointWayPoint joint_value_vector)
@@ -425,8 +461,7 @@ void Trajectory::setPresentJointWayPoint(JointWayPoint joint_value_vector)
 
 void Trajectory::setPresentTaskWayPoint(Name tool_name, TaskWayPoint tool_value_vector)
 {
-  manipulator_.setComponentPoseFromWorld(tool_name, tool_value_vector.kinematic);
-  manipulator_.setComponentDynamicPoseFromWorld(tool_name, tool_value_vector.dynamic);
+  manipulator_.setComponentPoseFromWorld(tool_name, tool_value_vector);
 }
 
 JointWayPoint Trajectory::getPresentJointWayPoint()
@@ -436,10 +471,7 @@ JointWayPoint Trajectory::getPresentJointWayPoint()
 
 TaskWayPoint Trajectory::getPresentTaskWayPoint(Name tool_name)
 {
-  TaskWayPoint result;
-  result.kinematic = manipulator_.getComponentPoseFromWorld(tool_name);
-  result.dynamic = manipulator_.getComponentDynamicPoseFromWorld(tool_name);
-  return result;
+  return manipulator_.getComponentPoseFromWorld(tool_name);
 }
 
 //void Trajectory::setStartWayPoint(std::vector<WayPoint> start_way_point)
@@ -509,7 +541,6 @@ bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
 
 void Trajectory::makeJointTrajectory(JointWayPoint start_way_point, JointWayPoint goal_way_point)
 {
-  joint_.setJointNum(manipulator_.getDOF());
   joint_.init(trajectory_time_.total_move_time, trajectory_time_.control_loop_time, start_way_point, goal_way_point);
 }
 

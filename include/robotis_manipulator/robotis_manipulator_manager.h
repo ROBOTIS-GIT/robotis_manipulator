@@ -27,27 +27,10 @@
 
 #include "robotis_manipulator_common.h"
 
-
 namespace ROBOTIS_MANIPULATOR
 {
 
-class KinematicsDynamics
-{
-public:
-  KinematicsDynamics(){}
-  ~KinematicsDynamics(){}
-
-  virtual void setOption(const void *arg) = 0;
-  virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
-  virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  virtual void forwardKinematics(Manipulator *manipulator) = 0;
-  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, KinematicPose target_pose, std::vector<double>* goal_joint_position) = 0;
-
-  virtual bool forwardDynamics(Manipulator *manipulator) = 0;
-  virtual bool inverseDynamics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue>* active_joint_value) = 0;
-};
-
-class Kinematics : public ROBOTIS_MANIPULATOR::KinematicsDynamics
+class Kinematics
 {
 public:
   Kinematics(){}
@@ -57,11 +40,7 @@ public:
   virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
   virtual void forwardKinematics(Manipulator *manipulator) = 0;
-  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, KinematicPose target_pose, std::vector<double>* goal_joint_position) = 0;
-
-  //Already defined
-  virtual bool forwardDynamics(Manipulator *manipulator);
-  virtual bool inverseDynamics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue>* active_joint_value);
+  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue>* goal_joint_position) = 0;
 };
 
 class JointActuator

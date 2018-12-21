@@ -290,7 +290,19 @@ void Manipulator::setComponentActuatorName(Name component_name, Name actuator_na
   component_.at(component_name).actuator_name = actuator_name;
 }
 
-void Manipulator::setComponentPoseFromWorld(Name component_name, KinematicPose pose_to_world)
+void Manipulator::setComponentPoseFromWorld(Name component_name, PoseValue pose_to_world)
+{
+  if (component_.find(component_name) != component_.end())
+  {
+    component_.at(component_name).pose_from_world = pose_to_world;
+  }
+  else
+  {
+    RM_LOG::ERROR("[setComponentPoseFromWorld] Wrong name.");
+  }
+}
+
+void Manipulator::setComponentKinematicPoseFromWorld(Name component_name, KinematicPose pose_to_world)
 {
   if (component_.find(component_name) != component_.end())
   {
@@ -298,7 +310,7 @@ void Manipulator::setComponentPoseFromWorld(Name component_name, KinematicPose p
   }
   else
   {
-    RM_LOG::ERROR("[setComponentPoseFromWorld] Wrong name.");
+    RM_LOG::ERROR("[setComponentKinematicPoseFromWorld] Wrong name.");
   }
 }
 
@@ -539,7 +551,12 @@ std::vector<Name> Manipulator::getComponentChildName(Name name)
   return component_.at(name).name.child;
 }
 
-KinematicPose Manipulator::getComponentPoseFromWorld(Name name)
+PoseValue Manipulator::getComponentPoseFromWorld(Name name)
+{
+  return component_.at(name).pose_from_world;
+}
+
+KinematicPose Manipulator::getComponentKinematicPoseFromWorld(Name name)
 {
   return component_.at(name).pose_from_world.kinematic;
 }
