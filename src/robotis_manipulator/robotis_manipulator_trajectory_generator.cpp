@@ -143,8 +143,6 @@ void TaskTrajectory::init(double move_time,
   std::vector<Point> goal_way_point;
 
   ////////////////////////////////////position////////////////////////////////////
-  std::vector<Point> start_way_point_position;
-  std::vector<Point> goal_way_point_position;
   for(uint8_t i = 0; i < 3; i++)      //x, y, z
   {
     Point position_temp;
@@ -152,65 +150,111 @@ void TaskTrajectory::init(double move_time,
     position_temp.velocity = start.dynamic.linear.velocity[i];
     position_temp.acceleration = start.dynamic.linear.acceleration[i];
     position_temp.effort = 0.0;
-    start_way_point_position.push_back(position_temp);
+    start_way_point.push_back(position_temp);
 
     position_temp.position = goal.kinematic.position[i];
     position_temp.velocity = goal.dynamic.linear.velocity[i];
     position_temp.acceleration = goal.dynamic.linear.acceleration[i];
     position_temp.effort = 0.0;
-    goal_way_point_position.push_back(position_temp);
+    goal_way_point.push_back(position_temp);
   }
   ////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////orientation///////////////////////////////////
-  std::vector<Point> start_way_point_orientation;
-  std::vector<Point> goal_way_point_orientation;
 
   Eigen::Vector3d start_orientation_rpy;
   Eigen::Vector3d start_ang_vel_rpy;
   Eigen::Vector3d start_ang_acc_rpy;
 
   start_orientation_rpy = RM_MATH::convertRotationToRPY(start.kinematic.orientation);
-  start_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
-                                                    *start.kinematic.orientation);
-  start_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.acceleration)
-                                                    *RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
-                                                    *start.kinematic.orientation);
+  start_ang_vel_rpy = RM_MATH::getRPYVelocityFromOmega(start_orientation_rpy, start.dynamic.angular.velocity);
+  start_ang_acc_rpy = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+//  start_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
+//                                                    *start.kinematic.orientation);
+//  start_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.acceleration)
+//                                                    *RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
+//                                                    *start.kinematic.orientation);
 
   Eigen::Vector3d goal_orientation_rpy;
   Eigen::Vector3d goal_ang_vel_rpy;
   Eigen::Vector3d goal_ang_acc_rpy;
 
   goal_orientation_rpy = RM_MATH::convertRotationToRPY(goal.kinematic.orientation);
-  goal_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
-                                                    *goal.kinematic.orientation);
-  goal_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.acceleration)
-                                                    *RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
-                                                    *goal.kinematic.orientation);
+  goal_ang_vel_rpy = RM_MATH::getRPYVelocityFromOmega(goal_orientation_rpy, goal.dynamic.angular.velocity);
+  goal_ang_acc_rpy = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+//  goal_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
+//                                                    *goal.kinematic.orientation);
+//  goal_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.acceleration)
+//                                                    *RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
+//                                                    *goal.kinematic.orientation);
 
   for(uint8_t i = 0; i < 3; i++)    //roll, pitch, yaw
   {
-    start_way_point_orientation.at(i).position = start_orientation_rpy[i];
-    start_way_point_orientation.at(i).velocity = start_ang_vel_rpy[i];
-    start_way_point_orientation.at(i).acceleration = start_ang_acc_rpy[i];
-    start_way_point_orientation.at(i).effort = 0.0;
+    Point orientation_temp;
+    orientation_temp.position = start_orientation_rpy[i];
+    orientation_temp.velocity = start_ang_vel_rpy[i];
+    orientation_temp.acceleration = start_ang_acc_rpy[i];
+    orientation_temp.effort = 0.0;
+    start_way_point.push_back(orientation_temp);
 
-    goal_way_point_orientation.at(i).position = goal_orientation_rpy[i];
-    goal_way_point_orientation.at(i).velocity = goal_ang_vel_rpy[i];
-    goal_way_point_orientation.at(i).acceleration = goal_ang_acc_rpy[i];
-    goal_way_point_orientation.at(i).effort = 0.0;
+    orientation_temp.position = goal_orientation_rpy[i];
+    orientation_temp.velocity = goal_ang_vel_rpy[i];
+    orientation_temp.acceleration = goal_ang_acc_rpy[i];
+    orientation_temp.effort = 0.0;
+    goal_way_point.push_back(orientation_temp);
   }
   ////////////////////////////////////////////////////////////////////////////////
 
-  start_way_point.reserve(start_way_point_position.size() + start_way_point_orientation.size());
-  start_way_point.insert(start_way_point_position.end(),
-                         start_way_point_orientation.begin(),
-                         start_way_point_orientation.end());
-  goal_way_point.reserve(goal_way_point_position.size() + goal_way_point_orientation.size());
-  goal_way_point.insert(goal_way_point_position.end(),
-                         goal_way_point_orientation.begin(),
-                         goal_way_point_orientation.end());
+//  RM_LOG::PRINTLN("//////////////////////////////////");
+//  RM_LOG::ERROR("start point : (");
+//  RM_LOG::PRINT("",start_way_point.at(0).position);
+//  RM_LOG::PRINT(", ",start_way_point.at(1).position);
+//  RM_LOG::PRINT(", ",start_way_point.at(2).position);
+//  RM_LOG::PRINT(", ",start_way_point.at(3).position);
+//  RM_LOG::PRINT(", ",start_way_point.at(4).position);
+//  RM_LOG::PRINT(", ",start_way_point.at(5).position);
+//  RM_LOG::PRINTLN(")");
+//  RM_LOG::ERROR("start vel : (");
+//  RM_LOG::PRINT("",start_way_point.at(0).velocity);
+//  RM_LOG::PRINT(", ",start_way_point.at(1).velocity);
+//  RM_LOG::PRINT(", ",start_way_point.at(2).velocity);
+//  RM_LOG::PRINT(", ",start_way_point.at(3).velocity);
+//  RM_LOG::PRINT(", ",start_way_point.at(4).velocity);
+//  RM_LOG::PRINT(", ",start_way_point.at(5).velocity);
+//  RM_LOG::PRINTLN(")");
+//  RM_LOG::ERROR("start acc : (");
+//  RM_LOG::PRINT("",start_way_point.at(0).acceleration);
+//  RM_LOG::PRINT(", ",start_way_point.at(1).acceleration);
+//  RM_LOG::PRINT(", ",start_way_point.at(2).acceleration);
+//  RM_LOG::PRINT(", ",start_way_point.at(3).acceleration);
+//  RM_LOG::PRINT(", ",start_way_point.at(4).acceleration);
+//  RM_LOG::PRINT(", ",start_way_point.at(5).acceleration);
+//  RM_LOG::PRINTLN(")");
 
+//  RM_LOG::ERROR("goal point : (");
+//  RM_LOG::PRINT("",goal_way_point.at(0).position);
+//  RM_LOG::PRINT(", ",goal_way_point.at(1).position);
+//  RM_LOG::PRINT(", ",goal_way_point.at(2).position);
+//  RM_LOG::PRINT(", ",goal_way_point.at(3).position);
+//  RM_LOG::PRINT(", ",goal_way_point.at(4).position);
+//  RM_LOG::PRINT(", ",goal_way_point.at(5).position);
+//  RM_LOG::PRINTLN(")");
+//  RM_LOG::ERROR("goal vel : (");
+//  RM_LOG::PRINT("",goal_way_point.at(0).velocity);
+//  RM_LOG::PRINT(", ",goal_way_point.at(1).velocity);
+//  RM_LOG::PRINT(", ",goal_way_point.at(2).velocity);
+//  RM_LOG::PRINT(", ",goal_way_point.at(3).velocity);
+//  RM_LOG::PRINT(", ",goal_way_point.at(4).velocity);
+//  RM_LOG::PRINT(", ",goal_way_point.at(5).velocity);
+//  RM_LOG::PRINTLN(")");
+//  RM_LOG::ERROR("goal acc : (");
+//  RM_LOG::PRINT("",goal_way_point.at(0).acceleration);
+//  RM_LOG::PRINT(", ",goal_way_point.at(1).acceleration);
+//  RM_LOG::PRINT(", ",goal_way_point.at(2).acceleration);
+//  RM_LOG::PRINT(", ",goal_way_point.at(3).acceleration);
+//  RM_LOG::PRINT(", ",goal_way_point.at(4).acceleration);
+//  RM_LOG::PRINT(", ",goal_way_point.at(5).acceleration);
+//  RM_LOG::PRINTLN(")");
 
   coefficient_size_ = start_way_point.size();
   coefficient_.resize(6,coefficient_size_);
@@ -254,6 +298,16 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
 
     result_point.push_back(single_task_way_point);
   }
+//  RM_LOG::PRINT("tick : ",tick);
+//  RM_LOG::PRINT(" / ");
+//  RM_LOG::PRINT("point : (");
+//  RM_LOG::PRINT("",result_point.at(0).position);
+//  RM_LOG::PRINT(", ",result_point.at(1).position);
+//  RM_LOG::PRINT(", ",result_point.at(2).position);
+//  RM_LOG::PRINT(", ",result_point.at(3).position);
+//  RM_LOG::PRINT(", ",result_point.at(4).position);
+//  RM_LOG::PRINT(", ",result_point.at(5).position);
+//  RM_LOG::PRINTLN(")");
 
   TaskWayPoint task_way_point;
   ////////////////////////////////////position////////////////////////////////////
@@ -266,25 +320,35 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
   ////////////////////////////////////////////////////////////////////////////////
 
   //////////////////////////////////orientation///////////////////////////////////
+  Eigen::Vector3d rpy_orientation;
+  rpy_orientation << result_point.at(3).position, result_point.at(4).position, result_point.at(5).position;
   task_way_point.kinematic.orientation = RM_MATH::convertRPYToRotation(result_point.at(3).position,   //roll
                                                                        result_point.at(4).position,   //pitch
                                                                        result_point.at(5).position);   //yaw
 
-  task_way_point.dynamic.angular.velocity = RM_MATH::matrixLogarithm(
-        RM_MATH::convertRPYToRotation(result_point.at(3).velocity,
-                                      result_point.at(4).velocity,
-                                      result_point.at(5).velocity)
-        * task_way_point.kinematic.orientation.transpose()
-        );
-  task_way_point.dynamic.angular.acceleration = RM_MATH::matrixLogarithm(
-        RM_MATH::convertRPYToRotation(result_point.at(3).acceleration,
-                                      result_point.at(4).acceleration,
-                                      result_point.at(5).acceleration)
-        * task_way_point.kinematic.orientation.transpose()
-        * RM_MATH::skewSymmetricMatrix(task_way_point.dynamic.angular.velocity).transpose()
-        );
+  Eigen::Vector3d rpy_velocity;
+  rpy_velocity << result_point.at(3).velocity, result_point.at(4).velocity, result_point.at(5).velocity;
+  task_way_point.dynamic.angular.velocity = RM_MATH::getOmegaFromRPYVelocity(RM_MATH::convertRotationToRPY(task_way_point.kinematic.orientation),rpy_velocity);
+  task_way_point.dynamic.angular.acceleration = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+//  task_way_point.dynamic.angular.velocity = RM_MATH::matrixLogarithm(
+//        RM_MATH::convertRPYToRotation(result_point.at(3).velocity,
+//                                      result_point.at(4).velocity,
+//                                      result_point.at(5).velocity)
+//        * task_way_point.kinematic.orientation.transpose()
+//        );
+//  task_way_point.dynamic.angular.acceleration = RM_MATH::matrixLogarithm(
+//        RM_MATH::convertRPYToRotation(result_point.at(3).acceleration,
+//                                      result_point.at(4).acceleration,
+//                                      result_point.at(5).acceleration)
+//        * task_way_point.kinematic.orientation.transpose()
+//        * RM_MATH::skewSymmetricMatrix(task_way_point.dynamic.angular.velocity).transpose()
+//        );
   ////////////////////////////////////////////////////////////////////////////////
 
+//  RM_LOG::PRINT("position : ");
+//  RM_LOG::PRINT_VECTOR(task_way_point.kinematic.position);
+//  RM_LOG::PRINT("orientation : ");
+//  RM_LOG::PRINT_MATRIX(task_way_point.kinematic.orientation);
   return task_way_point;
 }
 
@@ -473,36 +537,6 @@ TaskWayPoint Trajectory::getPresentTaskWayPoint(Name tool_name)
 {
   return manipulator_.getComponentPoseFromWorld(tool_name);
 }
-
-//void Trajectory::setStartWayPoint(std::vector<WayPoint> start_way_point)
-//{
-//  start_way_point_ = start_way_point;
-//}
-
-//void Trajectory::setGoalWayPoint(std::vector<WayPoint> goal_way_point)
-//{
-//  goal_way_point_ = goal_way_point;
-//}
-
-//void Trajectory::clearStartWayPoint()
-//{
-//  start_way_point_.clear();
-//}
-
-//void Trajectory::clearGoalWayPoint()
-//{
-//  goal_way_point_.clear();
-//}
-
-//std::vector<WayPoint> Trajectory::getStartWayPoint()
-//{
-//  return start_way_point_;
-//}
-
-//std::vector<WayPoint> Trajectory::getGoalWayPoint()
-//{
-//  return goal_way_point_;
-//}
 
 JointWayPoint Trajectory::removeWayPointDynamicData(JointWayPoint value)
 {

@@ -347,3 +347,30 @@ T RM_MATH::map(T x, T in_min, T in_max, T out_min, T out_max)
 {
   return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
+
+Eigen::Vector3d RM_MATH::getRPYVelocityFromOmega(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega)
+{
+  Eigen::Matrix3d c_inverse;
+  Eigen::Vector3d rpy_velocity;
+
+  c_inverse << 1, sin(rpy_vector(0))*tan(rpy_vector(1)), cos(rpy_vector(0))*tan(rpy_vector(1)),
+       0, cos(rpy_vector(0)),                    -sin(rpy_vector(0)),
+       0, sin(rpy_vector(0))/cos(rpy_vector(1)), cos(rpy_vector(0))/cos(rpy_vector(1));
+
+  rpy_velocity = c_inverse * omega;
+  return rpy_velocity;
+}
+
+Eigen::Vector3d RM_MATH::getOmegaFromRPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity)
+{
+  Eigen::Matrix3d c;
+  Eigen::Vector3d omega;
+
+  c << 1, 0,                     -sin(rpy_vector(1)),
+        0, cos(rpy_vector(0)),    sin(rpy_vector(0))*cos(rpy_vector(1)),
+        0, -sin(rpy_vector(0)), cos(rpy_vector(0))*cos(rpy_vector(1));
+
+  omega = c * rpy_velocity;
+  return omega;
+
+}

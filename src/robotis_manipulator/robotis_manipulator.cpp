@@ -189,17 +189,6 @@ PoseValue RobotisManipulator::getPoseValue(Name component_name)
   return manipulator_.getComponentPoseFromWorld(component_name);
 }
 
-////Directly set component value for simulation
-//void RobotisManipulator::setAllActiveJointWayPoint(JointWayPoint joint_value_vector)
-//{
-//  manipulator_.setAllActiveJointValue(joint_value_vector);
-//}
-
-//void RobotisManipulator::setAllToolValue(std::vector<JointValue> tool_value_vector)
-//{
-//  manipulator_.setAllToolValue(tool_value_vector);
-//}
-
 //Joint limit
 bool RobotisManipulator::checkLimit(Name component_name, double joint_position)
 {
@@ -1138,7 +1127,6 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, KinematicPose goal_p
     trajectory_.setPresentJointWayPoint(present_joint_value);
     trajectory_.UpdatePresentWayPoint(kinematics_);
   }
-
   trajectory_.setTrajectoryType(TASK_TRAJECTORY);
   trajectory_.setPresentControlToolName(tool_name);
   trajectory_.setMoveTime(move_time);
@@ -1267,12 +1255,11 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   else if(trajectory_.checkTrajectoryType(TASK_TRAJECTORY))
   {
     TaskWayPoint task_way_point;
-    std::vector<JointValue> joint_value;
     task_way_point = trajectory_.getTaskTrajectory().getTaskWayPoint(tick_time);
 
-    if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_value))
+    if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
-      if(!checkLimit(trajectory_.getTrajectoryManipulator()->getAllActiveJointComponentName(), joint_value))
+      if(!checkLimit(trajectory_.getTrajectoryManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
         joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
@@ -1300,12 +1287,11 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   else if(trajectory_.checkTrajectoryType(CUSTOM_TASK_TRAJECTORY))
   {
     TaskWayPoint task_way_point;
-    std::vector<JointValue> joint_value;
     task_way_point = trajectory_.getCustomTaskTrajectory(trajectory_.getPresentCustomTrajectoryName())->getTaskWayPoint(tick_time);
 
-    if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_value))
+    if(kinematics_->inverseKinematics(trajectory_.getTrajectoryManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
-      if(!checkLimit(trajectory_.getTrajectoryManipulator()->getAllActiveJointComponentName(), joint_value))
+      if(!checkLimit(trajectory_.getTrajectoryManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
         joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
@@ -1316,6 +1302,10 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   //set present joint task value to trajectory manipulator
   trajectory_.setPresentJointWayPoint(joint_way_point_value);
   trajectory_.UpdatePresentWayPoint(kinematics_);
+
+//  Eigen::Vector3d print_temp = trajectory_.getTrajectoryManipulator()->getComponentDynamicPoseFromWorld("gripper").angular.velocity;
+//  RM_LOG::PRINT("ang vel");
+//  RM_LOG::PRINT_VECTOR(print_temp);
 
   return joint_way_point_value;
 }
