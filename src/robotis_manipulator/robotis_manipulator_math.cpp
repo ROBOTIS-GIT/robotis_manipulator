@@ -372,5 +372,40 @@ Eigen::Vector3d RM_MATH::getOmegaFromRPYVelocity(Eigen::Vector3d rpy_vector, Eig
 
   omega = c * rpy_velocity;
   return omega;
+}
 
+Eigen::Vector3d RM_MATH::getRPYAccelerationFromOmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot)
+{
+  Eigen::Vector3d c_dot;
+  Eigen::Matrix3d c_inverse;
+  Eigen::Vector3d rpy_acceleration;
+
+  c_dot << -cos(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2],
+           -sin(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2] + cos(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2],
+           -cos(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2] - cos(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2];
+
+  c_inverse << 1, sin(rpy_vector(0))*tan(rpy_vector(1)), cos(rpy_vector(0))*tan(rpy_vector(1)),
+       0, cos(rpy_vector(0)),                    -sin(rpy_vector(0)),
+       0, sin(rpy_vector(0))/cos(rpy_vector(1)), cos(rpy_vector(0))/cos(rpy_vector(1));
+
+  rpy_acceleration = c_inverse * (omega_dot - c_dot);
+  return rpy_acceleration;
+}
+
+Eigen::Vector3d RM_MATH::getOmegaDotFromRPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration)
+{
+  Eigen::Vector3d c_dot;
+  Eigen::Matrix3d c;
+  Eigen::Vector3d omega_dot;
+
+  c_dot << -cos(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2],
+           -sin(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2] + cos(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2],
+           -cos(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2] - cos(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2];
+
+  c << 1, 0,                     -sin(rpy_vector(1)),
+        0, cos(rpy_vector(0)),    sin(rpy_vector(0))*cos(rpy_vector(1)),
+        0, -sin(rpy_vector(0)), cos(rpy_vector(0))*cos(rpy_vector(1));
+
+  omega_dot = c_dot + c * rpy_acceleration;
+  return omega_dot;
 }

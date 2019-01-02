@@ -168,7 +168,7 @@ void TaskTrajectory::init(double move_time,
 
   start_orientation_rpy = RM_MATH::convertRotationToRPY(start.kinematic.orientation);
   start_ang_vel_rpy = RM_MATH::getRPYVelocityFromOmega(start_orientation_rpy, start.dynamic.angular.velocity);
-  start_ang_acc_rpy = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+  start_ang_acc_rpy = RM_MATH::getRPYAccelerationFromOmegaDot(start_orientation_rpy, start_ang_vel_rpy, start.dynamic.angular.acceleration);
 //  start_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.velocity)
 //                                                    *start.kinematic.orientation);
 //  start_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(start.dynamic.angular.acceleration)
@@ -181,7 +181,7 @@ void TaskTrajectory::init(double move_time,
 
   goal_orientation_rpy = RM_MATH::convertRotationToRPY(goal.kinematic.orientation);
   goal_ang_vel_rpy = RM_MATH::getRPYVelocityFromOmega(goal_orientation_rpy, goal.dynamic.angular.velocity);
-  goal_ang_acc_rpy = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+  start_ang_acc_rpy = RM_MATH::getRPYAccelerationFromOmegaDot(goal_orientation_rpy, goal_ang_vel_rpy, goal.dynamic.angular.acceleration);
 //  goal_ang_vel_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.velocity)
 //                                                    *goal.kinematic.orientation);
 //  goal_ang_acc_rpy = RM_MATH::convertRotationToRPY(RM_MATH::skewSymmetricMatrix(goal.dynamic.angular.acceleration)
@@ -328,8 +328,11 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
 
   Eigen::Vector3d rpy_velocity;
   rpy_velocity << result_point.at(3).velocity, result_point.at(4).velocity, result_point.at(5).velocity;
-  task_way_point.dynamic.angular.velocity = RM_MATH::getOmegaFromRPYVelocity(RM_MATH::convertRotationToRPY(task_way_point.kinematic.orientation),rpy_velocity);
-  task_way_point.dynamic.angular.acceleration = RM_MATH::makeVector3(0.0, 0.0, 0.0);
+  task_way_point.dynamic.angular.velocity = RM_MATH::getOmegaFromRPYVelocity(rpy_orientation, rpy_velocity);
+
+  Eigen::Vector3d rpy_acceleration;
+  rpy_acceleration << result_point.at(3).acceleration, result_point.at(4).acceleration, result_point.at(5).acceleration;
+  task_way_point.dynamic.angular.acceleration = RM_MATH::getOmegaDotFromRPYAcceleration(rpy_orientation, rpy_velocity, rpy_acceleration);
 //  task_way_point.dynamic.angular.velocity = RM_MATH::matrixLogarithm(
 //        RM_MATH::convertRPYToRotation(result_point.at(3).velocity,
 //                                      result_point.at(4).velocity,

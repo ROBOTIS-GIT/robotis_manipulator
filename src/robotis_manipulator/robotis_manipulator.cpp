@@ -1267,6 +1267,7 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     }
     else
     {
+      joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
       RM_LOG::ERROR("[TASK_TRAJECTORY] fail to solve IK");
       moving_ = false;
     }
@@ -1296,6 +1297,12 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
         joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
         moving_ = false;
       }
+    }
+    else
+    {
+      joint_way_point_value = trajectory_.removeWayPointDynamicData(trajectory_.getPresentJointWayPoint());
+      RM_LOG::ERROR("[CUSTOM_TASK_TRAJECTORY] fail to solve IK");
+      moving_ = false;
     }
   }
   /////////////////////////////////////////////////////////////////
