@@ -119,6 +119,7 @@ public:
   void setMoveTime(double move_time);
   void setPresentTime(double present_time);
   void setStartTimeFromPresentTime();
+  void setStartTime(double start_time);
   void setControlLoopTime(double control_time);
   double getMoveTime();
   double getControlLoopTime();
@@ -143,7 +144,7 @@ public:
   Name getPresentControlToolName();
 
   //First Way Point
-  void initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics *kinematics);
+  void initTrajectoryWayPoint(Manipulator present_real_manipulator, Kinematics *kinematics);
 
   //Present Way Point
   void UpdatePresentWayPoint(Kinematics* kinematics); //forward kinematics,dynamics
@@ -168,6 +169,7 @@ public:
   void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
   double getToolGoalPosition(Name tool_name);
   JointValue getToolGoalValue(Name tool_name);
+
 
 };
 

@@ -186,6 +186,7 @@ public:
   // Additional Functions
   std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
   std::vector<JointValue> getToolGoalValue();
+  std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
 };
 } // namespace OPEN_MANIPULATOR
 

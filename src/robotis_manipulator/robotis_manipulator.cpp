@@ -1339,7 +1339,7 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(doub
 
   if(!trajectory_initialization)
   {
-    trajectory_.initTrajectoryWayPoint(present_time, manipulator_, kinematics_);
+    trajectory_.initTrajectoryWayPoint(manipulator_, kinematics_);
     trajectory_initialization = true;
   }
 
@@ -1350,6 +1350,32 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(doub
     joint_goal_way_point = TrajectoryTimeCounter();
     step_moving_ = true;
     return joint_goal_way_point;
+  }
+  return {};
+}
+
+std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectoryTickTime(double tick_time)
+{
+  if(!trajectory_initialization)
+  {
+    trajectory_.initTrajectoryWayPoint(manipulator_, kinematics_);
+    trajectory_initialization = true;
+  }
+
+  if(moving_)
+  {
+    step_moving_ = false;
+    if(tick_time < trajectory_.getMoveTime())
+    {
+      moving_ = true;
+      return getTrajectoryJointValue(tick_time);
+    }
+    else
+    {
+      moving_ = false;
+      return getTrajectoryJointValue(trajectory_.getMoveTime());
+    }
+    step_moving_ = true;
   }
   return {};
 }

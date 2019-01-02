@@ -378,6 +378,11 @@ void Trajectory::setStartTimeFromPresentTime()
   trajectory_time_.start_time = trajectory_time_.present_time;
 }
 
+void Trajectory::setStartTime(double start_time)
+{
+  trajectory_time_.start_time = start_time;
+}
+
 void Trajectory::setControlLoopTime(double control_time)
 {
   trajectory_time_.control_loop_time = control_time;
@@ -466,7 +471,7 @@ Name Trajectory::getPresentControlToolName()
  return present_control_tool_name_;
 }
 
-void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present_real_manipulator, Kinematics *kinematics)
+void Trajectory::initTrajectoryWayPoint(Manipulator present_real_manipulator, Kinematics *kinematics)
 {
   setTrajectoryManipulator(present_real_manipulator);
   JointWayPoint joint_way_point_vector;
@@ -474,7 +479,6 @@ void Trajectory::initTrajectoryWayPoint(double present_time, Manipulator present
 
   setPresentJointWayPoint(joint_way_point_vector);
   UpdatePresentWayPoint(kinematics);
-  setPresentTime(present_time);
 }
 
 void Trajectory::UpdatePresentWayPoint(Kinematics *kinematics)
