@@ -1317,22 +1317,6 @@ JointWayPoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   return joint_way_point_value;
 }
 
-JointWayPoint RobotisManipulator::TrajectoryTimeCounter()       //Private
-{
-  double tick_time = trajectory_.getTickTime();
-
-  if(tick_time < trajectory_.getMoveTime())
-  {
-    moving_ = true;
-    return getTrajectoryJointValue(tick_time);
-  }
-  else
-  {
-    moving_ = false;
-    return getTrajectoryJointValue(trajectory_.getMoveTime());
-  }
-}
-
 std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(double present_time)
 {
   trajectory_.setPresentTime(present_time);
@@ -1347,7 +1331,18 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(doub
   {
     step_moving_ = false;
     JointWayPoint joint_goal_way_point;
-    joint_goal_way_point = TrajectoryTimeCounter();
+    double tick_time = trajectory_.getTickTime();
+
+    if(tick_time < trajectory_.getMoveTime())
+    {
+      moving_ = true;
+      return getTrajectoryJointValue(tick_time);
+    }
+    else
+    {
+      moving_ = false;
+      return getTrajectoryJointValue(trajectory_.getMoveTime());
+    }
     step_moving_ = true;
     return joint_goal_way_point;
   }
@@ -1365,17 +1360,19 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectoryTickT
   if(moving_)
   {
     step_moving_ = false;
+    JointWayPoint joint_goal_way_point ;
     if(tick_time < trajectory_.getMoveTime())
     {
       moving_ = true;
-      return getTrajectoryJointValue(tick_time);
+      joint_goal_way_point = getTrajectoryJointValue(tick_time);
     }
     else
     {
       moving_ = false;
-      return getTrajectoryJointValue(trajectory_.getMoveTime());
+      joint_goal_way_point = getTrajectoryJointValue(trajectory_.getMoveTime());
     }
     step_moving_ = true;
+    return joint_goal_way_point;
   }
   return {};
 }

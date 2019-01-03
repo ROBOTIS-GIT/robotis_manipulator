@@ -51,7 +51,7 @@ private:
   void startMoving();
 
   JointWayPoint getTrajectoryJointValue(double tick_time);
-  JointWayPoint TrajectoryTimeCounter();
+//  JointWayPoint TrajectoryTimeCounter();
 
 public:
   RobotisManipulator();
