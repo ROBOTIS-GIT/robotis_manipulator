@@ -79,7 +79,6 @@ typedef struct _AcutuatorLimit
 typedef struct _Time
 {
   double total_move_time;
-  double control_loop_time;
   double present_time;
   double start_time;
 }Time;

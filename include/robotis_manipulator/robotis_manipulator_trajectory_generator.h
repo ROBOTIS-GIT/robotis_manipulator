@@ -49,8 +49,7 @@ public:
 
   void calcCoefficient(Point start,
                        Point goal,
-                       double move_time,
-                       double control_time);
+                       double move_time);
 
   Eigen::VectorXd getCoefficient();
 };
@@ -67,7 +66,6 @@ public:
   virtual ~JointTrajectory();
 
   void init(double move_time,
-            double control_time,
             JointWayPoint start,
             JointWayPoint goal
             );
@@ -87,7 +85,6 @@ public:
   virtual ~TaskTrajectory();
 
   void init(double move_time,
-            double control_time,
             TaskWayPoint start,
             TaskWayPoint goal
             );
@@ -120,9 +117,7 @@ public:
   void setPresentTime(double present_time);
   void setStartTimeFromPresentTime();
   void setStartTime(double start_time);
-  void setControlLoopTime(double control_time);
   double getMoveTime();
-  double getControlLoopTime();
   double getTickTime();
 
   //Manipulator

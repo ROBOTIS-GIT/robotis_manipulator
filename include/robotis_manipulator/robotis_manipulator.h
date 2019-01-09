@@ -149,9 +149,7 @@ public:
   ////////////////////////////////////////tra/
 
   // time
-  void setTrajectoryControlTime(double trajectory_control_time);
   double getTrajectoryMoveTime();
-  double getTrajectoryControlTime();
   bool isMoving();
 
   //Joint limit (Check as Trajectory Manipulator)

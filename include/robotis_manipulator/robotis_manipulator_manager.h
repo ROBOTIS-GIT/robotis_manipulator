@@ -94,7 +94,7 @@ public:
   CustomJointTrajectory(){}
   virtual ~CustomJointTrajectory(){}
 
-  virtual void init(double move_time, double control_time, JointWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void init(double move_time, JointWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
   virtual void setOption(const void *arg) = 0;
   virtual JointWayPoint getJointWayPoint(double tick) = 0;
 };
@@ -105,7 +105,7 @@ public:
   CustomTaskTrajectory(){}
   virtual ~CustomTaskTrajectory(){}
 
-  virtual void init(double move_time, double control_time, TaskWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void init(double move_time, TaskWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
   virtual void setOption(const void *arg) = 0;
   virtual TaskWayPoint getTaskWayPoint(double tick) = 0;
 };

@@ -877,19 +877,9 @@ void RobotisManipulator::startMoving()      //Private
   trajectory_.setStartTimeFromPresentTime();
 }
 
-void RobotisManipulator::setTrajectoryControlTime(double control_time)
-{
-  trajectory_.setControlLoopTime(control_time);
-}
-
 double RobotisManipulator::getTrajectoryMoveTime()
 {
   return trajectory_.getMoveTime();
-}
-
-double RobotisManipulator::getTrajectoryControlTime()
-{
-  return trajectory_.getControlLoopTime();
 }
 
 bool RobotisManipulator::isMoving()
