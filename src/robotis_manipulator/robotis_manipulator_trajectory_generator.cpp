@@ -466,7 +466,6 @@ void Trajectory::initTrajectoryWayPoint(Manipulator present_real_manipulator, Ki
 void Trajectory::UpdatePresentWayPoint(Kinematics *kinematics)
 {
   //kinematics
-  kinematics->updatePassiveJointValue(&manipulator_);
   kinematics->forwardKinematics(&manipulator_);
 }
 

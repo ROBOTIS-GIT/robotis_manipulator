@@ -72,11 +72,11 @@ void Manipulator::addJoint(Name my_name,
   temp_component.relative.inertia.mass = mass;
   temp_component.relative.inertia.inertia_tensor = inertia_tensor;
   temp_component.relative.inertia.center_of_mass = center_of_mass;
-  temp_component.actuator_constant.id = joint_actuator_id;
-  temp_component.actuator_constant.coefficient = coefficient;
-  temp_component.actuator_constant.axis = axis_of_rotation;
-  temp_component.actuator_constant.limit.maximum = max_limit;
-  temp_component.actuator_constant.limit.minimum = min_limit;
+  temp_component.joint_constant.id = joint_actuator_id;
+  temp_component.joint_constant.coefficient = coefficient;
+  temp_component.joint_constant.axis = axis_of_rotation;
+  temp_component.joint_constant.limit.maximum = max_limit;
+  temp_component.joint_constant.limit.minimum = min_limit;
 
   temp_component.pose_from_world.kinematic.position = Eigen::Vector3d::Zero();
   temp_component.pose_from_world.kinematic.orientation = Eigen::Matrix3d::Identity();
@@ -119,11 +119,11 @@ void Manipulator::addTool(Name my_name,
   temp_component.relative.inertia.mass = mass;
   temp_component.relative.inertia.inertia_tensor = inertia_tensor;
   temp_component.relative.inertia.center_of_mass = center_of_mass;
-  temp_component.actuator_constant.id = tool_id;
-  temp_component.actuator_constant.coefficient = coefficient;
-  temp_component.actuator_constant.axis = Eigen::Vector3d::Zero();
-  temp_component.actuator_constant.limit.maximum = max_limit;
-  temp_component.actuator_constant.limit.minimum = min_limit;
+  temp_component.joint_constant.id = tool_id;
+  temp_component.joint_constant.coefficient = coefficient;
+  temp_component.joint_constant.axis = Eigen::Vector3d::Zero();
+  temp_component.joint_constant.limit.maximum = max_limit;
+  temp_component.joint_constant.limit.minimum = min_limit;
 
   temp_component.pose_from_world.kinematic.position = Eigen::Vector3d::Zero();
   temp_component.pose_from_world.kinematic.orientation = Eigen::Matrix3d::Identity();
@@ -190,14 +190,14 @@ void Manipulator::checkManipulatorSetting()
     RM_LOG::PRINT(" -Actuator Name : ");
     RM_LOG::PRINTLN(STRING(component_.at(it_component->first).actuator_name));
     RM_LOG::PRINT(" -ID : ");
-    RM_LOG::PRINTLN("", component_.at(it_component->first).actuator_constant.id,0);
+    RM_LOG::PRINTLN("", component_.at(it_component->first).joint_constant.id,0);
     RM_LOG::PRINTLN(" -Joint Axis : ");
-    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).actuator_constant.axis);
+    RM_LOG::PRINT_VECTOR(component_.at(it_component->first).joint_constant.axis);
     RM_LOG::PRINT(" -Coefficient : ");
-    RM_LOG::PRINTLN("", component_.at(it_component->first).actuator_constant.coefficient);
+    RM_LOG::PRINTLN("", component_.at(it_component->first).joint_constant.coefficient);
     RM_LOG::PRINTLN(" -Limit : ");
-    RM_LOG::PRINT("    Maximum :", component_.at(it_component->first).actuator_constant.limit.maximum);
-    RM_LOG::PRINTLN(", Minimum :", component_.at(it_component->first).actuator_constant.limit.minimum);
+    RM_LOG::PRINT("    Maximum :", component_.at(it_component->first).joint_constant.limit.maximum);
+    RM_LOG::PRINTLN(", Minimum :", component_.at(it_component->first).joint_constant.limit.minimum);
 
     RM_LOG::PRINTLN(" [Actuator Value]");
     RM_LOG::PRINTLN(" -Value : ", component_.at(it_component->first).joint_value.position);
@@ -593,17 +593,17 @@ Eigen::Matrix3d Manipulator::getComponentRelativeOrientationFromParent(Name name
 
 int8_t Manipulator::getId(Name name)
 {
-  return component_.at(name).actuator_constant.id;
+  return component_.at(name).joint_constant.id;
 }
 
 double Manipulator::getCoefficient(Name name)
 {
-  return component_.at(name).actuator_constant.coefficient;
+  return component_.at(name).joint_constant.coefficient;
 }
 
 Eigen::Vector3d Manipulator::getAxis(Name name)
 {
-  return component_.at(name).actuator_constant.axis;
+  return component_.at(name).joint_constant.axis;
 }
 
 double Manipulator::getJointPosition(Name name)
@@ -746,7 +746,7 @@ std::vector<uint8_t> Manipulator::getAllJointID()
   {
     if (checkComponentType(it_component->first, ACTIVE_JOINT_COMPONENT) || checkComponentType(it_component->first, PASSIVE_JOINT_COMPONENT))
     {
-      joint_id.push_back(component_.at(it_component->first).actuator_constant.id);
+      joint_id.push_back(component_.at(it_component->first).joint_constant.id);
     }
   }
   return joint_id;
@@ -761,7 +761,7 @@ std::vector<uint8_t> Manipulator::getAllActiveJointID()
   {
     if (checkComponentType(it_component->first, ACTIVE_JOINT_COMPONENT))
     {
-      active_joint_id.push_back(component_.at(it_component->first).actuator_constant.id);
+      active_joint_id.push_back(component_.at(it_component->first).joint_constant.id);
     }
   }
   return active_joint_id;
@@ -802,9 +802,9 @@ std::vector<Name> Manipulator::getAllActiveJointComponentName()
 
 bool Manipulator::checkLimit(Name component_name, double value)
 {
-  if(component_.at(component_name).actuator_constant.limit.maximum < value)
+  if(component_.at(component_name).joint_constant.limit.maximum < value)
     return false;
-  else if(component_.at(component_name).actuator_constant.limit.minimum > value)
+  else if(component_.at(component_name).joint_constant.limit.minimum > value)
     return false;
   else
     return true;
@@ -824,7 +824,7 @@ Name Manipulator::findComponentNameFromId(int8_t id)
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
-    if (component_.at(it_component->first).actuator_constant.id == id)
+    if (component_.at(it_component->first).joint_constant.id == id)
     {
       return it_component->first;
     }

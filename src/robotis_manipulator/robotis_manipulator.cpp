@@ -241,11 +241,6 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
 
 // KINEMATICS
 
-void RobotisManipulator::updatePassiveJointValue()
-{
-  return kinematics_->updatePassiveJointValue(&manipulator_);
-}
-
 Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
 {
   return kinematics_->jacobian(&manipulator_, tool_name);
@@ -890,7 +885,7 @@ bool RobotisManipulator::isMoving()
 
 //Trajectory Control Move Fuction
 
-void RobotisManipulator::jointTrajectoryMoveToPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::jointTrajectoryMoveFromPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value)
 {
   if(present_joint_value.size() != 0)
   {
@@ -900,7 +895,7 @@ void RobotisManipulator::jointTrajectoryMoveToPresentPosition(std::vector<double
 
   JointWayPoint present_way_point = trajectory_.getPresentJointWayPoint();
   std::vector<double> goal_joint_position;
-  for(int i = 0; i < manipulator_.getDOF(); i ++)
+  for(int i = 0; i < trajectory_.getTrajectoryManipulator()->getDOF(); i ++)
     goal_joint_position.push_back(present_way_point.at(i).position + delta_goal_joint_position.at(i));
 
   jointTrajectoryMove(goal_joint_position, move_time);
@@ -921,7 +916,7 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<double> goal_joint_posi
 
   JointValue goal_way_point_temp;
   JointWayPoint goal_way_point;
-  for (uint8_t index = 0; index < manipulator_.getDOF(); index++)
+  for (uint8_t index = 0; index < trajectory_.getTrajectoryManipulator()->getDOF(); index++)
   {
     goal_way_point_temp.position = goal_joint_position.at(index);
     goal_way_point_temp.velocity = 0.0;
@@ -953,24 +948,12 @@ void RobotisManipulator::jointTrajectoryMove(std::vector<JointValue> goal_joint_
 
   JointWayPoint present_way_point = trajectory_.getPresentJointWayPoint();
 
-  JointValue goal_way_point_temp;
-  JointWayPoint goal_way_point;
-  for (uint8_t index = 0; index < manipulator_.getDOF(); index++)
-  {
-    goal_way_point_temp.position = goal_joint_value.at(index).position;
-    goal_way_point_temp.velocity = goal_joint_value.at(index).velocity;
-    goal_way_point_temp.acceleration = goal_joint_value.at(index).acceleration;
-    goal_way_point_temp.effort = goal_joint_value.at(index).effort;
-
-    goal_way_point.push_back(goal_way_point_temp);
-  }
-
   if(isMoving())
   {
     moving_=false;
     while(!step_moving_);
   }
-  trajectory_.makeJointTrajectory(present_way_point, goal_way_point);
+  trajectory_.makeJointTrajectory(present_way_point, goal_joint_value);
   startMoving();
 }
 
@@ -1035,7 +1018,7 @@ void RobotisManipulator::jointTrajectoryMove(Name tool_name, KinematicPose goal_
     RM_LOG::ERROR("[JOINT_TRAJECTORY] Fail to solve IK");
 }
 
-void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::taskTrajectoryMoveFromPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value)
 {
   if(present_joint_value.size() != 0)
   {
@@ -1050,7 +1033,7 @@ void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
-void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::taskTrajectoryMoveFromPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time, std::vector<JointValue> present_joint_value)
 {
   if(present_joint_value.size() != 0)
   {
@@ -1065,7 +1048,7 @@ void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, Eigen::
   taskTrajectoryMove(tool_name, goal_pose, move_time);
 }
 
-void RobotisManipulator::taskTrajectoryMoveToPresentPose(Name tool_name, KinematicPose goal_pose_delta, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::taskTrajectoryMoveFromPresentPose(Name tool_name, KinematicPose goal_pose_delta, double move_time, std::vector<JointValue> present_joint_value)
 {
   if(present_joint_value.size() != 0)
   {
@@ -1112,18 +1095,19 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, Eigen::Matrix3d goal
 
 void RobotisManipulator::taskTrajectoryMove(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value)
 {
+  trajectory_.setTrajectoryType(TASK_TRAJECTORY);
+  trajectory_.setPresentControlToolName(tool_name);
+  trajectory_.setMoveTime(move_time);
+
   if(present_joint_value.size() != 0)
   {
     trajectory_.setPresentJointWayPoint(present_joint_value);
     trajectory_.UpdatePresentWayPoint(kinematics_);
   }
-  trajectory_.setTrajectoryType(TASK_TRAJECTORY);
-  trajectory_.setPresentControlToolName(tool_name);
-  trajectory_.setMoveTime(move_time);
 
   TaskWayPoint present_task_way_point = trajectory_.getPresentTaskWayPoint(tool_name);
 
-  TaskWayPoint goal_task_way_point;
+  TaskWayPoint goal_task_way_point;                             //data conversion
   goal_task_way_point.kinematic = goal_pose;
   goal_task_way_point = trajectory_.removeWayPointDynamicData(goal_task_way_point);
 
@@ -1136,12 +1120,12 @@ void RobotisManipulator::taskTrajectoryMove(Name tool_name, KinematicPose goal_p
   startMoving();
 }
 
-void RobotisManipulator::customTrajectorysetOption(Name drawing_name, const void* arg)
+void RobotisManipulator::customTrajectorysetOption(Name trajectory_name, const void* arg)
 {
-  trajectory_.setCustomTrajectoryOption(drawing_name, arg);
+  trajectory_.setCustomTrajectoryOption(trajectory_name, arg);
 }
 
-void RobotisManipulator::customTrajectoryMove(Name drawing_name, Name tool_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::customTrajectoryMove(Name trajectory_name, Name tool_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value)
 {
   trajectory_.setTrajectoryType(CUSTOM_TASK_TRAJECTORY);
   trajectory_.setPresentControlToolName(tool_name);
@@ -1160,11 +1144,11 @@ void RobotisManipulator::customTrajectoryMove(Name drawing_name, Name tool_name,
     moving_=false;
     while(!step_moving_) ;
   }
-  trajectory_.makeCustomTrajectory(drawing_name, present_task_way_point, arg);
+  trajectory_.makeCustomTrajectory(trajectory_name, present_task_way_point, arg);
   startMoving();
 }
 
-void RobotisManipulator::customTrajectoryMove(Name drawing_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value)
+void RobotisManipulator::customTrajectoryMove(Name trajectory_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value)
 {
   trajectory_.setTrajectoryType(CUSTOM_JOINT_TRAJECTORY);
   trajectory_.setMoveTime(move_time);
@@ -1182,7 +1166,7 @@ void RobotisManipulator::customTrajectoryMove(Name drawing_name, const void *arg
     moving_=false;
     while(!step_moving_) ;
   }
-  trajectory_.makeCustomTrajectory(drawing_name, present_joint_way_point, arg);
+  trajectory_.makeCustomTrajectory(trajectory_name, present_joint_way_point, arg);
   startMoving();
 }
 
@@ -1370,7 +1354,7 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectoryTickT
 std::vector<JointValue> RobotisManipulator::getToolGoalValue()
 {
   std::vector<JointValue> result_vector;
-  std::vector<Name> tool_component_name = manipulator_.getAllToolComponentName();
+  std::vector<Name> tool_component_name = trajectory_.getTrajectoryManipulator()->getAllToolComponentName();
   for(uint32_t index =0; index<tool_component_name.size(); index++)
   {
     result_vector.push_back(trajectory_.getToolGoalValue(tool_component_name.at(index)));

@@ -68,7 +68,7 @@ typedef struct
 } Inertia;
 
 //Actuator Value Limit struct
-typedef struct _AcutuatorLimit
+typedef struct _Limit
 {
   double maximum;
   double minimum;
@@ -94,12 +94,6 @@ typedef enum _TrajectoryType
   CUSTOM_JOINT_TRAJECTORY,
   CUSTOM_TASK_TRAJECTORY
 }TrajectoryType;
-
-//typedef enum _WayPointType
-//{
-//  JOINT_WAY_POINT = 0,
-//  TASK_WAY_POINT
-//}WayPointType;
 
 //Point struct
 typedef struct _Point
@@ -142,7 +136,7 @@ typedef struct _Relative
   Inertia inertia;
 } Relative;
 
-typedef struct _ActuatorConstant
+typedef struct _JointConstant
 {
   int8_t id;
   Eigen::Vector3d axis;
@@ -168,7 +162,7 @@ typedef struct _Component
   ChainigName name;
   ComponentType component_type;
   Relative relative;
-  JointConstant actuator_constant;
+  JointConstant joint_constant;
   //variable
   PoseValue pose_from_world;
   JointValue joint_value;
