@@ -1306,16 +1306,16 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(doub
     step_moving_ = false;
     JointWayPoint joint_goal_way_point;
     double tick_time = trajectory_.getTickTime();
-
+    
     if(tick_time < trajectory_.getMoveTime())
     {
       moving_ = true;
-      return getTrajectoryJointValue(tick_time);
+      joint_goal_way_point = getTrajectoryJointValue(tick_time);
     }
     else
     {
       moving_ = false;
-      return getTrajectoryJointValue(trajectory_.getMoveTime());
+      joint_goal_way_point = getTrajectoryJointValue(trajectory_.getMoveTime());
     }
     step_moving_ = true;
     return joint_goal_way_point;
