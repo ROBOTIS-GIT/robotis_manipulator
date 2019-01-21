@@ -164,7 +164,6 @@ void Manipulator::checkManipulatorSetting()
   RM_LOG::PRINTLN(" -Angular acceleration : ");
   RM_LOG::PRINT_VECTOR(world_.pose.dynamic.angular.acceleration);
 
-
   std::vector<double> result_vector;
   std::map<Name, Component>::iterator it_component;
 
@@ -831,6 +830,4 @@ Name Manipulator::findComponentNameFromId(int8_t id)
   }
   return {};
 }
-
-
 ////////////////////////////////////////////////////////////

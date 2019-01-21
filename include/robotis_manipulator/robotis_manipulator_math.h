@@ -82,6 +82,6 @@ Eigen::VectorXd poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d
 
 template <typename T> T map(T x, T in_min, T in_max, T out_min, T out_max);
 
-} // namespace MATH
+} // namespace RM_MATH
 
-#endif // RMMATH_HPP_
+#endif // ROBOTIS_MANIPULATOR_MATH_H_

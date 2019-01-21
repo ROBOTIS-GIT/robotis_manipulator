@@ -25,7 +25,7 @@
 #include "robotis_manipulator_math.h"
 #include "robotis_manipulator_debug.h"
 
-#include <algorithm> // for sort()
+#include <algorithm>
 
 namespace ROBOTIS_MANIPULATOR
 {
@@ -42,7 +42,6 @@ private:
 
   Kinematics *kinematics_;
 
-//  Time manipulation_time_;
   bool using_platform_;
   bool moving_;
   bool step_moving_;
@@ -51,13 +50,12 @@ private:
   void startMoving();
 
   JointWayPoint getTrajectoryJointValue(double tick_time);
-//  JointWayPoint TrajectoryTimeCounter();
 
 public:
   RobotisManipulator();
   virtual ~RobotisManipulator();
 
-  ///////////////////////////*initialize function*/////////////////////////////
+  /////////////////////////// initialize function /////////////////////////////
   void addWorld(Name world_name,
                 Name child_name,
                 Eigen::Vector3d world_position = Eigen::Vector3d::Zero(3),
@@ -94,7 +92,7 @@ public:
   void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
   void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
 
-  // MANIPULATOR
+  // Manipulator
   Manipulator *getManipulator();
 
   JointValue getJointValue(Name joint_name);
@@ -107,13 +105,13 @@ public:
   DynamicPose getDynamicPose(Name component_name);
   PoseValue getPoseValue(Name component_name);
 
-  // KINEMATICS (INCLUDES VIRTUAL)
+  // Kinematics (include virtual function)
   Eigen::MatrixXd jacobian(Name tool_name);
   void forwardKinematics();
   bool inverseKinematics(Name tool_name, PoseValue goal_pose, std::vector<JointValue> *goal_joint_value);
   void kinematicsSetOption(const void* arg);
 
-  // ACTUATOR (INCLUDES VIRTUAL)
+  // Actuator (include virtual function)
   void jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void toolActuatorSetMode(Name actuator_name, const void *arg);
 
@@ -145,9 +143,9 @@ public:
   std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
   std::vector<JointValue> receiveAllToolActuatorValue();
 
-  ////////////////////////////////////////tra/
+  ////////////////////////////////////////trajectory
 
-  // time
+  // Time
   double getTrajectoryMoveTime();
   bool isMoving();
 
@@ -157,7 +155,7 @@ public:
   bool checkLimit(std::vector<Name> component_name, std::vector<double> position_vector);
   bool checkLimit(std::vector<Name> component_name, std::vector<JointValue> value_vector);
 
-  //Trajectory Control Move Fuction
+  //Trajectory control move fuction
   void jointTrajectoryMoveFromPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   void jointTrajectoryMove(std::vector<double> goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   void jointTrajectoryMove(std::vector<JointValue> goal_joint_value, double move_time, std::vector<JointValue> present_joint_value = {});
@@ -180,11 +178,11 @@ public:
 
   void TrajectoryWait(double wait_time, std::vector<JointValue> present_joint_value = {});
 
-  // Additional Functions
+  // Additional functions
   std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
   std::vector<JointValue> getToolGoalValue();
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
 };
-} // namespace OPEN_MANIPULATOR
+} // namespace ROBOTIS_MANIPULATOR
 
 #endif

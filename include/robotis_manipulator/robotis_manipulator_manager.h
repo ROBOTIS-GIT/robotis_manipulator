@@ -109,7 +109,5 @@ public:
   virtual TaskWayPoint getTaskWayPoint(double tick) = 0;
 };
 
-
-
-} // namespace OPEN_MANIPULATOR
+} // namespace ROBOTIS_MANIPULATOR
 #endif

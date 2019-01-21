@@ -164,13 +164,10 @@ public:
   void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
   double getToolGoalPosition(Name tool_name);
   JointValue getToolGoalValue(Name tool_name);
-
-
 };
 
-
-} // namespace RM_TRAJECTORY
-#endif // RMTRAJECTORY_H_
+} // namespace ROBOTIS_MANIPULATOR
+#endif // ROBOTIS_MNAMIPULATOR_TRAJECTORY_GENERATOR_H_
 
 
 

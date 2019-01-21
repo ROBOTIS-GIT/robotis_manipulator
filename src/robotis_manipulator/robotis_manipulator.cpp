@@ -37,7 +37,7 @@ RobotisManipulator::~RobotisManipulator()
 {
 }
 
-///////////////////////////*initialize function*/////////////////////////////
+/////////////////////////// initialize function /////////////////////////////
 
 void RobotisManipulator::addWorld(Name world_name,
                            Name child_name,
@@ -138,7 +138,7 @@ void RobotisManipulator::addCustomTrajectory(Name trajectory_name, CustomTaskTra
 
 /////////////////////////////////////////////////////////////////////////////
 
-// MANIPULATOR
+// Manipulator
 Manipulator *RobotisManipulator::getManipulator()
 {
   return &manipulator_;
@@ -239,7 +239,7 @@ bool RobotisManipulator::checkLimit(std::vector<Name> component_name, std::vecto
 }
 
 
-// KINEMATICS
+// Kinematics
 
 Eigen::MatrixXd RobotisManipulator::jacobian(Name tool_name)
 {
@@ -261,7 +261,7 @@ void RobotisManipulator::kinematicsSetOption(const void* arg)
   kinematics_->setOption(arg);
 }
 
-// ACTUATOR
+// Actuator
 
 void RobotisManipulator::jointActuatorSetMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
@@ -474,9 +474,9 @@ bool RobotisManipulator::isEnabled(Name actuator_name)
 
 bool RobotisManipulator::sendJointActuatorValue(Name joint_component_name, JointValue value)
 {
-  //trajectory manipulator set
-//  trajectory_.getTrajectoryManipulator()->setJointValue(joint_component_name,value);
-//  trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
+  // trajectory manipulator set
+  // trajectory_.getTrajectoryManipulator()->setJointValue(joint_component_name,value);
+  // trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
 
   if(using_platform_)
   {
@@ -508,10 +508,10 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
   if(joint_component_name.size() != value_vector.size())
     return false; //error;
 
-  //trajectory manipulator set
-//  for(uint8_t index = 0; index < joint_component_name.size(); index++)
-//    trajectory_.getTrajectoryManipulator()->setJointValue(joint_component_name.at(index), value_vector.at(index));
-//  trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
+  // trajectory manipulator set
+  // for(uint8_t index = 0; index < joint_component_name.size(); index++)
+  //   trajectory_.getTrajectoryManipulator()->setJointValue(joint_component_name.at(index), value_vector.at(index));
+  // trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
 
   if(using_platform_)
   {
@@ -557,9 +557,9 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
 
 bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value_vector)
 {
-  //trajectory manipulator set
-//  trajectory_.setPresentJointWayPoint(value_vector);
-//  trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
+  // trajectory manipulator set
+  // trajectory_.setPresentJointWayPoint(value_vector);
+  // trajectory_.UpdatePresentWayPoint(kinematics_dynamics_);
 
   if(using_platform_)
   {
@@ -723,8 +723,8 @@ std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
 
 bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, JointValue value)
 {
-  //trajectory manipulator set
-//  trajectory_.getTrajectoryManipulator()->setJointValue(tool_component_name,value);
+  // trajectory manipulator set
+  // trajectory_.getTrajectoryManipulator()->setJointValue(tool_component_name,value);
 
   if(using_platform_)
   {
@@ -748,9 +748,9 @@ bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, JointVa
 
 bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector)
 {
-  //trajectory manipulator set
-//  for(uint8_t index = 0; index < tool_component_name.size(); index++)
-//    trajectory_.getTrajectoryManipulator()->setJointValue(tool_component_name.at(index), value_vector.at(index));
+  // trajectory manipulator set
+  // for(uint8_t index = 0; index < tool_component_name.size(); index++)
+  //   trajectory_.getTrajectoryManipulator()->setJointValue(tool_component_name.at(index), value_vector.at(index));
 
   if(using_platform_)
   {
@@ -777,8 +777,8 @@ bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_co
 
 bool RobotisManipulator::sendAllToolActuatorValue(std::vector<JointValue> value_vector)
 {
-  //trajectory manipulator set
-//  trajectory_.getTrajectoryManipulator()->setAllToolValue(value_vector);
+  // trajectory manipulator set
+  // trajectory_.getTrajectoryManipulator()->setAllToolValue(value_vector);
 
   if(using_platform_)
   {
