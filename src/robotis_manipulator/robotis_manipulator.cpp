@@ -662,7 +662,7 @@ std::vector<JointValue> RobotisManipulator::receiveMultipleJointActuatorValue(st
           result.position = get_value_vector.at(index2).position * manipulator_.getCoefficient(joint_component_name.at(index));
           result.velocity = get_value_vector.at(index2).velocity * manipulator_.getCoefficient(joint_component_name.at(index));
           result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getCoefficient(joint_component_name.at(index));
-          result.effort = get_value_vector.at(index2).effort = 0.0;
+          result.effort = get_value_vector.at(index2).effort;
           manipulator_.setJointValue(joint_component_name.at(index), result);
           result_vector.push_back(result);
         }
@@ -708,7 +708,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
           result.position = get_value_vector.at(index2).position * manipulator_.getCoefficient(it->first);
           result.velocity = get_value_vector.at(index2).velocity * manipulator_.getCoefficient(it->first);
           result.acceleration = get_value_vector.at(index2).acceleration * manipulator_.getCoefficient(it->first);
-          result.effort = get_value_vector.at(index2).effort = 0.0;
+          result.effort = get_value_vector.at(index2).effort;
           manipulator_.setJointValue(it->first, result);
           result_vector.push_back(result);
         }
