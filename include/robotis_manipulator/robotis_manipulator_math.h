@@ -42,10 +42,10 @@ namespace RM_MATH
 {
 double sign(double number);
 
-Eigen::Vector3d makeVector3(double v1, double v2, double v3);
-Eigen::Matrix3d makeMatrix3(double m11, double m12, double m13,
-                            double m21, double m22, double m23,
-                            double m31, double m32, double m33);
+Eigen::Vector3d Vector3(double v1, double v2, double v3);
+Eigen::Matrix3d Matrix3(double m11, double m12, double m13,
+                        double m21, double m22, double m23,
+                        double m31, double m32, double m33);
 
 Eigen::Vector3d getTransitionXYZ(double position_x, double position_y, double position_z);
 Eigen::Matrix4d getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll, double pitch, double yaw);

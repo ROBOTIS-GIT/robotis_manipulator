@@ -16,7 +16,7 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-#include "../../include/robotis_manipulator/robotis_manipulator_debug.h"
+#include "../../include/robotis_manipulator/robotis_manipulator_log.h"
 
 
 void RM_LOG::PRINT(STRING str, STRING color)
@@ -277,4 +277,3 @@ void RM_LOG::ERROR(const char* str, double data, uint8_t point)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-

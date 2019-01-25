@@ -139,7 +139,7 @@ void Manipulator::addTool(Name my_name,
   component_.insert(std::make_pair(my_name, temp_component));
 }
 
-void Manipulator::checkManipulatorSetting()
+void Manipulator::printManipulatorSetting()
 {
   RM_LOG::PRINTLN("----------<Manipulator Description>----------");
   RM_LOG::PRINTLN("<Degree of freedom>\n", dof_);
@@ -799,7 +799,7 @@ std::vector<Name> Manipulator::getAllActiveJointComponentName()
 
 
 
-bool Manipulator::checkLimit(Name component_name, double value)
+bool Manipulator::checkJointLimit(Name component_name, double value)
 {
   if(component_.at(component_name).joint_constant.limit.maximum < value)
     return false;

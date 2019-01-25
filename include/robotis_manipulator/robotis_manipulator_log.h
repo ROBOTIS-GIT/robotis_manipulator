@@ -71,8 +71,7 @@ namespace RM_LOG
   void ERROR(const char* str);
   void ERROR(const char* str, double data, uint8_t point = 3);
 
-  template <typename T>
-  void PRINT_VECTOR(std::vector<T> &vec, uint8_t point = 3)
+  template <typename T> void PRINT_VECTOR(std::vector<T> &vec, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
     DEBUG.print("(");
@@ -97,8 +96,7 @@ namespace RM_LOG
   #endif
   }
 
-  template <typename vector>
-  void PRINT_VECTOR(vector &vec, uint8_t point = 3)
+  template <typename vector> void PRINT_VECTOR(vector &vec, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
     DEBUG.print("(");
@@ -123,9 +121,7 @@ namespace RM_LOG
   #endif
   }
 
-
-  template <typename matrix>
-  void PRINT_MATRIX(matrix &m, uint8_t point = 3)
+  template <typename matrix> void PRINT_MATRIX(matrix &m, uint8_t point = 3)
   {
   #if defined(__OPENCR__)
 

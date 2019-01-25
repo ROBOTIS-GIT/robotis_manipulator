@@ -58,18 +58,18 @@ class JointTrajectory
 {
 private:
   uint8_t coefficient_size_;
-  MinimumJerk trajectory_generator_;
-  Eigen::MatrixXd coefficient_;
+  MinimumJerk minimum_jerk_trajectory_generator_;
+  Eigen::MatrixXd minimum_jerk_coefficient_;
 
 public:
   JointTrajectory();
   virtual ~JointTrajectory();
 
-  void init(double move_time,
+  void makeJointTrajectory(double move_time,
             JointWayPoint start,
             JointWayPoint goal
             );
-  Eigen::MatrixXd getCoefficient();
+  Eigen::MatrixXd getMinimumJerkCoefficient();
   JointWayPoint getJointWayPoint(double tick);
 };
 
@@ -77,18 +77,18 @@ class TaskTrajectory
 {
 private:
   uint8_t coefficient_size_;
-  MinimumJerk trajectory_generator_;
-  Eigen::MatrixXd coefficient_;
+  MinimumJerk minimum_jerk_trajectory_generator_;
+  Eigen::MatrixXd minimum_jerk_coefficient_;
 
 public:
   TaskTrajectory();
   virtual ~TaskTrajectory();
 
-  void init(double move_time,
+  void makeTaskTrajectory(double move_time,
             TaskWayPoint start,
             TaskWayPoint goal
             );
-  Eigen::MatrixXd getCoefficient();
+  Eigen::MatrixXd getMinimumJerkCoefficient();
   TaskWayPoint getTaskWayPoint(double tick);
 };
 

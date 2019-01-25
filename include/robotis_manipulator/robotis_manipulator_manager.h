@@ -38,8 +38,8 @@ public:
 
   virtual void setOption(const void *arg) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  virtual void forwardKinematics(Manipulator *manipulator) = 0;
-  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue>* goal_joint_position) = 0;
+  virtual void solveForwardKinematics(Manipulator *manipulator) = 0;
+  virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, PoseValue target_pose, std::vector<JointValue>* goal_joint_position) = 0;
 };
 
 class JointActuator
@@ -61,7 +61,7 @@ public:
   virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
   bool findId(uint8_t actuator_id);
-  bool isEnabled();
+  bool getEnabledState();
 };
 
 class ToolActuator
@@ -83,7 +83,7 @@ public:
   virtual Actuator receiveToolActuatorValue() = 0;
 
   bool findId(uint8_t actuator_id);
-  bool isEnabled();
+  bool getEnabledState();
 };
 
 
@@ -93,7 +93,7 @@ public:
   CustomJointTrajectory(){}
   virtual ~CustomJointTrajectory(){}
 
-  virtual void init(double move_time, JointWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void makeJointTrajectory(double move_time, JointWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
   virtual void setOption(const void *arg) = 0;
   virtual JointWayPoint getJointWayPoint(double tick) = 0;
 };
@@ -104,7 +104,7 @@ public:
   CustomTaskTrajectory(){}
   virtual ~CustomTaskTrajectory(){}
 
-  virtual void init(double move_time, TaskWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void makeTaskTrajectory(double move_time, TaskWayPoint start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
   virtual void setOption(const void *arg) = 0;
   virtual TaskWayPoint getTaskWayPoint(double tick) = 0;
 };

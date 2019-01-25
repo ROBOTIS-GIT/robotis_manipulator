@@ -31,6 +31,22 @@ double RM_MATH::sign(double number)
   }
 }
 
+Eigen::Vector3d RM_MATH::Vector3(double v1, double v2, double v3)
+{
+  Eigen::Vector3d temp;
+  temp << v1, v2, v3;
+  return temp;
+}
+
+Eigen::Matrix3d RM_MATH::Matrix3(double m11, double m12, double m13,
+                                     double m21, double m22, double m23,
+                                     double m31, double m32, double m33)
+{
+  Eigen::Matrix3d temp;
+  temp << m11, m12, m13, m21, m22, m23, m31, m32, m33;
+  return temp;
+}
+
 /////////////////////convert function/////////////////////////////////////
 
 Eigen::Vector3d RM_MATH::getTransitionXYZ(double position_x, double position_y, double position_z)
@@ -231,21 +247,7 @@ Eigen::Vector3d RM_MATH::convertRotToOmega(const Eigen::Matrix3d& rotation_matri
 ///////////////////////////////////////////////////////////////////////
 
 
-Eigen::Vector3d RM_MATH::makeVector3(double v1, double v2, double v3)
-{
-  Eigen::Vector3d temp;
-  temp << v1, v2, v3;
-  return temp;
-}
 
-Eigen::Matrix3d RM_MATH::makeMatrix3(double m11, double m12, double m13,
-                                     double m21, double m22, double m23,
-                                     double m31, double m32, double m33)
-{
-  Eigen::Matrix3d temp;
-  temp << m11, m12, m13, m21, m22, m23, m31, m32, m33;
-  return temp;
-}
 
 
 //////////////////////

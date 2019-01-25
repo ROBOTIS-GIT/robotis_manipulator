@@ -32,7 +32,7 @@
 #include <vector>
 #include <map>
 #include "robotis_manipulator_math.h"
-#include "robotis_manipulator_debug.h"
+#include "robotis_manipulator_log.h"
 
 namespace ROBOTIS_MANIPULATOR
 {
@@ -211,7 +211,7 @@ public:
                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
 
   void addComponentChild(Name my_name, Name child_name);
-  void checkManipulatorSetting();
+  void printManipulatorSetting();
 
   ///////////////////////////////Set function//////////////////////////////////
   void setWorldPose(PoseValue world_pose);
@@ -296,7 +296,7 @@ public:
   std::vector<Name> getAllActiveJointComponentName();
 
   ////////////////////////////////check function////////////////////////////////
-  bool checkLimit(Name Component_name, double value);
+  bool checkJointLimit(Name Component_name, double value);
   bool checkComponentType(Name component_name, ComponentType component_type);
 
   ///////////////////////////////Find function//////////////////////////////////

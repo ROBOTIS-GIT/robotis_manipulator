@@ -67,18 +67,18 @@ JointTrajectory::JointTrajectory()
 
 JointTrajectory::~JointTrajectory() {}
 
-void JointTrajectory::init(double move_time, JointWayPoint start,
+void JointTrajectory::makeJointTrajectory(double move_time, JointWayPoint start,
                            JointWayPoint goal)
 {
   coefficient_size_ = start.size();
-  coefficient_.resize(6,coefficient_size_);
+  minimum_jerk_coefficient_.resize(6,coefficient_size_);
   for (uint8_t index = 0; index < coefficient_size_; index++)
   {
-    trajectory_generator_.calcCoefficient(start.at(index),
+    minimum_jerk_trajectory_generator_.calcCoefficient(start.at(index),
                                     goal.at(index),
                                     move_time);
 
-    coefficient_.col(index) = trajectory_generator_.getCoefficient();
+    minimum_jerk_coefficient_.col(index) = minimum_jerk_trajectory_generator_.getCoefficient();
   }
 }
 
@@ -89,23 +89,23 @@ JointWayPoint JointTrajectory::getJointWayPoint(double tick)
   {
     JointValue single_joint_way_point;
 
-    single_joint_way_point.position = coefficient_(0, index) +
-             coefficient_(1, index) * pow(tick, 1) +
-             coefficient_(2, index) * pow(tick, 2) +
-             coefficient_(3, index) * pow(tick, 3) +
-             coefficient_(4, index) * pow(tick, 4) +
-             coefficient_(5, index) * pow(tick, 5);
+    single_joint_way_point.position = minimum_jerk_coefficient_(0, index) +
+             minimum_jerk_coefficient_(1, index) * pow(tick, 1) +
+             minimum_jerk_coefficient_(2, index) * pow(tick, 2) +
+             minimum_jerk_coefficient_(3, index) * pow(tick, 3) +
+             minimum_jerk_coefficient_(4, index) * pow(tick, 4) +
+             minimum_jerk_coefficient_(5, index) * pow(tick, 5);
 
-    single_joint_way_point.velocity = coefficient_(1, index) +
-             2 * coefficient_(2, index) * pow(tick, 1) +
-             3 * coefficient_(3, index) * pow(tick, 2) +
-             4 * coefficient_(4, index) * pow(tick, 3) +
-             5 * coefficient_(5, index) * pow(tick, 4);
+    single_joint_way_point.velocity = minimum_jerk_coefficient_(1, index) +
+             2 * minimum_jerk_coefficient_(2, index) * pow(tick, 1) +
+             3 * minimum_jerk_coefficient_(3, index) * pow(tick, 2) +
+             4 * minimum_jerk_coefficient_(4, index) * pow(tick, 3) +
+             5 * minimum_jerk_coefficient_(5, index) * pow(tick, 4);
 
-    single_joint_way_point.acceleration = 2 * coefficient_(2, index) +
-             6 * coefficient_(3, index) * pow(tick, 1) +
-             12 * coefficient_(4, index) * pow(tick, 2) +
-             20 * coefficient_(5, index) * pow(tick, 3);
+    single_joint_way_point.acceleration = 2 * minimum_jerk_coefficient_(2, index) +
+             6 * minimum_jerk_coefficient_(3, index) * pow(tick, 1) +
+             12 * minimum_jerk_coefficient_(4, index) * pow(tick, 2) +
+             20 * minimum_jerk_coefficient_(5, index) * pow(tick, 3);
 
     single_joint_way_point.effort = 0.0;
 
@@ -115,20 +115,20 @@ JointWayPoint JointTrajectory::getJointWayPoint(double tick)
   return joint_way_point;
 }
 
-Eigen::MatrixXd JointTrajectory::getCoefficient()
+Eigen::MatrixXd JointTrajectory::getMinimumJerkCoefficient()
 {
-  return coefficient_;
+  return minimum_jerk_coefficient_;
 }
 
 //-------------------- Task trajectory --------------------//
 
 TaskTrajectory::TaskTrajectory()
 {
-  coefficient_ = Eigen::MatrixXd::Identity(6, 4);
+  minimum_jerk_coefficient_ = Eigen::MatrixXd::Identity(6, 4);
 }
 TaskTrajectory::~TaskTrajectory() {}
 
-void TaskTrajectory::init(double move_time, TaskWayPoint start,
+void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWayPoint start,
                            TaskWayPoint goal)
 {
   std::vector<Point> start_way_point;
@@ -188,14 +188,14 @@ void TaskTrajectory::init(double move_time, TaskWayPoint start,
   ////////////////////////////////////////////////////////////////////////////////
 
   coefficient_size_ = start_way_point.size();
-  coefficient_.resize(6,coefficient_size_);
+  minimum_jerk_coefficient_.resize(6,coefficient_size_);
   for (uint8_t index = 0; index < coefficient_size_; index++)
   {
-    trajectory_generator_.calcCoefficient(start_way_point.at(index),
+    minimum_jerk_trajectory_generator_.calcCoefficient(start_way_point.at(index),
                                     goal_way_point.at(index),
                                     move_time);
 
-    coefficient_.col(index) = trajectory_generator_.getCoefficient();
+    minimum_jerk_coefficient_.col(index) = minimum_jerk_trajectory_generator_.getCoefficient();
   }
 }
 
@@ -206,23 +206,23 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
   {
     Point single_task_way_point;
 
-    single_task_way_point.position = coefficient_(0, index) +
-             coefficient_(1, index) * pow(tick, 1) +
-             coefficient_(2, index) * pow(tick, 2) +
-             coefficient_(3, index) * pow(tick, 3) +
-             coefficient_(4, index) * pow(tick, 4) +
-             coefficient_(5, index) * pow(tick, 5);
+    single_task_way_point.position = minimum_jerk_coefficient_(0, index) +
+             minimum_jerk_coefficient_(1, index) * pow(tick, 1) +
+             minimum_jerk_coefficient_(2, index) * pow(tick, 2) +
+             minimum_jerk_coefficient_(3, index) * pow(tick, 3) +
+             minimum_jerk_coefficient_(4, index) * pow(tick, 4) +
+             minimum_jerk_coefficient_(5, index) * pow(tick, 5);
 
-    single_task_way_point.velocity = coefficient_(1, index) +
-             2 * coefficient_(2, index) * pow(tick, 1) +
-             3 * coefficient_(3, index) * pow(tick, 2) +
-             4 * coefficient_(4, index) * pow(tick, 3) +
-             5 * coefficient_(5, index) * pow(tick, 4);
+    single_task_way_point.velocity = minimum_jerk_coefficient_(1, index) +
+             2 * minimum_jerk_coefficient_(2, index) * pow(tick, 1) +
+             3 * minimum_jerk_coefficient_(3, index) * pow(tick, 2) +
+             4 * minimum_jerk_coefficient_(4, index) * pow(tick, 3) +
+             5 * minimum_jerk_coefficient_(5, index) * pow(tick, 4);
 
-    single_task_way_point.acceleration = 2 * coefficient_(2, index) +
-             6 * coefficient_(3, index) * pow(tick, 1) +
-             12 * coefficient_(4, index) * pow(tick, 2) +
-             20 * coefficient_(5, index) * pow(tick, 3);
+    single_task_way_point.acceleration = 2 * minimum_jerk_coefficient_(2, index) +
+             6 * minimum_jerk_coefficient_(3, index) * pow(tick, 1) +
+             12 * minimum_jerk_coefficient_(4, index) * pow(tick, 2) +
+             20 * minimum_jerk_coefficient_(5, index) * pow(tick, 3);
 
     single_task_way_point.effort = 0.0;
 
@@ -257,9 +257,9 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
   return task_way_point;
 }
 
-Eigen::MatrixXd TaskTrajectory::getCoefficient()
+Eigen::MatrixXd TaskTrajectory::getMinimumJerkCoefficient()
 {
-  return coefficient_;
+  return minimum_jerk_coefficient_;
 }
 
 
@@ -371,7 +371,7 @@ void Trajectory::initTrajectoryWayPoint(Manipulator present_real_manipulator, Ki
 void Trajectory::UpdatePresentWayPoint(Kinematics *kinematics)
 {
   //kinematics
-  kinematics->forwardKinematics(&manipulator_);
+  kinematics->solveForwardKinematics(&manipulator_);
 }
 
 void Trajectory::setPresentJointWayPoint(JointWayPoint joint_value_vector)
@@ -431,12 +431,12 @@ bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
 
 void Trajectory::makeJointTrajectory(JointWayPoint start_way_point, JointWayPoint goal_way_point)
 {
-  joint_.init(trajectory_time_.total_move_time, start_way_point, goal_way_point);
+  joint_.makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
 void Trajectory::makeTaskTrajectory(TaskWayPoint start_way_point, TaskWayPoint goal_way_point)
 {
-  task_.init(trajectory_time_.total_move_time, start_way_point, goal_way_point);
+  task_.makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
 void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWayPoint start_way_point, const void *arg)
@@ -444,7 +444,7 @@ void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWayPoint start_
   if(cus_joint_.find(trajectory_name) != cus_joint_.end())
   {
     present_custom_trajectory_name_ = trajectory_name;
-    cus_joint_.at(trajectory_name)->init(trajectory_time_.total_move_time, start_way_point, arg);
+    cus_joint_.at(trajectory_name)->makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
   }
   else
     RM_LOG::ERROR("[makeCustomTrajectory] Wrong way point type.");
@@ -455,7 +455,7 @@ void Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWayPoint start_w
   if(cus_task_.find(trajectory_name) != cus_task_.end())
   {
     present_custom_trajectory_name_ = trajectory_name;
-    cus_task_.at(trajectory_name)->init(trajectory_time_.total_move_time, start_way_point, arg);
+    cus_task_.at(trajectory_name)->makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
   }
   else
     RM_LOG::ERROR("[makeCustomTrajectory] Wrong way point type.");
