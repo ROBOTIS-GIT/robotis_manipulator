@@ -18,7 +18,7 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_trajectory_generator.h"
 
-using namespace ROBOTIS_MANIPULATOR;
+using namespace robotis_manipulator;
 
 MinimumJerk::MinimumJerk()
 {
@@ -67,8 +67,8 @@ JointTrajectory::JointTrajectory()
 
 JointTrajectory::~JointTrajectory() {}
 
-void JointTrajectory::makeJointTrajectory(double move_time, JointWayPoint start,
-                           JointWayPoint goal)
+void JointTrajectory::makeJointTrajectory(double move_time, JointWaypoint start,
+                           JointWaypoint goal)
 {
   coefficient_size_ = start.size();
   minimum_jerk_coefficient_.resize(6,coefficient_size_);
@@ -82,9 +82,9 @@ void JointTrajectory::makeJointTrajectory(double move_time, JointWayPoint start,
   }
 }
 
-JointWayPoint JointTrajectory::getJointWayPoint(double tick)
+JointWaypoint JointTrajectory::getJointWaypoint(double tick)
 {
-  JointWayPoint joint_way_point;
+  JointWaypoint joint_way_point;
   for (uint8_t index = 0; index < coefficient_size_; index++)
   {
     JointValue single_joint_way_point;
@@ -128,8 +128,8 @@ TaskTrajectory::TaskTrajectory()
 }
 TaskTrajectory::~TaskTrajectory() {}
 
-void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWayPoint start,
-                           TaskWayPoint goal)
+void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWaypoint start,
+                           TaskWaypoint goal)
 {
   std::vector<Point> start_way_point;
   std::vector<Point> goal_way_point;
@@ -158,17 +158,17 @@ void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWayPoint start,
   Eigen::Vector3d start_ang_vel_rpy;
   Eigen::Vector3d start_ang_acc_rpy;
 
-  start_orientation_rpy = RM_MATH::convertRotationMatrixToRPYVector(start.kinematic.orientation);
-  start_ang_vel_rpy = RM_MATH::convertOmegaToRPYVelocity(start_orientation_rpy, start.dynamic.angular.velocity);
-  start_ang_acc_rpy = RM_MATH::convertOmegaDotToRPYAcceleration(start_orientation_rpy, start_ang_vel_rpy, start.dynamic.angular.acceleration);
+  start_orientation_rpy = rm_math::convertRotationMatrix2RPYVector(start.kinematic.orientation);
+  start_ang_vel_rpy = rm_math::convertOmega2RPYVelocity(start_orientation_rpy, start.dynamic.angular.velocity);
+  start_ang_acc_rpy = rm_math::convertOmegaDot2RPYAcceleration(start_orientation_rpy, start_ang_vel_rpy, start.dynamic.angular.acceleration);
 
   Eigen::Vector3d goal_orientation_rpy;
   Eigen::Vector3d goal_ang_vel_rpy;
   Eigen::Vector3d goal_ang_acc_rpy;
 
-  goal_orientation_rpy = RM_MATH::convertRotationMatrixToRPYVector(goal.kinematic.orientation);
-  goal_ang_vel_rpy = RM_MATH::convertOmegaToRPYVelocity(goal_orientation_rpy, goal.dynamic.angular.velocity);
-  start_ang_acc_rpy = RM_MATH::convertOmegaDotToRPYAcceleration(goal_orientation_rpy, goal_ang_vel_rpy, goal.dynamic.angular.acceleration);
+  goal_orientation_rpy = rm_math::convertRotationMatrix2RPYVector(goal.kinematic.orientation);
+  goal_ang_vel_rpy = rm_math::convertOmega2RPYVelocity(goal_orientation_rpy, goal.dynamic.angular.velocity);
+  start_ang_acc_rpy = rm_math::convertOmegaDot2RPYAcceleration(goal_orientation_rpy, goal_ang_vel_rpy, goal.dynamic.angular.acceleration);
 
   for(uint8_t i = 0; i < 3; i++)    //roll, pitch, yaw
   {
@@ -199,7 +199,7 @@ void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWayPoint start,
   }
 }
 
-TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
+TaskWaypoint TaskTrajectory::getTaskWaypoint(double tick)
 {
   std::vector<Point> result_point;
   for (uint8_t index = 0; index < coefficient_size_; index++)
@@ -229,7 +229,7 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
     result_point.push_back(single_task_way_point);
   }
 
-  TaskWayPoint task_way_point;
+  TaskWaypoint task_way_point;
   ////////////////////////////////////position////////////////////////////////////
   for(uint8_t i = 0; i < 3; i++)        //x ,y ,z
   {
@@ -242,17 +242,17 @@ TaskWayPoint TaskTrajectory::getTaskWayPoint(double tick)
   //////////////////////////////////orientation///////////////////////////////////
   Eigen::Vector3d rpy_orientation;
   rpy_orientation << result_point.at(3).position, result_point.at(4).position, result_point.at(5).position;
-  task_way_point.kinematic.orientation = RM_MATH::convertRPYToRotationMatrix(result_point.at(3).position,   //roll
+  task_way_point.kinematic.orientation = rm_math::convertRPY2RotationMatrix(result_point.at(3).position,   //roll
                                                                        result_point.at(4).position,   //pitch
                                                                        result_point.at(5).position);   //yaw
 
   Eigen::Vector3d rpy_velocity;
   rpy_velocity << result_point.at(3).velocity, result_point.at(4).velocity, result_point.at(5).velocity;
-  task_way_point.dynamic.angular.velocity = RM_MATH::convertRPYVelocityToOmega(rpy_orientation, rpy_velocity);
+  task_way_point.dynamic.angular.velocity = rm_math::convertRPYVelocity2Omega(rpy_orientation, rpy_velocity);
 
   Eigen::Vector3d rpy_acceleration;
   rpy_acceleration << result_point.at(3).acceleration, result_point.at(4).acceleration, result_point.at(5).acceleration;
-  task_way_point.dynamic.angular.acceleration = RM_MATH::convertRPYAccelerationToOmegaDot(rpy_orientation, rpy_velocity, rpy_acceleration);
+  task_way_point.dynamic.angular.acceleration = rm_math::convertRPYAcceleration2OmegaDot(rpy_orientation, rpy_velocity, rpy_acceleration);
 
   return task_way_point;
 }
@@ -263,8 +263,9 @@ Eigen::MatrixXd TaskTrajectory::getMinimumJerkCoefficient()
 }
 
 
-//------------------------ trajectory ------------------------//
-
+/*****************************************************************************
+** Trajectory Class
+*****************************************************************************/
 void Trajectory::setMoveTime(double move_time)
 {
   trajectory_time_.total_move_time = move_time;
@@ -275,7 +276,7 @@ void Trajectory::setPresentTime(double present_time)
   trajectory_time_.present_time = present_time;
 }
 
-void Trajectory::setStartTimeFromPresentTime()
+void Trajectory::setStartTimeToPresentTime()
 {
   trajectory_time_.start_time = trajectory_time_.present_time;
 }
@@ -295,12 +296,12 @@ double Trajectory::getTickTime()
   return trajectory_time_.present_time - trajectory_time_.start_time;
 }
 
-void Trajectory::setTrajectoryManipulator(Manipulator manipulator)
+void Trajectory::setManipulator(Manipulator manipulator)
 {
   manipulator_= manipulator;
 }
 
-Manipulator* Trajectory::getTrajectoryManipulator()
+Manipulator* Trajectory::getManipulator()
 {
   return &manipulator_;
 }
@@ -358,43 +359,43 @@ Name Trajectory::getPresentControlToolName()
  return present_control_tool_name_;
 }
 
-void Trajectory::initTrajectoryWayPoint(Manipulator present_real_manipulator, Kinematics *kinematics)
+void Trajectory::initTrajectoryWaypoint(Manipulator actual_manipulator, Kinematics *kinematics)
 {
-  setTrajectoryManipulator(present_real_manipulator);
-  JointWayPoint joint_way_point_vector;
-  joint_way_point_vector = getTrajectoryManipulator()->getAllActiveJointValue();
+  setManipulator(actual_manipulator);
+  JointWaypoint joint_way_point_vector;
+  joint_way_point_vector = getManipulator()->getAllActiveJointValue();
 
-  setPresentJointWayPoint(joint_way_point_vector);
-  UpdatePresentWayPoint(kinematics);
+  setPresentJointWaypoint(joint_way_point_vector);
+  updatePresentWaypoint(kinematics);
 }
 
-void Trajectory::UpdatePresentWayPoint(Kinematics *kinematics)
+void Trajectory::updatePresentWaypoint(Kinematics *kinematics)
 {
   //kinematics
   kinematics->solveForwardKinematics(&manipulator_);
 }
 
-void Trajectory::setPresentJointWayPoint(JointWayPoint joint_value_vector)
+void Trajectory::setPresentJointWaypoint(JointWaypoint joint_value_vector)
 {
   manipulator_.setAllActiveJointValue(joint_value_vector);
 }
 
-void Trajectory::setPresentTaskWayPoint(Name tool_name, TaskWayPoint tool_value_vector)
+void Trajectory::setPresentTaskWaypoint(Name tool_name, TaskWaypoint tool_value_vector)
 {
   manipulator_.setComponentPoseFromWorld(tool_name, tool_value_vector);
 }
 
-JointWayPoint Trajectory::getPresentJointWayPoint()
+JointWaypoint Trajectory::getPresentJointWaypoint()
 {
   return manipulator_.getAllActiveJointValue();
 }
 
-TaskWayPoint Trajectory::getPresentTaskWayPoint(Name tool_name)
+TaskWaypoint Trajectory::getPresentTaskWaypoint(Name tool_name)
 {
   return manipulator_.getComponentPoseFromWorld(tool_name);
 }
 
-JointWayPoint Trajectory::removeWayPointDynamicData(JointWayPoint value)
+JointWaypoint Trajectory::removeWaypointDynamicData(JointWaypoint value)
 {
   for(uint32_t index =0; index < value.size(); index++)
   {
@@ -405,7 +406,7 @@ JointWayPoint Trajectory::removeWayPointDynamicData(JointWayPoint value)
   return value;
 }
 
-TaskWayPoint Trajectory::removeWayPointDynamicData(TaskWayPoint value)
+TaskWaypoint Trajectory::removeWaypointDynamicData(TaskWaypoint value)
 {
   value.dynamic.linear.velocity = Eigen::Vector3d::Zero(3);
   value.dynamic.linear.acceleration = Eigen::Vector3d::Zero(3);
@@ -429,17 +430,17 @@ bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
     return false;
 }
 
-void Trajectory::makeJointTrajectory(JointWayPoint start_way_point, JointWayPoint goal_way_point)
+void Trajectory::makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point)
 {
   joint_.makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
-void Trajectory::makeTaskTrajectory(TaskWayPoint start_way_point, TaskWayPoint goal_way_point)
+void Trajectory::makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point)
 {
   task_.makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
-void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWayPoint start_way_point, const void *arg)
+void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg)
 {
   if(cus_joint_.find(trajectory_name) != cus_joint_.end())
   {
@@ -447,10 +448,10 @@ void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWayPoint start_
     cus_joint_.at(trajectory_name)->makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
   }
   else
-    RM_LOG::ERROR("[makeCustomTrajectory] Wrong way point type.");
+    rm_log::error("[makeCustomTrajectory] Wrong way point type.");
 }
 
-void Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWayPoint start_way_point, const void *arg)
+void Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg)
 {
   if(cus_task_.find(trajectory_name) != cus_task_.end())
   {
@@ -458,7 +459,7 @@ void Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWayPoint start_w
     cus_task_.at(trajectory_name)->makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
   }
   else
-    RM_LOG::ERROR("[makeCustomTrajectory] Wrong way point type.");
+    rm_log::error("[makeCustomTrajectory] Wrong way point type.");
 }
 
 //tool

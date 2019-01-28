@@ -18,8 +18,9 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_log.h"
 
+using namespace rm_log;
 
-void RM_LOG::PRINT(STRING str, STRING color)
+void print(STRING str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -34,11 +35,11 @@ void RM_LOG::PRINT(STRING str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINT(STRING str, double data, uint8_t point, STRING color)
+void print(STRING str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.print(data, point);
+  DEBUG.print(data, decimal_point);
 #else
        if(color == "RED")      printf(ANSI_COLOR_RED);
   else if(color == "GREEN")    printf(ANSI_COLOR_GREEN);
@@ -46,11 +47,11 @@ void RM_LOG::PRINT(STRING str, double data, uint8_t point, STRING color)
   else if(color == "BLUE")     printf(ANSI_COLOR_BLUE);
   else if(color == "MAGENTA")  printf(ANSI_COLOR_MAGENTA);
   else if(color == "CYAN")     printf(ANSI_COLOR_CYAN);
-  printf("%s %.*lf", str.c_str(), point, data);
+  printf("%s %.*lf", str.c_str(), decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINT(const char* str, STRING color)
+void print(const char* str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -65,11 +66,11 @@ void RM_LOG::PRINT(const char* str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINT(const char* str, double data, uint8_t point, STRING color)
+void print(const char* str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.print(data, point);
+  DEBUG.print(data, decimal_point);
 #else
        if(color == "RED")      printf(ANSI_COLOR_RED);
   else if(color == "GREEN")    printf(ANSI_COLOR_GREEN);
@@ -77,13 +78,13 @@ void RM_LOG::PRINT(const char* str, double data, uint8_t point, STRING color)
   else if(color == "BLUE")     printf(ANSI_COLOR_BLUE);
   else if(color == "MAGENTA")  printf(ANSI_COLOR_MAGENTA);
   else if(color == "CYAN")     printf(ANSI_COLOR_CYAN);
-  printf("%s %.*lf", str, point, data);
+  printf("%s %.*lf", str, decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
 
 
-void RM_LOG::PRINTLN(STRING str, STRING color)
+void println(STRING str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -98,11 +99,11 @@ void RM_LOG::PRINTLN(STRING str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINTLN(STRING str, double data, uint8_t point, STRING color)
+void println(STRING str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
      if(color == "RED")      printf(ANSI_COLOR_RED);
   else if(color == "GREEN")    printf(ANSI_COLOR_GREEN);
@@ -110,11 +111,11 @@ void RM_LOG::PRINTLN(STRING str, double data, uint8_t point, STRING color)
   else if(color == "BLUE")     printf(ANSI_COLOR_BLUE);
   else if(color == "MAGENTA")  printf(ANSI_COLOR_MAGENTA);
   else if(color == "CYAN")     printf(ANSI_COLOR_CYAN);
-  printf("%s %.*lf\n", str.c_str(), point, data);
+  printf("%s %.*lf\n", str.c_str(), decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINTLN(const char* str, STRING color)
+void println(const char* str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -129,11 +130,11 @@ void RM_LOG::PRINTLN(const char* str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::PRINTLN(const char* str, double data, uint8_t point, STRING color)
+void println(const char* str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
        if(color == "RED")      printf(ANSI_COLOR_RED);
   else if(color == "GREEN")    printf(ANSI_COLOR_GREEN);
@@ -141,12 +142,12 @@ void RM_LOG::PRINTLN(const char* str, double data, uint8_t point, STRING color)
   else if(color == "BLUE")     printf(ANSI_COLOR_BLUE);
   else if(color == "MAGENTA")  printf(ANSI_COLOR_MAGENTA);
   else if(color == "CYAN")     printf(ANSI_COLOR_CYAN);
-  printf("%s %.*lf\n", str, point, data);
+  printf("%s %.*lf\n", str, decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
 
-void RM_LOG::INFO(STRING str)
+void info(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -155,17 +156,17 @@ void RM_LOG::INFO(STRING str)
   printf("[INFO] %s\n", str.c_str());
 #endif
 }
-void RM_LOG::INFO(STRING str, double data, uint8_t point)
+void info(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
-  printf("[INFO] %s %.*lf\n", str.c_str(), point, data);
+  printf("[INFO] %s %.*lf\n", str.c_str(), decimal_point, data);
 #endif
 }
-void RM_LOG::INFO(const char* str)
+void info(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -174,17 +175,17 @@ void RM_LOG::INFO(const char* str)
   printf("[INFO] %s\n", str);
 #endif
 }
-void RM_LOG::INFO(const char* str, double data, uint8_t point)
+void info(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
-  printf("[INFO] %s %.*lf\n", str, point, data);
+  printf("[INFO] %s %.*lf\n", str, decimal_point, data);
 #endif
 }
-void RM_LOG::WARN(STRING str)
+void warn(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -195,19 +196,19 @@ void RM_LOG::WARN(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::WARN(STRING str, double data, uint8_t point)
+void warn(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
   printf(ANSI_COLOR_YELLOW);
-  printf("[WARN] %s %.*lf\n",str.c_str(), point, data);
+  printf("[WARN] %s %.*lf\n",str.c_str(), decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::WARN(const char* str)
+void warn(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -218,19 +219,19 @@ void RM_LOG::WARN(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::WARN(const char* str, double data, uint8_t point)
+void warn(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
   printf(ANSI_COLOR_YELLOW);
-  printf("[WARN] %s %.*lf\n", str, point, data);
+  printf("[WARN] %s %.*lf\n", str, decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::ERROR(STRING str)
+void error(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -241,20 +242,20 @@ void RM_LOG::ERROR(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::ERROR(STRING str, double data, uint8_t point)
+void error(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
   printf(ANSI_COLOR_RED);
-  printf("[ERROR] %s %.*lf\n", str.c_str(), point, data);
+  printf("[ERROR] %s %.*lf\n", str.c_str(), decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
 
-void RM_LOG::ERROR(const char* str)
+void error(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -265,15 +266,15 @@ void RM_LOG::ERROR(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void RM_LOG::ERROR(const char* str, double data, uint8_t point)
+void error(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
   DEBUG.print(str);
-  DEBUG.println(data, point);
+  DEBUG.println(data, decimal_point);
 #else
   printf(ANSI_COLOR_RED);
-  printf("[ERROR] %s %.*lf\n", str, point, data);
+  printf("[ERROR] %s %.*lf\n", str, decimal_point, data);
   printf(ANSI_COLOR_RESET);
 #endif
 }
