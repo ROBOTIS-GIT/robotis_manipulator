@@ -27,7 +27,7 @@
 
 #include <algorithm>
 
-namespace ROBOTIS_MANIPULATOR
+namespace robotis_manipulator
 {
 
 class RobotisManipulator
@@ -47,7 +47,7 @@ private:
 private:
   void startMoving();
 
-  JointWayPoint getTrajectoryJointValue(double tick_time);
+  JointWaypoint getTrajectoryJointValue(double tick_time);
 
 public:
   RobotisManipulator();
@@ -101,12 +101,12 @@ public:
   std::vector<JointValue> getAllToolValue();
   KinematicPose getKinematicPose(Name component_name);
   DynamicPose getDynamicPose(Name component_name);
-  PoseValue getPoseValue(Name component_name);
+  Pose getPose(Name component_name);
 
   // Kinematics (include virtual function)
   Eigen::MatrixXd jacobian(Name tool_name);
   void solveForwardKinematics();
-  bool solveInverseKinematics(Name tool_name, PoseValue goal_pose, std::vector<JointValue> *goal_joint_value);
+  bool solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue> *goal_joint_value);
   void setKinematicsOption(const void* arg);
 
   // ACTUATOR (INCLUDES VIRTUAL)
