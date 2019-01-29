@@ -53,32 +53,39 @@ public:
   RobotisManipulator();
   virtual ~RobotisManipulator();
 
-  /////////////////////////// initialize function /////////////////////////////
+
+  /*****************************************************************************
+  ** Initialize Function
+  *****************************************************************************/
   void addWorld(Name world_name,
                 Name child_name,
-                Eigen::Vector3d world_position = Eigen::Vector3d::Zero(3),
+                Eigen::Vector3d world_position = Eigen::Vector3d::Zero(),
                 Eigen::Matrix3d world_orientation = Eigen::Matrix3d::Identity());
 
   void addJoint(Name my_name,
-                    Name parent_name,
-                    Name child_name,
-                    Eigen::Vector3d relative_position,
-                    Eigen::Matrix3d relative_orientation,
-                    Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
-                    int8_t joint_actuator_id = -1, double max_limit = M_PI, double min_limit = -M_PI,
-                    double coefficient = 1.0,
-                    double mass = 0.0,
-                    Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
-                    Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+                Name parent_name,
+                Name child_name,
+                Eigen::Vector3d relative_position,
+                Eigen::Matrix3d relative_orientation,
+                Eigen::Vector3d axis_of_rotation = Eigen::Vector3d::Zero(),
+                int8_t joint_actuator_id = -1, 
+                double max_position_limit = M_PI, 
+                double min_position_limit = -M_PI,
+                double coefficient = 1.0,
+                double mass = 0.0,
+                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
+                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
 
   void addTool(Name my_name,
                Name parent_name,
                Eigen::Vector3d relative_position,
                Eigen::Matrix3d relative_orientation,
-               int8_t tool_id = -1, double max_limit =M_PI, double min_limit = -M_PI,
+               int8_t tool_id = -1, 
+               double max_position_limit =M_PI, 
+               double min_position_limit = -M_PI,
                double coefficient = 1.0,
                double mass = 0.0,
-               Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(3, 3),
+               Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
 
   void addComponentChild(Name my_name, Name child_name);
@@ -90,7 +97,10 @@ public:
   void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
   void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
 
-  // Manipulator
+
+  /*****************************************************************************
+  ** Manipulator Function
+  *****************************************************************************/
   Manipulator *getManipulator();
 
   JointValue getJointValue(Name joint_name);
@@ -103,13 +113,19 @@ public:
   DynamicPose getDynamicPose(Name component_name);
   Pose getPose(Name component_name);
 
-  // Kinematics (include virtual function)
+
+  /*****************************************************************************
+  ** Kinematics Function (Including Virtual Function)
+  *****************************************************************************/
   Eigen::MatrixXd jacobian(Name tool_name);
   void solveForwardKinematics();
   bool solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue> *goal_joint_value);
   void setKinematicsOption(const void* arg);
 
-  // ACTUATOR (INCLUDES VIRTUAL)
+
+  /*****************************************************************************
+  ** Actuator Function (Including Virtual Function)
+  *****************************************************************************/
   void setJointActuatorMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void setToolActuatorMode(Name actuator_name, const void *arg);
   std::vector<uint8_t> getJointActuatorId(Name actuator_name);
@@ -138,17 +154,26 @@ public:
   std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
   std::vector<JointValue> receiveAllToolActuatorValue();
 
-  // time
+
+  /*****************************************************************************
+  ** Time Function
+  *****************************************************************************/
   double getTrajectoryMoveTime();
   bool getMovingState();
 
-  //Joint limit (Check as Trajectory Manipulator)
+
+  /*****************************************************************************
+  ** Check Joint Limit Function
+  *****************************************************************************/
   bool checkJointLimit(Name component_name, double position);
   bool checkJointLimit(Name component_name, JointValue value);
   bool checkJointLimit(std::vector<Name> component_name, std::vector<double> position_vector);
   bool checkJointLimit(std::vector<Name> component_name, std::vector<JointValue> value_vector);
 
-  //Trajectory Control Move Fuction
+
+  /*****************************************************************************
+  ** Trajectory Control Fuction
+  *****************************************************************************/
   void makeJointTrajectoryFromPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   void makeJointTrajectory(std::vector<double> goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   void makeJointTrajectory(std::vector<JointValue> goal_joint_value, double move_time, std::vector<JointValue> present_joint_value = {});
