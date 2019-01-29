@@ -52,7 +52,7 @@ Eigen::Matrix3d inertiaMatrix(double ixx, double ixy, double ixz , double iyy , 
 ** Convert
 *****************************************************************************/
 // Translation Vector
-Eigen::Vector3d convertXYZToVector(double x, double y, double z);
+Eigen::Vector3d convertXYZ2Vector(double x, double y, double z);
 
 // Rotation 
 Eigen::Matrix3d convertRollAngle2RotationMatrix(double angle);
@@ -84,7 +84,7 @@ Eigen::Vector3d convertRPYAcceleration2OmegaDot(Eigen::Vector3d rpy_vector, Eige
 double sign(double value);
 
 Eigen::Matrix4d inverseTransformationMatrix(const Eigen::MatrixXd& transformation_matrix);
-Eigen::Vector3d logarithmMatrix(Eigen::Matrix3d rotation_matrix);
+Eigen::Vector3d matrixLogarithm(Eigen::Matrix3d rotation_matrix);
 Eigen::Matrix3d skewSymmetricMatrix(Eigen::Vector3d v);
 Eigen::Matrix3d rodriguesRotationMatrix(Eigen::Vector3d axis, double angle);
 

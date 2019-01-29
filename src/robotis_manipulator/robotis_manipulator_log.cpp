@@ -18,9 +18,7 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_log.h"
 
-using namespace robotis_manipulator_log;
-
-void print(STRING str, STRING color)
+void robotis_manipulator_log::print(STRING str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -35,7 +33,7 @@ void print(STRING str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void print(STRING str, double data, uint8_t decimal_point, STRING color)
+void robotis_manipulator_log::print(STRING str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -51,7 +49,7 @@ void print(STRING str, double data, uint8_t decimal_point, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void print(const char* str, STRING color)
+void robotis_manipulator_log::print(const char* str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -66,7 +64,7 @@ void print(const char* str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void print(const char* str, double data, uint8_t decimal_point, STRING color)
+void robotis_manipulator_log::print(const char* str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -84,7 +82,7 @@ void print(const char* str, double data, uint8_t decimal_point, STRING color)
 }
 
 
-void println(STRING str, STRING color)
+void robotis_manipulator_log::println(STRING str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -99,7 +97,7 @@ void println(STRING str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void println(STRING str, double data, uint8_t decimal_point, STRING color)
+void robotis_manipulator_log::println(STRING str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -115,7 +113,7 @@ void println(STRING str, double data, uint8_t decimal_point, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void println(const char* str, STRING color)
+void robotis_manipulator_log::println(const char* str, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.println(str);
@@ -130,7 +128,7 @@ void println(const char* str, STRING color)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void println(const char* str, double data, uint8_t decimal_point, STRING color)
+void robotis_manipulator_log::println(const char* str, double data, uint8_t decimal_point, STRING color)
 {
 #if defined(__OPENCR__)
   DEBUG.print(str);
@@ -147,7 +145,7 @@ void println(const char* str, double data, uint8_t decimal_point, STRING color)
 #endif
 }
 
-void info(STRING str)
+void robotis_manipulator_log::info(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -156,7 +154,7 @@ void info(STRING str)
   printf("[INFO] %s\n", str.c_str());
 #endif
 }
-void info(STRING str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::info(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -166,7 +164,7 @@ void info(STRING str, double data, uint8_t decimal_point)
   printf("[INFO] %s %.*lf\n", str.c_str(), decimal_point, data);
 #endif
 }
-void info(const char* str)
+void robotis_manipulator_log::info(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -175,7 +173,7 @@ void info(const char* str)
   printf("[INFO] %s\n", str);
 #endif
 }
-void info(const char* str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::info(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[INFO] ");
@@ -185,7 +183,7 @@ void info(const char* str, double data, uint8_t decimal_point)
   printf("[INFO] %s %.*lf\n", str, decimal_point, data);
 #endif
 }
-void warn(STRING str)
+void robotis_manipulator_log::warn(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -196,7 +194,7 @@ void warn(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void warn(STRING str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::warn(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -208,7 +206,7 @@ void warn(STRING str, double data, uint8_t decimal_point)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void warn(const char* str)
+void robotis_manipulator_log::warn(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -219,7 +217,7 @@ void warn(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void warn(const char* str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::warn(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[WARN] ");
@@ -231,7 +229,7 @@ void warn(const char* str, double data, uint8_t decimal_point)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void error(STRING str)
+void robotis_manipulator_log::error(STRING str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -242,7 +240,7 @@ void error(STRING str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void error(STRING str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::error(STRING str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -255,7 +253,7 @@ void error(STRING str, double data, uint8_t decimal_point)
 #endif
 }
 
-void error(const char* str)
+void robotis_manipulator_log::error(const char* str)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");
@@ -266,7 +264,7 @@ void error(const char* str)
   printf(ANSI_COLOR_RESET);
 #endif
 }
-void error(const char* str, double data, uint8_t decimal_point)
+void robotis_manipulator_log::error(const char* str, double data, uint8_t decimal_point)
 {
 #if defined(__OPENCR__)
   DEBUG.print("[ERROR] ");

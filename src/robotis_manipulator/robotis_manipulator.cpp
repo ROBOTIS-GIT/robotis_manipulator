@@ -757,7 +757,7 @@ JointValue RobotisManipulator::receiveToolActuatorValue(Name tool_component_name
 {
   if(actuator_added_stete_)
   {
-    ToolValue result;
+    JointValue result;
     result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))->receiveToolActuatorValue();
     result.position = result.position * manipulator_.getCoefficient(tool_component_name);
     result.velocity = result.velocity * manipulator_.getCoefficient(tool_component_name);
@@ -774,7 +774,7 @@ std::vector<JointValue> RobotisManipulator::receiveMultipleToolActuatorValue(std
   if(actuator_added_stete_)
   {
     std::vector<JointValue> result_vector;
-    ToolValue result;
+    ActuatorValue result;
     for (uint32_t index = 0; index < tool_component_name.size(); index++)
     {
       result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue();
@@ -797,7 +797,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllToolActuatorValue()
     std::vector<Name> tool_component_name;
     tool_component_name = manipulator_.getAllToolComponentName();
     std::vector<JointValue> result_vector;
-    ToolValue result;
+    ActuatorValue result;
     for (uint32_t index = 0; index < tool_component_name.size(); index++)
     {
       result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name.at(index)))->receiveToolActuatorValue();

@@ -104,7 +104,7 @@ typedef struct _Point
   double velocity;
   double acceleration;
   double effort;
-} Point, JointValue, ToolValue;
+} Point, ActuatorValue, JointValue, ToolValue;
 
 typedef std::vector<JointValue> JointWaypoint;
 
@@ -180,7 +180,7 @@ private:
   std::map<Name, Component> component_;
 
 public:
-  Manipulator() : dof_(0) {};
+  Manipulator():dof_(0){};
   ~Manipulator() {}
 
   /*****************************************************************************

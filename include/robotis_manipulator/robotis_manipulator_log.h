@@ -16,8 +16,8 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-#ifndef ROBOTIS_MANIPULATOR_DEBUG_H
-#define ROBOTIS_MANIPULATOR_DEBUG_H
+#ifndef ROBOTIS_MANIPULATOR_LOG_H
+#define ROBOTIS_MANIPULATOR_LOG_H
 
 #include <unistd.h>
 #include <vector>
@@ -165,4 +165,4 @@ namespace robotis_manipulator_log
   }
 }
 
-#endif // ROBOTIS_MANIPULATOR_DEBUG_H
+#endif // ROBOTIS_MANIPULATOR_LOG_H
