@@ -57,8 +57,8 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<JointValue> value_vector) = 0;
-  virtual std::vector<JointValue> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
+  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<ActuatorValue> value_vector) = 0;
+  virtual std::vector<ActuatorValue> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
   bool findId(uint8_t actuator_id);
   bool getEnabledState();
@@ -79,8 +79,8 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendToolActuatorValue(ToolValue value) = 0;
-  virtual ToolValue receiveToolActuatorValue() = 0;
+  virtual bool sendToolActuatorValue(ActuatorValue value) = 0;
+  virtual ActuatorValue receiveToolActuatorValue() = 0;
 
   bool findId(uint8_t actuator_id);
   bool getEnabledState();
