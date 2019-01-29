@@ -223,7 +223,7 @@ void RobotisManipulator::setJointActuatorMode(Name actuator_name, std::vector<ui
     }
     else
     {
-      rm_log::error("[jointActuatorSetMode] Worng Actuator Name.");
+      robotis_manipulator_log::error("[jointActuatorSetMode] Worng Actuator Name.");
     }
   }
 }
@@ -839,7 +839,7 @@ bool RobotisManipulator::checkJointLimit(Name component_name, double joint_posit
     return true;
   else
   {
-    rm_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
+    robotis_manipulator_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
     return false;
   }
 }
@@ -850,7 +850,7 @@ bool RobotisManipulator::checkJointLimit(Name component_name, JointValue value)
     return true;
   else
   {
-    rm_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
+    robotis_manipulator_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name) + ".");
     return false;
   }
 }
@@ -861,7 +861,7 @@ bool RobotisManipulator::checkJointLimit(std::vector<Name> component_name, std::
   {
     if(!trajectory_.getManipulator()->checkJointLimit(component_name.at(index), position_vector.at(index)))
     {
-      rm_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
+      robotis_manipulator_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
       return false;
     }
   }
@@ -874,7 +874,7 @@ bool RobotisManipulator::checkJointLimit(std::vector<Name> component_name, std::
   {
     if(!trajectory_.getManipulator()->checkJointLimit(component_name.at(index), value_vector.at(index).position))
     {
-      rm_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
+      robotis_manipulator_log::error("[checkJointLimit] Goal value exceeded limit at " + STRING(component_name.at(index)) + ".");
       return false;
     }
   }
@@ -1013,7 +1013,7 @@ void RobotisManipulator::makeJointTrajectory(Name tool_name, KinematicPose goal_
     startMoving();
   }
   else
-    rm_log::error("[JOINT_TRAJECTORY] Fail to solve IK");
+    robotis_manipulator_log::error("[JOINT_TRAJECTORY] Fail to solve IK");
 }
 
 void RobotisManipulator::makeTaskTrajectoryFromPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value)
@@ -1242,7 +1242,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     else
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
-      rm_log::error("[TASK_TRAJECTORY] fail to solve IK");
+      robotis_manipulator_log::error("[TASK_TRAJECTORY] fail to solve IK");
       moving_state_ = false;
     }
   }
@@ -1275,7 +1275,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     else
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
-      rm_log::error("[CUSTOM_TASK_TRAJECTORY] fail to solve IK");
+      robotis_manipulator_log::error("[CUSTOM_TASK_TRAJECTORY] fail to solve IK");
       moving_state_ = false;
     }
   }
@@ -1285,8 +1285,8 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   trajectory_.updatePresentWaypoint(kinematics_);
 
 //  Eigen::Vector3d print_temp = trajectory_.getManipulator()->getComponentDynamicPoseFromWorld("gripper").angular.velocity;
-//  RM_LOG::PRINT("ang vel");
-//  RM_LOG::PRINT_VECTOR(print_temp);
+//  robotis_manipulator_log::PRINT("ang vel");
+//  robotis_manipulator_log::PRINT_VECTOR(print_temp);
 
   return joint_way_point_value;
 }

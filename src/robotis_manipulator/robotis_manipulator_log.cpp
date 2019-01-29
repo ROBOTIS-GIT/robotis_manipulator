@@ -18,7 +18,7 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_log.h"
 
-using namespace rm_log;
+using namespace robotis_manipulator_log;
 
 void print(STRING str, STRING color)
 {

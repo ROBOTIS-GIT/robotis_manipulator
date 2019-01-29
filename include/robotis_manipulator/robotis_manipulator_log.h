@@ -46,7 +46,7 @@
   typedef std::string STRING;
 #endif
 
-namespace rm_log
+namespace robotis_manipulator_log
 {
   void print(STRING str, STRING color = "DEFAULT");
   void print(STRING str, double data, uint8_t decimal_point = 3, STRING color = "DEFAULT");

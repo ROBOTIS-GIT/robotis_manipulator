@@ -18,7 +18,7 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_math.h"
 
-using namespace rm_math;
+using namespace robotis_manipulator_math;
 
 
 /*****************************************************************************
@@ -110,7 +110,7 @@ Eigen::Vector3d convertRotationMatrix2RPYVector(const Eigen::Matrix3d& rotation)
 
 Eigen::Matrix3d convertRPY2RotationMatrix(double roll, double pitch, double yaw)
 {
-  Eigen::Matrix3d rotation = rm_math::convertYawAngle2RotationMatrix(yaw)*rm_math::convertPitchAngle2RotationMatrix(pitch)*rm_math::convertRollAngle2RotationMatrix(roll);
+  Eigen::Matrix3d rotation = robotis_manipulator_math::convertYawAngle2RotationMatrix(yaw)*robotis_manipulator_math::convertPitchAngle2RotationMatrix(pitch)*robotis_manipulator_math::convertRollAngle2RotationMatrix(roll);
 
   return rotation;
 }
@@ -118,7 +118,7 @@ Eigen::Matrix3d convertRPY2RotationMatrix(double roll, double pitch, double yaw)
 Eigen::Quaterniond convertRPY2Quaternion(double roll, double pitch, double yaw)
 {
  Eigen::Quaterniond quaternion;
- quaternion = rm_math::convertRPY2RotationMatrix(roll,pitch,yaw);
+ quaternion = robotis_manipulator_math::convertRPY2RotationMatrix(roll,pitch,yaw);
 
  return quaternion;
 }
@@ -133,7 +133,7 @@ Eigen::Quaterniond convertRotationMatrix2Quaternion(const Eigen::Matrix3d& rotat
 
 Eigen::Vector3d convertQuaternion2RPYVector(const Eigen::Quaterniond& quaternion)
 {
-  Eigen::Vector3d rpy = rm_math::convertRotationMatrix2RPYVector(quaternion.toRotationMatrix());
+  Eigen::Vector3d rpy = robotis_manipulator_math::convertRotationMatrix2RPYVector(quaternion.toRotationMatrix());
 
   return rpy;
 }
@@ -147,13 +147,13 @@ Eigen::Matrix3d convertQuaternion2RotationMatrix(const Eigen::Quaterniond& quate
 
 Eigen::Vector3d convertRotationMatrix2Omega(const Eigen::Matrix3d& rotation_matrix)
 {
-  return rm_math::logarithmMatrix(rotation_matrix);
+  return robotis_manipulator_math::logarithmMatrix(rotation_matrix);
 }
 
 // Transformation Matrix
 Eigen::Matrix4d convertXYZRPY2TransformationMatrix(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
 {
-  Eigen::Matrix4d transformation = rm_math::convertRPY2TransformationMatrix(roll, pitch, yaw);
+  Eigen::Matrix4d transformation = robotis_manipulator_math::convertRPY2TransformationMatrix(roll, pitch, yaw);
   transformation.coeffRef(0,3) = position_x;
   transformation.coeffRef(1,3) = position_y;
   transformation.coeffRef(2,3) = position_z;
@@ -360,7 +360,7 @@ Eigen::Matrix3d rodriguesRotationMatrix(Eigen::Vector3d axis, double angle)
   Eigen::Matrix3d rotation_matrix = Eigen::Matrix3d::Zero();
   Eigen::Matrix3d Identity_matrix = Eigen::Matrix3d::Identity();
 
-  skew_symmetric_matrix = rm_math::skewSymmetricMatrix(axis);
+  skew_symmetric_matrix = robotis_manipulator_math::skewSymmetricMatrix(axis);
   rotation_matrix = Identity_matrix +
                     skew_symmetric_matrix * sin(angle) +
                     skew_symmetric_matrix * skew_symmetric_matrix * (1 - cos(angle));
@@ -378,7 +378,7 @@ Eigen::Vector3d positionDifference(Eigen::Vector3d desired_position, Eigen::Vect
 Eigen::Vector3d orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
 {
   Eigen::Vector3d orientation_difference;
-  orientation_difference = present_orientation * rm_math::logarithmMatrix(present_orientation.transpose() * desired_orientation);
+  orientation_difference = present_orientation * robotis_manipulator_math::logarithmMatrix(present_orientation.transpose() * desired_orientation);
 
   return orientation_difference;
 }
@@ -390,8 +390,8 @@ Eigen::VectorXd poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d
   Eigen::Vector3d orientation_difference;
   Eigen::VectorXd pose_difference(6);
 
-  position_difference = rm_math::positionDifference(desired_position, present_position);
-  orientation_difference = rm_math::orientationDifference(desired_orientation, present_orientation);
+  position_difference = robotis_manipulator_math::positionDifference(desired_position, present_position);
+  orientation_difference = robotis_manipulator_math::orientationDifference(desired_orientation, present_orientation);
   pose_difference << position_difference(0), position_difference(1), position_difference(2),
       orientation_difference(0), orientation_difference(1), orientation_difference(2);
 
