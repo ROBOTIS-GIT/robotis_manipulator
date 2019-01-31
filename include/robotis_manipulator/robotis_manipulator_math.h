@@ -35,8 +35,10 @@
 #define DEG2RAD 0.01745329252 //(M_PI / 180.0)
 #define RAD2DEG 57.2957795131 //(180.0 / M_PI)
 
-namespace robotis_manipulator_math
+namespace robotis_manipulator
 {
+
+namespace math {
 
 /*****************************************************************************
 ** Make a Vector or Matrix
@@ -92,6 +94,8 @@ Eigen::Vector3d positionDifference(Eigen::Vector3d desired_position, Eigen::Vect
 Eigen::Vector3d orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
 Eigen::VectorXd poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
                         Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
-} // namespace robotis_manipulator_math
+
+} // math
+} // namespace robotis_manipulator
 
 #endif // ROBOTIS_MANIPULATOR_MATH_H_
