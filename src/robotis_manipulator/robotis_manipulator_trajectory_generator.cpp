@@ -158,17 +158,17 @@ void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWaypoint start,
   Eigen::Vector3d start_ang_vel_rpy;
   Eigen::Vector3d start_ang_acc_rpy;
 
-  start_orientation_rpy = math::convertRotationMatrix2RPYVector(start.kinematic.orientation);
-  start_ang_vel_rpy = math::convertOmega2RPYVelocity(start_orientation_rpy, start.dynamic.angular.velocity);
-  start_ang_acc_rpy = math::convertOmegaDot2RPYAcceleration(start_orientation_rpy, start_ang_vel_rpy, start.dynamic.angular.acceleration);
+  start_orientation_rpy = math::convertRotationMatrixToRPYVector(start.kinematic.orientation);
+  start_ang_vel_rpy = math::convertOmegaToRPYVelocity(start_orientation_rpy, start.dynamic.angular.velocity);
+  start_ang_acc_rpy = math::convertOmegaDotToRPYAcceleration(start_orientation_rpy, start_ang_vel_rpy, start.dynamic.angular.acceleration);
 
   Eigen::Vector3d goal_orientation_rpy;
   Eigen::Vector3d goal_ang_vel_rpy;
   Eigen::Vector3d goal_ang_acc_rpy;
 
-  goal_orientation_rpy = math::convertRotationMatrix2RPYVector(goal.kinematic.orientation);
-  goal_ang_vel_rpy = math::convertOmega2RPYVelocity(goal_orientation_rpy, goal.dynamic.angular.velocity);
-  start_ang_acc_rpy = math::convertOmegaDot2RPYAcceleration(goal_orientation_rpy, goal_ang_vel_rpy, goal.dynamic.angular.acceleration);
+  goal_orientation_rpy = math::convertRotationMatrixToRPYVector(goal.kinematic.orientation);
+  goal_ang_vel_rpy = math::convertOmegaToRPYVelocity(goal_orientation_rpy, goal.dynamic.angular.velocity);
+  start_ang_acc_rpy = math::convertOmegaDotToRPYAcceleration(goal_orientation_rpy, goal_ang_vel_rpy, goal.dynamic.angular.acceleration);
 
   for(uint8_t i = 0; i < 3; i++)    //roll, pitch, yaw
   {
@@ -242,17 +242,17 @@ TaskWaypoint TaskTrajectory::getTaskWaypoint(double tick)
   //////////////////////////////////orientation///////////////////////////////////
   Eigen::Vector3d rpy_orientation;
   rpy_orientation << result_point.at(3).position, result_point.at(4).position, result_point.at(5).position;
-  task_way_point.kinematic.orientation = math::convertRPY2RotationMatrix(result_point.at(3).position,   //roll
+  task_way_point.kinematic.orientation = math::convertRPYToRotationMatrix(result_point.at(3).position,   //roll
                                                                        result_point.at(4).position,   //pitch
                                                                        result_point.at(5).position);   //yaw
 
   Eigen::Vector3d rpy_velocity;
   rpy_velocity << result_point.at(3).velocity, result_point.at(4).velocity, result_point.at(5).velocity;
-  task_way_point.dynamic.angular.velocity = math::convertRPYVelocity2Omega(rpy_orientation, rpy_velocity);
+  task_way_point.dynamic.angular.velocity = math::convertRPYVelocityToOmega(rpy_orientation, rpy_velocity);
 
   Eigen::Vector3d rpy_acceleration;
   rpy_acceleration << result_point.at(3).acceleration, result_point.at(4).acceleration, result_point.at(5).acceleration;
-  task_way_point.dynamic.angular.acceleration = math::convertRPYAcceleration2OmegaDot(rpy_orientation, rpy_velocity, rpy_acceleration);
+  task_way_point.dynamic.angular.acceleration = math::convertRPYAccelerationToOmegaDot(rpy_orientation, rpy_velocity, rpy_acceleration);
 
   return task_way_point;
 }

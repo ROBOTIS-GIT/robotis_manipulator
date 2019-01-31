@@ -53,7 +53,7 @@ Eigen::Matrix3d robotis_manipulator::math::inertiaMatrix(double ixx, double ixy,
 ** Convert
 *****************************************************************************/
 // Translation Vector
-Eigen::Vector3d robotis_manipulator::math::convertXYZ2Vector(double x, double y, double z)
+Eigen::Vector3d robotis_manipulator::math::convertXYZToVector(double x, double y, double z)
 {
   Eigen::Vector3d position;
   position << x, y, z;
@@ -62,7 +62,7 @@ Eigen::Vector3d robotis_manipulator::math::convertXYZ2Vector(double x, double y,
 }
 
 //Rotation
-Eigen::Matrix3d robotis_manipulator::math::convertRollAngle2RotationMatrix(double angle)
+Eigen::Matrix3d robotis_manipulator::math::convertRollAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
   rotation <<
@@ -73,7 +73,7 @@ Eigen::Matrix3d robotis_manipulator::math::convertRollAngle2RotationMatrix(doubl
   return rotation;
 }
 
-Eigen::Matrix3d robotis_manipulator::math::convertPitchAngle2RotationMatrix(double angle)
+Eigen::Matrix3d robotis_manipulator::math::convertPitchAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
   rotation <<
@@ -84,7 +84,7 @@ Eigen::Matrix3d robotis_manipulator::math::convertPitchAngle2RotationMatrix(doub
   return rotation;
 }
 
-Eigen::Matrix3d robotis_manipulator::math::convertYawAngle2RotationMatrix(double angle)
+Eigen::Matrix3d robotis_manipulator::math::convertYawAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
   rotation <<
@@ -95,7 +95,7 @@ Eigen::Matrix3d robotis_manipulator::math::convertYawAngle2RotationMatrix(double
   return rotation;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertRotationMatrix2RPYVector(const Eigen::Matrix3d& rotation)
+Eigen::Vector3d robotis_manipulator::math::convertRotationMatrixToRPYVector(const Eigen::Matrix3d& rotation)
 {
   Eigen::Vector3d rpy;// = Eigen::MatrixXd::Zero(3,1);
   rpy.coeffRef(0,0) = atan2(rotation.coeff(2,1), rotation.coeff(2,2));
@@ -105,22 +105,22 @@ Eigen::Vector3d robotis_manipulator::math::convertRotationMatrix2RPYVector(const
   return rpy;
 }
 
-Eigen::Matrix3d robotis_manipulator::math::convertRPY2RotationMatrix(double roll, double pitch, double yaw)
+Eigen::Matrix3d robotis_manipulator::math::convertRPYToRotationMatrix(double roll, double pitch, double yaw)
 {
-  Eigen::Matrix3d rotation = robotis_manipulator::math::convertYawAngle2RotationMatrix(yaw)*robotis_manipulator::math::convertPitchAngle2RotationMatrix(pitch)*robotis_manipulator::math::convertRollAngle2RotationMatrix(roll);
+  Eigen::Matrix3d rotation = robotis_manipulator::math::convertYawAngleToRotationMatrix(yaw)*robotis_manipulator::math::convertPitchAngleToRotationMatrix(pitch)*robotis_manipulator::math::convertRollAngleToRotationMatrix(roll);
 
   return rotation;
 }
 
-Eigen::Quaterniond robotis_manipulator::math::convertRPY2Quaternion(double roll, double pitch, double yaw)
+Eigen::Quaterniond robotis_manipulator::math::convertRPYToQuaternion(double roll, double pitch, double yaw)
 {
  Eigen::Quaterniond quaternion;
- quaternion = robotis_manipulator::math::convertRPY2RotationMatrix(roll,pitch,yaw);
+ quaternion = robotis_manipulator::math::convertRPYToRotationMatrix(roll,pitch,yaw);
 
  return quaternion;
 }
 
-Eigen::Quaterniond robotis_manipulator::math::convertRotationMatrix2Quaternion(const Eigen::Matrix3d& rotation)
+Eigen::Quaterniond robotis_manipulator::math::convertRotationMatrixToQuaternion(const Eigen::Matrix3d& rotation)
 {
   Eigen::Quaterniond quaternion;
   quaternion = rotation;
@@ -128,29 +128,29 @@ Eigen::Quaterniond robotis_manipulator::math::convertRotationMatrix2Quaternion(c
   return quaternion;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertQuaternion2RPYVector(const Eigen::Quaterniond& quaternion)
+Eigen::Vector3d robotis_manipulator::math::convertQuaternionToRPYVector(const Eigen::Quaterniond& quaternion)
 {
-  Eigen::Vector3d rpy = robotis_manipulator::math::convertRotationMatrix2RPYVector(quaternion.toRotationMatrix());
+  Eigen::Vector3d rpy = robotis_manipulator::math::convertRotationMatrixToRPYVector(quaternion.toRotationMatrix());
 
   return rpy;
 }
 
-Eigen::Matrix3d robotis_manipulator::math::convertQuaternion2RotationMatrix(const Eigen::Quaterniond& quaternion)
+Eigen::Matrix3d robotis_manipulator::math::convertQuaternionToRotationMatrix(const Eigen::Quaterniond& quaternion)
 {
   Eigen::Matrix3d rotation = quaternion.toRotationMatrix();
 
   return rotation;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertRotationMatrix2Omega(const Eigen::Matrix3d& rotation_matrix)
+Eigen::Vector3d robotis_manipulator::math::convertRotationMatrixToOmega(const Eigen::Matrix3d& rotation_matrix)
 {
   return robotis_manipulator::math::matrixLogarithm(rotation_matrix);
 }
 
 // Transformation Matrix
-Eigen::Matrix4d robotis_manipulator::math::convertXYZRPY2TransformationMatrix(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
+Eigen::Matrix4d robotis_manipulator::math::convertXYZRPYToTransformationMatrix(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
 {
-  Eigen::Matrix4d transformation = robotis_manipulator::math::convertRPY2TransformationMatrix(roll, pitch, yaw);
+  Eigen::Matrix4d transformation = robotis_manipulator::math::convertRPYToTransformationMatrix(roll, pitch, yaw);
   transformation.coeffRef(0,3) = position_x;
   transformation.coeffRef(1,3) = position_y;
   transformation.coeffRef(2,3) = position_z;
@@ -158,7 +158,7 @@ Eigen::Matrix4d robotis_manipulator::math::convertXYZRPY2TransformationMatrix(do
   return transformation;
 }
 
-Eigen::Matrix4d robotis_manipulator::math::convertXYZ2TransformationMatrix(double position_x, double position_y, double position_z)
+Eigen::Matrix4d robotis_manipulator::math::convertXYZToTransformationMatrix(double position_x, double position_y, double position_z)
 {
   Eigen::Matrix4d mat_translation;
 
@@ -171,7 +171,7 @@ Eigen::Matrix4d robotis_manipulator::math::convertXYZ2TransformationMatrix(doubl
   return mat_translation;
 }
 
-Eigen::Matrix4d robotis_manipulator::math::convertRPY2TransformationMatrix(double roll, double pitch, double yaw )
+Eigen::Matrix4d robotis_manipulator::math::convertRPYToTransformationMatrix(double roll, double pitch, double yaw )
 {
   double sr = sin(roll), cr = cos(roll);
   double sp = sin(pitch), cp = cos(pitch);
@@ -230,7 +230,7 @@ Eigen::Matrix4d robotis_manipulator::math::inverseTransformationMatrix(const Eig
 }
 
 //Dynamic value
-Eigen::Vector3d robotis_manipulator::math::convertOmega2RPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega)
+Eigen::Vector3d robotis_manipulator::math::convertOmegaToRPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega)
 {
   Eigen::Matrix3d c_inverse;
   Eigen::Vector3d rpy_velocity;
@@ -243,7 +243,7 @@ Eigen::Vector3d robotis_manipulator::math::convertOmega2RPYVelocity(Eigen::Vecto
   return rpy_velocity;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertRPYVelocity2Omega(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity)
+Eigen::Vector3d robotis_manipulator::math::convertRPYVelocityToOmega(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity)
 {
   Eigen::Matrix3d c;
   Eigen::Vector3d omega;
@@ -256,7 +256,7 @@ Eigen::Vector3d robotis_manipulator::math::convertRPYVelocity2Omega(Eigen::Vecto
   return omega;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertOmegaDot2RPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot)
+Eigen::Vector3d robotis_manipulator::math::convertOmegaDotToRPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot)
 {
   Eigen::Vector3d c_dot;
   Eigen::Matrix3d c_inverse;
@@ -274,7 +274,7 @@ Eigen::Vector3d robotis_manipulator::math::convertOmegaDot2RPYAcceleration(Eigen
   return rpy_acceleration;
 }
 
-Eigen::Vector3d robotis_manipulator::math::convertRPYAcceleration2OmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration)
+Eigen::Vector3d robotis_manipulator::math::convertRPYAccelerationToOmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration)
 {
   Eigen::Vector3d c_dot;
   Eigen::Matrix3d c;

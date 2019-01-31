@@ -54,30 +54,30 @@ Eigen::Matrix3d inertiaMatrix(double ixx, double ixy, double ixz , double iyy , 
 ** Convert
 *****************************************************************************/
 // Translation Vector
-Eigen::Vector3d convertXYZ2Vector(double x, double y, double z);
+Eigen::Vector3d convertXYZToVector(double x, double y, double z);
 
 // Rotation 
-Eigen::Matrix3d convertRollAngle2RotationMatrix(double angle);
-Eigen::Matrix3d convertPitchAngle2RotationMatrix(double angle);
-Eigen::Matrix3d convertYawAngle2RotationMatrix(double angle);
-Eigen::Vector3d convertRotationMatrix2RPYVector(const Eigen::Matrix3d& rotation_matrix);
-Eigen::Matrix3d convertRPY2RotationMatrix(double roll, double pitch, double yaw);
-Eigen::Quaterniond convertRPY2Quaternion(double roll, double pitch, double yaw);
-Eigen::Quaterniond convertRotationMatrix2Quaternion(const Eigen::Matrix3d& rotation_matrix);
-Eigen::Vector3d convertQuaternion2RPYVector(const Eigen::Quaterniond& quaternion);
-Eigen::Matrix3d convertQuaternion2RotationMatrix(const Eigen::Quaterniond& quaternion);
-Eigen::Vector3d convertRotationMatrix2Omega(const Eigen::Matrix3d& rotation_matrix);
+Eigen::Matrix3d convertRollAngleToRotationMatrix(double angle);
+Eigen::Matrix3d convertPitchAngleToRotationMatrix(double angle);
+Eigen::Matrix3d convertYawAngleToRotationMatrix(double angle);
+Eigen::Vector3d convertRotationMatrixToRPYVector(const Eigen::Matrix3d& rotation_matrix);
+Eigen::Matrix3d convertRPYToRotationMatrix(double roll, double pitch, double yaw);
+Eigen::Quaterniond convertRPYToQuaternion(double roll, double pitch, double yaw);
+Eigen::Quaterniond convertRotationMatrixToQuaternion(const Eigen::Matrix3d& rotation_matrix);
+Eigen::Vector3d convertQuaternionToRPYVector(const Eigen::Quaterniond& quaternion);
+Eigen::Matrix3d convertQuaternionToRotationMatrix(const Eigen::Quaterniond& quaternion);
+Eigen::Vector3d convertRotationMatrixToOmega(const Eigen::Matrix3d& rotation_matrix);
 
 // Transformation Matrix
-Eigen::Matrix4d convertXYZRPY2TransformationMatrix(double x, double y, double z , double roll, double pitch, double yaw);
-Eigen::Matrix4d convertXYZ2TransformationMatrix(double x, double y, double z);
-Eigen::Matrix4d convertRPY2TransformationMatrix(double roll, double pitch, double yaw);
+Eigen::Matrix4d convertXYZRPYToTransformationMatrix(double x, double y, double z , double roll, double pitch, double yaw);
+Eigen::Matrix4d convertXYZToTransformationMatrix(double x, double y, double z);
+Eigen::Matrix4d convertRPYToTransformationMatrix(double roll, double pitch, double yaw);
 
 // Dynamic Value
-Eigen::Vector3d convertOmega2RPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega);
-Eigen::Vector3d convertRPYVelocity2Omega(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity);
-Eigen::Vector3d convertOmegaDot2RPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot);
-Eigen::Vector3d convertRPYAcceleration2OmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration);
+Eigen::Vector3d convertOmegaToRPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega);
+Eigen::Vector3d convertRPYVelocityToOmega(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity);
+Eigen::Vector3d convertOmegaDotToRPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot);
+Eigen::Vector3d convertRPYAccelerationToOmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration);
 
 
 /*****************************************************************************
