@@ -20,6 +20,7 @@
 
 using namespace robotis_manipulator;
 
+Manipulator::Manipulator():dof_(0){}
 
 /*****************************************************************************
 ** Add Function
