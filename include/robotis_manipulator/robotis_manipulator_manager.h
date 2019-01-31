@@ -27,30 +27,28 @@
 
 #include "robotis_manipulator_common.h"
 
-
-namespace ROBOTIS_MANIPULATOR
+namespace robotis_manipulator
 {
 
 class Kinematics
 {
 public:
-  Kinematics(){};
-  virtual ~Kinematics(){};
+  Kinematics() {}
+  virtual ~Kinematics() {}
 
   virtual void setOption(const void *arg) = 0;
-  virtual void updatePassiveJointValue(Manipulator *manipulator) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  virtual void forwardKinematics(Manipulator *manipulator) = 0;
-  virtual bool inverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<double>* goal_joint_value) = 0;
+  virtual void solveForwardKinematics(Manipulator *manipulator) = 0;
+  virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;
 };
 
 class JointActuator
 {
 public:
-  bool enable_state_;
+  bool enabled_state_;
 
-  JointActuator():enable_state_(false){};
-  virtual ~JointActuator(){};
+  JointActuator() : enabled_state_(false) {}
+  virtual ~JointActuator() {}
 
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
   virtual void setMode(std::vector<uint8_t> actuator_id, const void *arg) = 0;
@@ -59,20 +57,20 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<Actuator> value_vector) = 0;
-  virtual std::vector<Actuator> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
+  virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<ActuatorValue> value_vector) = 0;
+  virtual std::vector<ActuatorValue> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
   bool findId(uint8_t actuator_id);
-  bool isEnabled();
+  bool getEnabledState();
 };
 
 class ToolActuator
 {
 public:
-  bool enable_state_;
+  bool enabled_state_;
 
-  ToolActuator():enable_state_(false){};
-  virtual ~ToolActuator(){};
+  ToolActuator():enabled_state_(false){}
+  virtual ~ToolActuator() {}
 
   virtual void init(uint8_t actuator_id, const void *arg) = 0;
   virtual void setMode(const void *arg) = 0;
@@ -81,31 +79,35 @@ public:
   virtual void enable() = 0;
   virtual void disable() = 0;
 
-  virtual bool sendToolActuatorValue(double value) = 0;
-  virtual double receiveToolActuatorValue() = 0;
+  virtual bool sendToolActuatorValue(ActuatorValue value) = 0;
+  virtual ActuatorValue receiveToolActuatorValue() = 0;
 
   bool findId(uint8_t actuator_id);
-  bool isEnabled();
+  bool getEnabledState();
 };
 
 
-class DrawingTrajectory
+class CustomJointTrajectory
 {
-private:
-  WayPointType output_way_point_type_;
-
 public:
-  DrawingTrajectory(){};
-  virtual ~DrawingTrajectory(){};
+  CustomJointTrajectory() {}
+  virtual ~CustomJointTrajectory() {}
 
-  virtual void init(double move_time, double control_time, std::vector<WayPoint> start, const void *arg) = 0; //arg -> ex) radius, goal_pose, meter
+  virtual void makeJointTrajectory(double move_time, JointWaypoint start, const void *arg) = 0; 
   virtual void setOption(const void *arg) = 0;
-  virtual std::vector<WayPoint> getJointWayPoint(double tick) = 0;
-  virtual std::vector<WayPoint> getTaskWayPoint(double tick) = 0;
-
-  WayPointType getOutputWayPointType();
-  void setOutputWayPointType(WayPointType way_point_type);
+  virtual JointWaypoint getJointWaypoint(double tick) = 0;
 };
 
-} // namespace OPEN_MANIPULATOR
+class CustomTaskTrajectory
+{
+public:
+  CustomTaskTrajectory() {}
+  virtual ~CustomTaskTrajectory() {}
+
+  virtual void makeTaskTrajectory(double move_time, TaskWaypoint start, const void *arg) = 0; 
+  virtual void setOption(const void *arg) = 0;
+  virtual TaskWaypoint getTaskWaypoint(double tick) = 0;
+};
+
+} // namespace ROBOTIS_MANIPULATOR
 #endif

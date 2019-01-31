@@ -18,72 +18,28 @@
 
 #include "../../include/robotis_manipulator/robotis_manipulator_math.h"
 
-
-double RM_MATH::sign(double number)
+/*****************************************************************************
+** Make a Vector or Matrix
+*****************************************************************************/
+Eigen::Vector3d robotis_manipulator::math::vector3(double v1, double v2, double v3)
 {
-  if (number >= 0.0)
-  {
-    return 1.0;
-  }
-  else
-  {
-    return -1.0;
-  }
+  Eigen::Vector3d temp;
+  temp << v1, v2, v3;
+  return temp;
 }
 
-/////////////////////convert function/////////////////////////////////////
-
-Eigen::Vector3d RM_MATH::getTransitionXYZ(double position_x, double position_y, double position_z)
+Eigen::Matrix3d robotis_manipulator::math::matrix3(double m11, double m12, double m13,
+                        double m21, double m22, double m23,
+                        double m31, double m32, double m33)
 {
-  Eigen::Vector3d position;
-
-  position <<
-      position_x,
-      position_y,
-      position_z;
-
-  return position;
+  Eigen::Matrix3d temp;
+  temp << m11, m12, m13, m21, m22, m23, m31, m32, m33;
+  return temp;
 }
 
-Eigen::Matrix4d RM_MATH::getTransformationXYZRPY(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
-{
-  Eigen::Matrix4d transformation = getRotation4d(roll, pitch, yaw);
-  transformation.coeffRef(0,3) = position_x;
-  transformation.coeffRef(1,3) = position_y;
-  transformation.coeffRef(2,3) = position_z;
-
-  return transformation;
-}
-
-Eigen::Matrix4d RM_MATH::getInverseTransformation(const Eigen::MatrixXd& transform)
-{
-  // If T is Transform Matrix A from B, the BOA is translation component coordi. B to coordi. A
-
-  Eigen::Vector3d vec_boa;
-  Eigen::Vector3d vec_x, vec_y, vec_z;
-  Eigen::Matrix4d inv_t;
-
-  vec_boa(0) = -transform(0,3);
-  vec_boa(1) = -transform(1,3);
-  vec_boa(2) = -transform(2,3);
-
-  vec_x(0) = transform(0,0); vec_x(1) = transform(1,0); vec_x(2) = transform(2,0);
-  vec_y(0) = transform(0,1); vec_y(1) = transform(1,1); vec_y(2) = transform(2,1);
-  vec_z(0) = transform(0,2); vec_z(1) = transform(1,2); vec_z(2) = transform(2,2);
-
-  inv_t <<
-      vec_x(0), vec_x(1), vec_x(2), vec_boa.dot(vec_x),
-      vec_y(0), vec_y(1), vec_y(2), vec_boa.dot(vec_y),
-      vec_z(0), vec_z(1), vec_z(2), vec_boa.dot(vec_z),
-      0, 0, 0, 1;
-
-  return inv_t;
-}
-
-Eigen::Matrix3d RM_MATH::getInertiaXYZ(double ixx, double ixy, double ixz , double iyy , double iyz, double izz)
+Eigen::Matrix3d robotis_manipulator::math::inertiaMatrix(double ixx, double ixy, double ixz , double iyy , double iyz, double izz)
 {
   Eigen::Matrix3d inertia;
-
   inertia <<
       ixx, ixy, ixz,
       ixy, iyy, iyz,
@@ -92,10 +48,23 @@ Eigen::Matrix3d RM_MATH::getInertiaXYZ(double ixx, double ixy, double ixz , doub
   return inertia;
 }
 
-Eigen::Matrix3d RM_MATH::getRotationX(double angle)
+
+/*****************************************************************************
+** Convert
+*****************************************************************************/
+// Translation Vector
+Eigen::Vector3d robotis_manipulator::math::convertXYZToVector(double x, double y, double z)
+{
+  Eigen::Vector3d position;
+  position << x, y, z;
+
+  return position;
+}
+
+//Rotation
+Eigen::Matrix3d robotis_manipulator::math::convertRollAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
-
   rotation <<
       1.0, 0.0, 0.0,
       0.0, cos(angle), -sin(angle),
@@ -104,10 +73,9 @@ Eigen::Matrix3d RM_MATH::getRotationX(double angle)
   return rotation;
 }
 
-Eigen::Matrix3d RM_MATH::getRotationY(double angle)
+Eigen::Matrix3d robotis_manipulator::math::convertPitchAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
-
   rotation <<
       cos(angle), 0.0, sin(angle),
       0.0, 1.0, 0.0,
@@ -116,10 +84,9 @@ Eigen::Matrix3d RM_MATH::getRotationY(double angle)
   return rotation;
 }
 
-Eigen::Matrix3d RM_MATH::getRotationZ(double angle)
+Eigen::Matrix3d robotis_manipulator::math::convertYawAngleToRotationMatrix(double angle)
 {
   Eigen::Matrix3d rotation(3,3);
-
   rotation <<
       cos(angle), -sin(angle), 0.0,
       sin(angle), cos(angle), 0.0,
@@ -128,7 +95,83 @@ Eigen::Matrix3d RM_MATH::getRotationZ(double angle)
   return rotation;
 }
 
-Eigen::Matrix4d RM_MATH::getRotation4d(double roll, double pitch, double yaw )
+Eigen::Vector3d robotis_manipulator::math::convertRotationMatrixToRPYVector(const Eigen::Matrix3d& rotation)
+{
+  Eigen::Vector3d rpy;// = Eigen::MatrixXd::Zero(3,1);
+  rpy.coeffRef(0,0) = atan2(rotation.coeff(2,1), rotation.coeff(2,2));
+  rpy.coeffRef(1,0) = atan2(-rotation.coeff(2,0), sqrt(pow(rotation.coeff(2,1), 2) + pow(rotation.coeff(2,2),2)));
+  rpy.coeffRef(2,0) = atan2 (rotation.coeff(1,0), rotation.coeff(0,0));
+
+  return rpy;
+}
+
+Eigen::Matrix3d robotis_manipulator::math::convertRPYToRotationMatrix(double roll, double pitch, double yaw)
+{
+  Eigen::Matrix3d rotation = robotis_manipulator::math::convertYawAngleToRotationMatrix(yaw)*robotis_manipulator::math::convertPitchAngleToRotationMatrix(pitch)*robotis_manipulator::math::convertRollAngleToRotationMatrix(roll);
+
+  return rotation;
+}
+
+Eigen::Quaterniond robotis_manipulator::math::convertRPYToQuaternion(double roll, double pitch, double yaw)
+{
+ Eigen::Quaterniond quaternion;
+ quaternion = robotis_manipulator::math::convertRPYToRotationMatrix(roll,pitch,yaw);
+
+ return quaternion;
+}
+
+Eigen::Quaterniond robotis_manipulator::math::convertRotationMatrixToQuaternion(const Eigen::Matrix3d& rotation)
+{
+  Eigen::Quaterniond quaternion;
+  quaternion = rotation;
+
+  return quaternion;
+}
+
+Eigen::Vector3d robotis_manipulator::math::convertQuaternionToRPYVector(const Eigen::Quaterniond& quaternion)
+{
+  Eigen::Vector3d rpy = robotis_manipulator::math::convertRotationMatrixToRPYVector(quaternion.toRotationMatrix());
+
+  return rpy;
+}
+
+Eigen::Matrix3d robotis_manipulator::math::convertQuaternionToRotationMatrix(const Eigen::Quaterniond& quaternion)
+{
+  Eigen::Matrix3d rotation = quaternion.toRotationMatrix();
+
+  return rotation;
+}
+
+Eigen::Vector3d robotis_manipulator::math::convertRotationMatrixToOmega(const Eigen::Matrix3d& rotation_matrix)
+{
+  return robotis_manipulator::math::matrixLogarithm(rotation_matrix);
+}
+
+// Transformation Matrix
+Eigen::Matrix4d robotis_manipulator::math::convertXYZRPYToTransformationMatrix(double position_x, double position_y, double position_z , double roll , double pitch , double yaw)
+{
+  Eigen::Matrix4d transformation = robotis_manipulator::math::convertRPYToTransformationMatrix(roll, pitch, yaw);
+  transformation.coeffRef(0,3) = position_x;
+  transformation.coeffRef(1,3) = position_y;
+  transformation.coeffRef(2,3) = position_z;
+
+  return transformation;
+}
+
+Eigen::Matrix4d robotis_manipulator::math::convertXYZToTransformationMatrix(double position_x, double position_y, double position_z)
+{
+  Eigen::Matrix4d mat_translation;
+
+  mat_translation <<
+      1, 0, 0, position_x,
+      0, 1, 0, position_y,
+      0, 0, 1, position_z,
+      0, 0, 0,          1;
+
+  return mat_translation;
+}
+
+Eigen::Matrix4d robotis_manipulator::math::convertRPYToTransformationMatrix(double roll, double pitch, double yaw )
 {
   double sr = sin(roll), cr = cos(roll);
   double sp = sin(pitch), cp = cos(pitch);
@@ -161,97 +204,111 @@ Eigen::Matrix4d RM_MATH::getRotation4d(double roll, double pitch, double yaw )
   return mat_rpy;
 }
 
-Eigen::Matrix4d RM_MATH::getTranslation4D(double position_x, double position_y, double position_z)
+Eigen::Matrix4d robotis_manipulator::math::inverseTransformationMatrix(const Eigen::MatrixXd& transform)
 {
-  Eigen::Matrix4d mat_translation;
+  // If T is Transform Matrix A from B, the BOA is translation component coordi. B to coordi. A
 
-  mat_translation <<
-      1, 0, 0, position_x,
-      0, 1, 0, position_y,
-      0, 0, 1, position_z,
-      0, 0, 0,          1;
+  Eigen::Vector3d vec_boa;
+  Eigen::Vector3d vec_x, vec_y, vec_z;
+  Eigen::Matrix4d inv_t;
 
-  return mat_translation;
+  vec_boa(0) = -transform(0,3);
+  vec_boa(1) = -transform(1,3);
+  vec_boa(2) = -transform(2,3);
+
+  vec_x(0) = transform(0,0); vec_x(1) = transform(1,0); vec_x(2) = transform(2,0);
+  vec_y(0) = transform(0,1); vec_y(1) = transform(1,1); vec_y(2) = transform(2,1);
+  vec_z(0) = transform(0,2); vec_z(1) = transform(1,2); vec_z(2) = transform(2,2);
+
+  inv_t <<
+      vec_x(0), vec_x(1), vec_x(2), vec_boa.dot(vec_x),
+      vec_y(0), vec_y(1), vec_y(2), vec_boa.dot(vec_y),
+      vec_z(0), vec_z(1), vec_z(2), vec_boa.dot(vec_z),
+      0, 0, 0, 1;
+
+  return inv_t;
 }
 
-Eigen::Vector3d RM_MATH::convertRotationToRPY(const Eigen::Matrix3d& rotation)
+//Dynamic value
+Eigen::Vector3d robotis_manipulator::math::convertOmegaToRPYVelocity(Eigen::Vector3d rpy_vector, Eigen::Vector3d omega)
 {
-  Eigen::Vector3d rpy;// = Eigen::MatrixXd::Zero(3,1);
+  Eigen::Matrix3d c_inverse;
+  Eigen::Vector3d rpy_velocity;
 
-  rpy.coeffRef(0,0) = atan2(rotation.coeff(2,1), rotation.coeff(2,2));
-  rpy.coeffRef(1,0) = atan2(-rotation.coeff(2,0), sqrt(pow(rotation.coeff(2,1), 2) + pow(rotation.coeff(2,2),2)));
-  rpy.coeffRef(2,0) = atan2 (rotation.coeff(1,0), rotation.coeff(0,0));
+  c_inverse << 1, sin(rpy_vector(0))*tan(rpy_vector(1)), cos(rpy_vector(0))*tan(rpy_vector(1)),
+       0, cos(rpy_vector(0)),                    -sin(rpy_vector(0)),
+       0, sin(rpy_vector(0))/cos(rpy_vector(1)), cos(rpy_vector(0))/cos(rpy_vector(1));
 
-  return rpy;
+  rpy_velocity = c_inverse * omega;
+  return rpy_velocity;
 }
 
-Eigen::Matrix3d RM_MATH::convertRPYToRotation(double roll, double pitch, double yaw)
+Eigen::Vector3d robotis_manipulator::math::convertRPYVelocityToOmega(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity)
 {
-  Eigen::Matrix3d rotation = getRotationZ(yaw)*getRotationY(pitch)*getRotationX(roll);
+  Eigen::Matrix3d c;
+  Eigen::Vector3d omega;
 
-  return rotation;
+  c << 1, 0,                     -sin(rpy_vector(1)),
+        0, cos(rpy_vector(0)),    sin(rpy_vector(0))*cos(rpy_vector(1)),
+        0, -sin(rpy_vector(0)), cos(rpy_vector(0))*cos(rpy_vector(1));
+
+  omega = c * rpy_velocity;
+  return omega;
 }
 
- Eigen::Quaterniond RM_MATH::convertRPYToQuaternion(double roll, double pitch, double yaw)
- {
-   Eigen::Quaterniond quaternion;
-   quaternion = convertRPYToRotation(roll,pitch,yaw);
-
-   return quaternion;
- }
-
- Eigen::Quaterniond RM_MATH::convertRotationToQuaternion(const Eigen::Matrix3d& rotation)
- {
-   Eigen::Quaterniond quaternion;
-   quaternion = rotation;
-
-   return quaternion;
- }
-
- Eigen::Vector3d RM_MATH::convertQuaternionToRPY(const Eigen::Quaterniond& quaternion)
- {
-   Eigen::Vector3d rpy = convertRotationToRPY(quaternion.toRotationMatrix());
-
-   return rpy;
- }
-
- Eigen::Matrix3d RM_MATH::convertQuaternionToRotation(const Eigen::Quaterniond& quaternion)
- {
-   Eigen::Matrix3d rotation = quaternion.toRotationMatrix();
-
-   return rotation;
- }
-
-Eigen::Vector3d RM_MATH::convertRotToOmega(const Eigen::Matrix3d& rotation_matrix)
+Eigen::Vector3d robotis_manipulator::math::convertOmegaDotToRPYAcceleration(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d omega_dot)
 {
-  return matrixLogarithm(rotation_matrix);
+  Eigen::Vector3d c_dot;
+  Eigen::Matrix3d c_inverse;
+  Eigen::Vector3d rpy_acceleration;
+
+  c_dot << -cos(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2],
+           -sin(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2] + cos(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2],
+           -cos(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2] - cos(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2];
+
+  c_inverse << 1, sin(rpy_vector(0))*tan(rpy_vector(1)), cos(rpy_vector(0))*tan(rpy_vector(1)),
+       0, cos(rpy_vector(0)),                    -sin(rpy_vector(0)),
+       0, sin(rpy_vector(0))/cos(rpy_vector(1)), cos(rpy_vector(0))/cos(rpy_vector(1));
+
+  rpy_acceleration = c_inverse * (omega_dot - c_dot);
+  return rpy_acceleration;
 }
 
-
-///////////////////////////////////////////////////////////////////////
-
-
-Eigen::Vector3d RM_MATH::makeVector3(double v1, double v2, double v3)
+Eigen::Vector3d robotis_manipulator::math::convertRPYAccelerationToOmegaDot(Eigen::Vector3d rpy_vector, Eigen::Vector3d rpy_velocity, Eigen::Vector3d rpy_acceleration)
 {
-  Eigen::Vector3d temp;
-  temp << v1, v2, v3;
-  return temp;
-}
+  Eigen::Vector3d c_dot;
+  Eigen::Matrix3d c;
+  Eigen::Vector3d omega_dot;
 
-Eigen::Matrix3d RM_MATH::makeMatrix3(double m11, double m12, double m13,
-                                     double m21, double m22, double m23,
-                                     double m31, double m32, double m33)
-{
-  Eigen::Matrix3d temp;
-  temp << m11, m12, m13, m21, m22, m23, m31, m32, m33;
-  return temp;
+  c_dot << -cos(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2],
+           -sin(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2] + cos(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2],
+           -cos(rpy_vector[0]) * rpy_velocity[0] * rpy_velocity[1] - sin(rpy_vector[0]) * cos(rpy_vector[1]) * rpy_velocity[0] * rpy_velocity[2] - cos(rpy_vector[0]) * sin(rpy_vector[1]) * rpy_velocity[1] * rpy_velocity[2];
+
+  c << 1, 0,                     -sin(rpy_vector(1)),
+        0, cos(rpy_vector(0)),    sin(rpy_vector(0))*cos(rpy_vector(1)),
+        0, -sin(rpy_vector(0)), cos(rpy_vector(0))*cos(rpy_vector(1));
+
+  omega_dot = c_dot + c * rpy_acceleration;
+  return omega_dot;
 }
 
 
-//////////////////////
+/*****************************************************************************
+** Math
+*****************************************************************************/
+double robotis_manipulator::math::sign(double value)
+{
+  if (value >= 0.0)
+  {
+    return 1.0;
+  }
+  else
+  {
+    return -1.0;
+  }
+}
 
-
-Eigen::Vector3d RM_MATH::matrixLogarithm(Eigen::Matrix3d rotation_matrix)
+Eigen::Vector3d robotis_manipulator::math::matrixLogarithm(Eigen::Matrix3d rotation_matrix)
 {
   Eigen::Matrix3d R = rotation_matrix;
   Eigen::Vector3d l = Eigen::Vector3d::Zero();
@@ -285,7 +342,7 @@ Eigen::Vector3d RM_MATH::matrixLogarithm(Eigen::Matrix3d rotation_matrix)
   return rotation_vector;
 }
 
-Eigen::Matrix3d RM_MATH::skewSymmetricMatrix(Eigen::Vector3d v)
+Eigen::Matrix3d robotis_manipulator::math::skewSymmetricMatrix(Eigen::Vector3d v)
 {
   Eigen::Matrix3d skew_symmetric_matrix = Eigen::Matrix3d::Zero();
   skew_symmetric_matrix << 0, -v(2), v(1),
@@ -294,21 +351,20 @@ Eigen::Matrix3d RM_MATH::skewSymmetricMatrix(Eigen::Vector3d v)
   return skew_symmetric_matrix;
 }
 
-Eigen::Matrix3d RM_MATH::rodriguesRotationMatrix(Eigen::Vector3d axis, double angle)
+Eigen::Matrix3d robotis_manipulator::math::rodriguesRotationMatrix(Eigen::Vector3d axis, double angle)
 {
   Eigen::Matrix3d skew_symmetric_matrix = Eigen::Matrix3d::Zero();
   Eigen::Matrix3d rotation_matrix = Eigen::Matrix3d::Zero();
   Eigen::Matrix3d Identity_matrix = Eigen::Matrix3d::Identity();
 
-  skew_symmetric_matrix = skewSymmetricMatrix(axis);
+  skew_symmetric_matrix = robotis_manipulator::math::skewSymmetricMatrix(axis);
   rotation_matrix = Identity_matrix +
                     skew_symmetric_matrix * sin(angle) +
                     skew_symmetric_matrix * skew_symmetric_matrix * (1 - cos(angle));
   return rotation_matrix;
 }
 
-
-Eigen::Vector3d RM_MATH::positionDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position)
+Eigen::Vector3d robotis_manipulator::math::positionDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position)
 {
   Eigen::Vector3d position_difference;
   position_difference = desired_position - present_position;
@@ -316,34 +372,25 @@ Eigen::Vector3d RM_MATH::positionDifference(Eigen::Vector3d desired_position, Ei
   return position_difference;
 }
 
-Eigen::Vector3d RM_MATH::orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
+Eigen::Vector3d robotis_manipulator::math::orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
 {
   Eigen::Vector3d orientation_difference;
-  orientation_difference = present_orientation * matrixLogarithm(present_orientation.transpose() * desired_orientation);
+  orientation_difference = present_orientation * robotis_manipulator::math::matrixLogarithm(present_orientation.transpose() * desired_orientation);
 
   return orientation_difference;
 }
 
-Eigen::VectorXd RM_MATH::poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
+Eigen::VectorXd robotis_manipulator::math::poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
                               Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation)
 {
   Eigen::Vector3d position_difference;
   Eigen::Vector3d orientation_difference;
   Eigen::VectorXd pose_difference(6);
 
-  position_difference = positionDifference(desired_position, present_position);
-  orientation_difference = orientationDifference(desired_orientation, present_orientation);
+  position_difference = robotis_manipulator::math::positionDifference(desired_position, present_position);
+  orientation_difference = robotis_manipulator::math::orientationDifference(desired_orientation, present_orientation);
   pose_difference << position_difference(0), position_difference(1), position_difference(2),
       orientation_difference(0), orientation_difference(1), orientation_difference(2);
 
   return pose_difference;
-}
-
-///////////////////////////////////////////////////
-
-
-template <typename T>
-T RM_MATH::map(T x, T in_min, T in_max, T out_min, T out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
 }
