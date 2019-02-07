@@ -10,8 +10,8 @@ add_compile_options(-std=c++11)
 # Find catkin packages and libraries for catkin and system dependencies
 ################################################################################
 find_package(catkin REQUIRED COMPONENTS
-    roscpp
-    cmake_modules
+  roscpp
+  cmake_modules
 )
 find_package(Eigen3 REQUIRED)
 
@@ -43,6 +43,7 @@ catkin_package(
 include_directories(
   include
   ${catkin_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_library(robotis_manipulator
@@ -55,7 +56,7 @@ add_library(robotis_manipulator
 )
 
 add_dependencies(robotis_manipulator ${catkin_EXPORTED_TARGETS})
-target_link_libraries(robotis_manipulator ${catkin_LIBRARIES})
+target_link_libraries(robotis_manipulator ${catkin_LIBRARIES} ${Eigen3_LIBRARIES})
 
 ################################################################################
 # Install
