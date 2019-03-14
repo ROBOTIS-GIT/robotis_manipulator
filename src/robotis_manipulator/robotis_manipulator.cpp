@@ -1254,6 +1254,9 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
       moving_state_ = false;
     }
+    //set present joint task value to trajectory manipulator
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    trajectory_.updatePresentWaypoint(kinematics_);
   }
   /////////////////////////////////////////////////////////////////
   ///
@@ -1268,15 +1271,20 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
         joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+        task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
         moving_state_ = false;
       }
     }
     else
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+      task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
       log::error("[TASK_TRAJECTORY] fail to solve IK");
       moving_state_ = false;
     }
+    //set present joint task value to trajectory manipulator
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    trajectory_.setPresentTaskWaypoint(trajectory_.getPresentControlToolName(), task_way_point);
   }
   /////////////////////////////////////////////////////////////////
   ///
@@ -1290,6 +1298,9 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
       moving_state_ = false;
     }
+    //set present joint task value to trajectory manipulator
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    trajectory_.updatePresentWaypoint(kinematics_);
   }
   else if(trajectory_.checkTrajectoryType(CUSTOM_TASK_TRAJECTORY))
   {
@@ -1301,20 +1312,22 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
         joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+        task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
         moving_state_ = false;
       }
     }
     else
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+      task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
       log::error("[CUSTOM_TASK_TRAJECTORY] fail to solve IK");
       moving_state_ = false;
     }
+    //set present joint task value to trajectory manipulator
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    trajectory_.setPresentTaskWaypoint(trajectory_.getPresentControlToolName(), task_way_point);
   }
   /////////////////////////////////////////////////////////////////
-  //set present joint task value to trajectory manipulator
-  trajectory_.setPresentJointWaypoint(joint_way_point_value);
-  trajectory_.updatePresentWaypoint(kinematics_);
 
 //  Eigen::Vector3d print_temp = trajectory_.getManipulator()->getComponentDynamicPoseFromWorld("gripper").angular.velocity;
 //  log::PRINT("ang vel");
