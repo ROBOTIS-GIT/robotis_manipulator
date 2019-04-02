@@ -16,6 +16,13 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator_math.cpp
+ * @brief
+ * @details
+ */
+
+
 #include "../../include/robotis_manipulator/robotis_manipulator_math.h"
 
 /*****************************************************************************

@@ -16,6 +16,12 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator.cpp
+ * @brief
+ * @details
+ */
+
 #include "../../include/robotis_manipulator/robotis_manipulator.h"
 
 using namespace robotis_manipulator;
@@ -38,6 +44,7 @@ RobotisManipulator::~RobotisManipulator() {}
 /*****************************************************************************
 ** Initialize Function
 *****************************************************************************/
+
 void RobotisManipulator::addWorld(Name world_name,
                            Name child_name,
                            Eigen::Vector3d world_position,
@@ -1092,6 +1099,7 @@ void RobotisManipulator::makeTaskTrajectoryFromPresentPose(Name tool_name, Kinem
   goal_pose.orientation = goal_pose_delta.orientation * trajectory_.getManipulator()->getComponentOrientationFromWorld(tool_name);
   makeTaskTrajectory(tool_name, goal_pose, move_time);
 }
+
 
 void RobotisManipulator::makeTaskTrajectory(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value)
 {

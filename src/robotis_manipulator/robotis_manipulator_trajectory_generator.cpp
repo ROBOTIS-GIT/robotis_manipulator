@@ -16,6 +16,13 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator_trajectory_generator.cpp
+ * @brief
+ * @details
+ */
+
+
 #include "../../include/robotis_manipulator/robotis_manipulator_trajectory_generator.h"
 
 using namespace robotis_manipulator;

@@ -16,6 +16,13 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator_manager.cpp
+ * @brief
+ * @details
+ */
+
+
 #include "../../include/robotis_manipulator/robotis_manipulator_manager.h"
 
 using namespace robotis_manipulator;
