@@ -366,7 +366,8 @@ void Trajectory::initTrajectoryWaypoint(Manipulator actual_manipulator, Kinemati
   joint_way_point_vector = getManipulator()->getAllActiveJointValue();
 
   setPresentJointWaypoint(joint_way_point_vector);
-  updatePresentWaypoint(kinematics);
+  if(kinematics != NULL)
+    updatePresentWaypoint(kinematics);
 }
 
 void Trajectory::updatePresentWaypoint(Kinematics *kinematics)

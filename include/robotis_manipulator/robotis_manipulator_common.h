@@ -30,7 +30,8 @@
 #endif
 #include <math.h>
 #include <vector>
-#include <map>
+//#include <map>
+#include <unordered_map>
 #include "robotis_manipulator_math.h"
 #include "robotis_manipulator_log.h"
 
@@ -168,6 +169,30 @@ typedef struct _Component
   Name actuator_name;
 } Component;
 
+/*****************************************************************************
+** External environment parameter Set
+*****************************************************************************/
+
+typedef struct _Object
+{
+  Name tool_name;
+  Inertia inertia;
+}Object;
+
+typedef struct _Force
+{
+  double x;
+  double y;
+  double z;
+}Force;
+
+typedef struct _Moment
+{
+  double x;
+  double y;
+  double z;
+}Moment;
+
 
 /*****************************************************************************
 ** Manipulator Class
@@ -177,7 +202,7 @@ class Manipulator
 private:
   int8_t dof_;
   World world_;
-  std::map<Name, Component> component_;
+  std::unordered_map<Name, Component> component_;
 
 public:
   Manipulator();
@@ -267,9 +292,9 @@ public:
   Eigen::Matrix3d getWorldOrientation();
   DynamicPose getWorldDynamicPose();
   int8_t getComponentSize();
-  std::map<Name, Component> getAllComponent();
-  std::map<Name, Component>::iterator getIteratorBegin();
-  std::map<Name, Component>::iterator getIteratorEnd();
+  std::unordered_map<Name, Component> getAllComponent();
+  std::unordered_map<Name, Component>::iterator getIteratorBegin();
+  std::unordered_map<Name, Component>::iterator getIteratorEnd();
   Component getComponent(Name component_name);
   Name getComponentActuatorName(Name component_name);
   Name getComponentParentName(Name component_name);

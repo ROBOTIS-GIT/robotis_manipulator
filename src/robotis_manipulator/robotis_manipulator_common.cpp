@@ -165,7 +165,7 @@ void Manipulator::printManipulatorSetting()
   log::print_vector(world_.pose.dynamic.angular.acceleration);
 
   std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -380,7 +380,7 @@ void Manipulator::setJointValue(Name component_name, JointValue joint_value)
 void Manipulator::setAllActiveJointPosition(std::vector<double> joint_position_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -395,7 +395,7 @@ void Manipulator::setAllActiveJointPosition(std::vector<double> joint_position_v
 void Manipulator::setAllActiveJointValue(std::vector<JointValue> joint_value_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -413,7 +413,7 @@ void Manipulator::setAllActiveJointValue(std::vector<JointValue> joint_value_vec
 void Manipulator::setAllJointPosition(std::vector<double> joint_position_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -428,7 +428,7 @@ void Manipulator::setAllJointPosition(std::vector<double> joint_position_vector)
 void Manipulator::setAllJointValue(std::vector<JointValue> joint_value_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -443,7 +443,7 @@ void Manipulator::setAllJointValue(std::vector<JointValue> joint_value_vector)
 void Manipulator::setAllToolPosition(std::vector<double> tool_position_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -458,7 +458,7 @@ void Manipulator::setAllToolPosition(std::vector<double> tool_position_vector)
 void Manipulator::setAllToolValue(std::vector<JointValue> tool_value_vector)
 {
   int8_t index = 0;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -519,17 +519,17 @@ int8_t Manipulator::getComponentSize()
   return component_.size();
 }
 
-std::map<Name, Component> Manipulator::getAllComponent()
+std::unordered_map<Name, Component> Manipulator::getAllComponent()
 {
   return component_;
 }
 
-std::map<Name, Component>::iterator Manipulator::getIteratorBegin()
+std::unordered_map<Name, Component>::iterator Manipulator::getIteratorBegin()
 {
   return component_.begin();
 }
 
-std::map<Name, Component>::iterator Manipulator::getIteratorEnd()
+std::unordered_map<Name, Component>::iterator Manipulator::getIteratorEnd()
 {
   return component_.end();;
 }
@@ -652,7 +652,7 @@ Eigen::Vector3d Manipulator::getComponentCenterOfMass(Name component_name)
 std::vector<double> Manipulator::getAllJointPosition()
 {
   std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -667,7 +667,7 @@ std::vector<double> Manipulator::getAllJointPosition()
 std::vector<JointValue> Manipulator::getAllJointValue()
 {
   std::vector<JointValue> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -682,7 +682,7 @@ std::vector<JointValue> Manipulator::getAllJointValue()
 std::vector<double> Manipulator::getAllActiveJointPosition()
 {
   std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -697,7 +697,7 @@ std::vector<double> Manipulator::getAllActiveJointPosition()
 std::vector<JointValue> Manipulator::getAllActiveJointValue()
 {
   std::vector<JointValue> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -712,7 +712,7 @@ std::vector<JointValue> Manipulator::getAllActiveJointValue()
 std::vector<double> Manipulator::getAllToolPosition()
 {
   std::vector<double> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -728,7 +728,7 @@ std::vector<double> Manipulator::getAllToolPosition()
 std::vector<JointValue> Manipulator::getAllToolValue()
 {
   std::vector<JointValue> result_vector;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -743,7 +743,7 @@ std::vector<JointValue> Manipulator::getAllToolValue()
 std::vector<uint8_t> Manipulator::getAllJointID()
 {
   std::vector<uint8_t> joint_id;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -758,7 +758,7 @@ std::vector<uint8_t> Manipulator::getAllJointID()
 std::vector<uint8_t> Manipulator::getAllActiveJointID()
 {
   std::vector<uint8_t> active_joint_id;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -774,7 +774,7 @@ std::vector<uint8_t> Manipulator::getAllActiveJointID()
 std::vector<Name> Manipulator::getAllToolComponentName()
 {
   std::vector<Name> tool_name;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -789,7 +789,7 @@ std::vector<Name> Manipulator::getAllToolComponentName()
 std::vector<Name> Manipulator::getAllActiveJointComponentName()
 {
   std::vector<Name> active_joint_name;
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {
@@ -829,7 +829,7 @@ bool Manipulator::checkComponentType(Name component_name, ComponentType componen
 *****************************************************************************/
 Name Manipulator::findComponentNameUsingId(int8_t id)
 {
-  std::map<Name, Component>::iterator it_component;
+  std::unordered_map<Name, Component>::iterator it_component;
 
   for (it_component = component_.begin(); it_component != component_.end(); it_component++)
   {

@@ -36,17 +36,20 @@ private:
   Manipulator manipulator_;
   Trajectory trajectory_;
   Kinematics *kinematics_;
-  std::map<Name, JointActuator *> joint_actuator_;
-  std::map<Name, ToolActuator *> tool_actuator_;
+  Dynamics *dynamics_;
+  std::unordered_map<Name, JointActuator *> joint_actuator_;
+  std::unordered_map<Name, ToolActuator *> tool_actuator_;
 
   bool trajectory_initialized_state_;
-  bool actuator_added_stete_;
   bool moving_state_;
   bool step_moving_state_;
 
+  bool actuator_added_stete_;
+  bool kinematics_added_state_;
+  bool dynamics_added_state_;
+
 private:
   void startMoving();
-
   JointWaypoint getTrajectoryJointValue(double tick_time);
 
 public:
@@ -92,6 +95,7 @@ public:
   void printManipulatorSetting();
 
   void addKinematics(Kinematics *kinematics);
+  void addDynamics(Dynamics *dynamics);
   void addJointActuator(Name actuator_name, JointActuator *joint_actuator, std::vector<uint8_t> id_array, const void *arg);
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
   void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
@@ -122,6 +126,13 @@ public:
   bool solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue> *goal_joint_value);
   void setKinematicsOption(const void* arg);
 
+  /*****************************************************************************
+  ** Dynamics Function (Including Virtual Function)
+  *****************************************************************************/
+  void solveForwardDynamics();
+  bool solveInverseDynamics(std::vector<JointValue> *goal_joint_value);
+  void setDynamicsOption(const void* arg);
+  void setDynamicsEnvironments(const void* arg);
 
   /*****************************************************************************
   ** Actuator Function (Including Virtual Function)
