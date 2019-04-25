@@ -42,6 +42,19 @@ public:
   virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;
 };
 
+class Dynamics
+{
+public:
+  Dynamics() {}
+  virtual ~Dynamics() {}
+
+  virtual void setOption(const void *arg) = 0;
+  virtual void setEnvironments(const void *arg) = 0;
+  virtual Force solveForwardDynamics(Manipulator *manipulator) = 0;
+  virtual bool solveInverseDynamics(Manipulator *manipulator, std::vector<JointValue>* goal_joint_position) = 0;
+};
+
+
 class JointActuator
 {
 public:
