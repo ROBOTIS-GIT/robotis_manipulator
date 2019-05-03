@@ -20,6 +20,32 @@
 
 using namespace robotis_manipulator;
 
+bool robotis_manipulator::setEffortToValue(std::vector<JointValue> *value, std::vector<double> effort)
+{
+  if(value->size()==effort.size()){
+    for(int i=0; i<value->size(); i++){
+      value->at(i).effort=effort.at(i);
+    }
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+bool robotis_manipulator::setPositionToValue(std::vector<JointValue> *value, std::vector<double> position)
+{
+  if(value->size()==position.size()){
+    for(int i=0; i<value->size(); i++){
+      value->at(i).position=position.at(i);
+    }
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
 Manipulator::Manipulator():dof_(0){}
 
 /*****************************************************************************

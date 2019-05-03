@@ -117,7 +117,6 @@ public:
   DynamicPose getDynamicPose(Name component_name);
   Pose getPose(Name component_name);
 
-
   /*****************************************************************************
   ** Kinematics Function (Including Virtual Function)
   *****************************************************************************/
@@ -129,10 +128,10 @@ public:
   /*****************************************************************************
   ** Dynamics Function (Including Virtual Function)
   *****************************************************************************/
-  void solveForwardDynamics();
-  bool solveInverseDynamics(std::vector<JointValue> *goal_joint_value);
-  void setDynamicsOption(const void* arg);
-  void setDynamicsEnvironments(const void* arg);
+  void solveForwardDynamics(std::vector<double> joint_torque);
+  bool solveInverseDynamics(std::vector<double> *goal_joint_value);
+  void setDynamicsOption(STRING param_name, const void* arg);
+  void setDynamicsEnvironments(STRING param_name, const void* arg);
 
   /*****************************************************************************
   ** Actuator Function (Including Virtual Function)
@@ -212,6 +211,7 @@ public:
   std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
   std::vector<JointValue> getToolGoalValue();
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
+
 };
 } // namespace ROBOTIS_MANIPULATOR
 

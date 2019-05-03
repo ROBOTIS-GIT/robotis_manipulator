@@ -104,17 +104,19 @@ typedef struct _Point
   double position;
   double velocity;
   double acceleration;
-  double effort;
+  double effort;                              //Torque
 } Point, ActuatorValue, JointValue, ToolValue;
 
 typedef std::vector<JointValue> JointWaypoint;
+
+bool setEffortToValue(std::vector<JointValue> *value, std::vector<double> effort);
+bool setPositionToValue(std::vector<JointValue> *value, std::vector<double> position);
 
 typedef struct _TaskWaypoint
 {
   KinematicPose kinematic;
   DynamicPose dynamic;
 } TaskWaypoint, Pose;
-
 
 /*****************************************************************************
 ** Component Set

@@ -233,7 +233,7 @@ void RobotisManipulator::solveForwardKinematics()
 bool RobotisManipulator::solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue>* goal_joint_value)
 {
   if(kinematics_added_state_){
-    return kinematics_->solveInverseKinematics(&manipulator_, tool_name, goal_pose, goal_joint_value);
+    return kinematics_->solveInverseKinematics(manipulator_, tool_name, goal_pose, goal_joint_value);
   }
   else{
     log::error("[solveInverseKinematics] Kinematics Class was not added.");
@@ -255,20 +255,20 @@ void RobotisManipulator::setKinematicsOption(const void* arg)
 /*****************************************************************************
 ** Dynamics Function (Including Virtual Function)
 *****************************************************************************/
-void RobotisManipulator::solveForwardDynamics()
+void RobotisManipulator::solveForwardDynamics(std::vector<double> joint_torque)
 {
   if(dynamics_added_state_){
-    dynamics_->solveForwardDynamics(&manipulator_);
+    dynamics_->solveForwardDynamics(&manipulator_, joint_torque);
   }
   else{
     log::error("[solveForwardDynamics] Dynamics Class was not added.");
   }
 }
 
-bool RobotisManipulator::solveInverseDynamics(std::vector<JointValue>* goal_joint_value)
+bool RobotisManipulator::solveInverseDynamics(std::vector<double>* goal_joint_value)
 {
   if(dynamics_added_state_){
-    return dynamics_->solveInverseDynamics(&manipulator_, goal_joint_value);
+    return dynamics_->solveInverseDynamics(manipulator_, goal_joint_value);
   }
   else{
     log::error("[solveInverseDynamics] Dynamics Class was not added.");
@@ -276,20 +276,20 @@ bool RobotisManipulator::solveInverseDynamics(std::vector<JointValue>* goal_join
   }
 }
 
-void RobotisManipulator::setDynamicsOption(const void* arg)
+void RobotisManipulator::setDynamicsOption(STRING param_name, const void* arg)
 {
   if(dynamics_added_state_){
-    dynamics_->setOption(arg);
+    dynamics_->setOption(param_name, arg);
   }
   else{
     log::error("[setDynamicsOption] Dynamics Class was not added.");
   }
 }
 
-void RobotisManipulator::setDynamicsEnvironments(const void* arg)
+void RobotisManipulator::setDynamicsEnvironments(STRING param_name, const void* arg)
 {
   if(dynamics_added_state_){
-    dynamics_->setEnvironments(arg);
+    dynamics_->setEnvironments(param_name, arg);
   }
   else{
     log::error("[setDynamicsEnvironments] Dynamics Class was not added.");
@@ -1077,7 +1077,7 @@ void RobotisManipulator::makeJointTrajectory(Name tool_name, KinematicPose goal_
   temp_goal_pose.kinematic = goal_pose;
   temp_goal_pose = trajectory_.removeWaypointDynamicData(temp_goal_pose);
   std::vector<JointValue> goal_joint_angle;
-  if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), tool_name, temp_goal_pose, &goal_joint_angle))
+  if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), tool_name, temp_goal_pose, &goal_joint_angle))
   {
     if(getMovingState())
     {
@@ -1293,7 +1293,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     TaskWaypoint task_way_point;
     task_way_point = trajectory_.getTaskTrajectory().getTaskWaypoint(tick_time);
 
-    if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
+    if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
@@ -1336,7 +1336,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     TaskWaypoint task_way_point;
     task_way_point = trajectory_.getCustomTaskTrajectory(trajectory_.getPresentCustomTrajectoryName())->getTaskWaypoint(tick_time);
 
-    if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
+    if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
@@ -1359,8 +1359,11 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   /////////////////////////////////////////////////////////////////
 
   if(dynamics_added_state_){
-    dynamics_->solveInverseDynamics(trajectory_.getManipulator(), &joint_way_point_value);
+    std::vector<double> joint_torque;
+    dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque);
+    robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
   }
+
 //  Eigen::Vector3d print_temp = trajectory_.getManipulator()->getComponentDynamicPoseFromWorld("gripper").angular.velocity;
 //  log::PRINT("ang vel");
 //  log::PRINT_VECTOR(print_temp);
