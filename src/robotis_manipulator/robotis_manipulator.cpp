@@ -153,7 +153,7 @@ Manipulator *RobotisManipulator::getManipulator()
 
 JointValue RobotisManipulator::getJointValue(Name joint_name)
 {
-  return manipulator_,getJointValue(joint_name);
+  return manipulator_.getJointValue(joint_name);
 }
 
 JointValue RobotisManipulator::getToolValue(Name tool_name)
