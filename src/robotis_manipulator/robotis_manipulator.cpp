@@ -233,7 +233,7 @@ void RobotisManipulator::solveForwardKinematics()
 bool RobotisManipulator::solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue>* goal_joint_value)
 {
   if(kinematics_added_state_){
-    return kinematics_->solveInverseKinematics(manipulator_, tool_name, goal_pose, goal_joint_value);
+    return kinematics_->solveInverseKinematics(&manipulator_, tool_name, goal_pose, goal_joint_value);
   }
   else{
     log::error("[solveInverseKinematics] Kinematics Class was not added.");
@@ -1077,7 +1077,7 @@ void RobotisManipulator::makeJointTrajectory(Name tool_name, KinematicPose goal_
   temp_goal_pose.kinematic = goal_pose;
   temp_goal_pose = trajectory_.removeWaypointDynamicData(temp_goal_pose);
   std::vector<JointValue> goal_joint_angle;
-  if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), tool_name, temp_goal_pose, &goal_joint_angle))
+  if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), tool_name, temp_goal_pose, &goal_joint_angle))
   {
     if(getMovingState())
     {
@@ -1293,7 +1293,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     TaskWaypoint task_way_point;
     task_way_point = trajectory_.getTaskTrajectory().getTaskWaypoint(tick_time);
 
-    if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
+    if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {
@@ -1336,7 +1336,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     TaskWaypoint task_way_point;
     task_way_point = trajectory_.getCustomTaskTrajectory(trajectory_.getPresentCustomTrajectoryName())->getTaskWaypoint(tick_time);
 
-    if(kinematics_->solveInverseKinematics(*trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
+    if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), trajectory_.getPresentControlToolName(), task_way_point, &joint_way_point_value))
     {
       if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
       {

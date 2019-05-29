@@ -39,7 +39,7 @@ public:
   virtual void setOption(const void *arg) = 0;
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
   virtual void solveForwardKinematics(Manipulator *manipulator) = 0;                                                                                   //Every joint value to every component pose
-  virtual bool solveInverseKinematics(Manipulator manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;    //An component pose to every joint value
+  virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;    //An component pose to every joint value
 };
 
 class Dynamics
