@@ -105,8 +105,8 @@ private:
 
   JointTrajectory joint_;
   TaskTrajectory task_;
-  std::unordered_map<Name, CustomJointTrajectory *> cus_joint_;
-  std::unordered_map<Name, CustomTaskTrajectory *> cus_task_;
+  std::map<Name, CustomJointTrajectory *> cus_joint_;
+  std::map<Name, CustomTaskTrajectory *> cus_task_;
 
   Name present_custom_trajectory_name_;
   Name present_control_tool_name_;

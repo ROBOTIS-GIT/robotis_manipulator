@@ -31,7 +31,7 @@
 #include <math.h>
 #include <vector>
 //#include <map>
-#include <unordered_map>
+#include <map>
 #include "robotis_manipulator_math.h"
 #include "robotis_manipulator_log.h"
 
@@ -204,7 +204,7 @@ class Manipulator
 private:
   int8_t dof_;
   World world_;
-  std::unordered_map<Name, Component> component_;
+  std::map<Name, Component> component_;
 
 public:
   Manipulator();
@@ -294,9 +294,9 @@ public:
   Eigen::Matrix3d getWorldOrientation();
   DynamicPose getWorldDynamicPose();
   int8_t getComponentSize();
-  std::unordered_map<Name, Component> getAllComponent();
-  std::unordered_map<Name, Component>::iterator getIteratorBegin();
-  std::unordered_map<Name, Component>::iterator getIteratorEnd();
+  std::map<Name, Component> getAllComponent();
+  std::map<Name, Component>::iterator getIteratorBegin();
+  std::map<Name, Component>::iterator getIteratorEnd();
   Component getComponent(Name component_name);
   Name getComponentActuatorName(Name component_name);
   Name getComponentParentName(Name component_name);

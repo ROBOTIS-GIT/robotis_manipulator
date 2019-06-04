@@ -404,7 +404,7 @@ void RobotisManipulator::enableAllJointActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       joint_actuator_.at(it_joint_actuator->first)->enable();
@@ -417,7 +417,7 @@ void RobotisManipulator::disableAllJointActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       joint_actuator_.at(it_joint_actuator->first)->disable();
@@ -429,7 +429,7 @@ void RobotisManipulator::enableAllToolActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, ToolActuator *>::iterator it_tool_actuator;
+    std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
     {
       tool_actuator_.at(it_tool_actuator->first)->enable();
@@ -442,7 +442,7 @@ void RobotisManipulator::disableAllToolActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, ToolActuator *>::iterator it_tool_actuator;
+    std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
     {
       tool_actuator_.at(it_tool_actuator->first)->disable();
@@ -454,12 +454,12 @@ void RobotisManipulator::enableAllActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       joint_actuator_.at(it_joint_actuator->first)->enable();
     }
-    std::unordered_map<Name, ToolActuator *>::iterator it_tool_actuator;
+    std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
     {
       tool_actuator_.at(it_tool_actuator->first)->enable();
@@ -472,12 +472,12 @@ void RobotisManipulator::disableAllActuator()
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       joint_actuator_.at(it_joint_actuator->first)->disable();
     }
-    std::unordered_map<Name, ToolActuator *>::iterator it_tool_actuator;
+    std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
     {
       tool_actuator_.at(it_tool_actuator->first)->disable();
@@ -551,7 +551,7 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
 
     std::vector<uint8_t> single_actuator_id;
     std::vector<JointValue> single_value_vector;
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       single_actuator_id = joint_actuator_.at(it_joint_actuator->first)->getId();
@@ -583,7 +583,7 @@ bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value
 {
   if(actuator_added_stete_)
   {
-    std::unordered_map<Name, Component>::iterator it;
+    std::map<Name, Component>::iterator it;
     std::vector<int8_t> joint_id;
     int index = 0;
     for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
@@ -602,7 +602,7 @@ bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value
 
     std::vector<uint8_t> single_actuator_id;
     std::vector<JointValue> single_value_vector;
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       single_actuator_id = joint_actuator_.at(it_joint_actuator->first)->getId();
@@ -660,7 +660,7 @@ std::vector<JointValue> RobotisManipulator::receiveMultipleJointActuatorValue(st
 
     std::vector<JointValue> single_value_vector;
     std::vector<uint8_t> single_actuator_id;
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       single_actuator_id = joint_actuator_.at(it_joint_actuator->first)->getId();
@@ -706,7 +706,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
 
     std::vector<JointValue> single_value_vector;
     std::vector<uint8_t> single_actuator_id;
-    std::unordered_map<Name, JointActuator *>::iterator it_joint_actuator;
+    std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
     {
       single_actuator_id = joint_actuator_.at(it_joint_actuator->first)->getId();
@@ -718,7 +718,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
       }
     }
 
-    std::unordered_map<Name, Component>::iterator it;
+    std::map<Name, Component>::iterator it;
     std::vector<JointValue> result_vector;
     JointValue result;
 
@@ -1363,10 +1363,6 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
     dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque);
     robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
   }
-
-//  Eigen::Vector3d print_temp = trajectory_.getManipulator()->getComponentDynamicPoseFromWorld("gripper").angular.velocity;
-//  log::PRINT("ang vel");
-//  log::PRINT_VECTOR(print_temp);
 
   return joint_way_point_value;
 }

@@ -37,8 +37,8 @@ private:
   Trajectory trajectory_;
   Kinematics *kinematics_;
   Dynamics *dynamics_;
-  std::unordered_map<Name, JointActuator *> joint_actuator_;
-  std::unordered_map<Name, ToolActuator *> tool_actuator_;
+  std::map<Name, JointActuator *> joint_actuator_;
+  std::map<Name, ToolActuator *> tool_actuator_;
 
   bool trajectory_initialized_state_;
   bool moving_state_;
