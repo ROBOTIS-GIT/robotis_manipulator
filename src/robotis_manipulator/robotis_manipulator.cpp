@@ -77,18 +77,18 @@ void RobotisManipulator::addTool(Name my_name,
                                  Name parent_name,
                                  Eigen::Vector3d relative_position,
                                  Eigen::Matrix3d relative_orientation,
-                                 int8_t tool_id, 
-                                 double max_position_limit, 
+                                 int8_t tool_id,
+                                 double max_position_limit,
                                  double min_position_limit,
                                  double coefficient,
-                                 double mass,
-                                 Eigen::Matrix3d inertia_tensor,
-                                 Eigen::Vector3d center_of_mass)
+                                 double object_mass,
+                                 Eigen::Matrix3d object_inertia_tensor,
+                                 Eigen::Vector3d object_center_of_mass)
 {
   manipulator_.addTool(my_name, parent_name, 
                        relative_position, relative_orientation, tool_id, 
-                       max_position_limit, min_position_limit, coefficient, mass,
-                       inertia_tensor, center_of_mass);
+                       max_position_limit, min_position_limit, coefficient, object_mass,
+                       object_inertia_tensor, object_center_of_mass);
 }
 
 void RobotisManipulator::printManipulatorSetting()
@@ -255,7 +255,7 @@ void RobotisManipulator::setKinematicsOption(const void* arg)
 /*****************************************************************************
 ** Dynamics Function (Including Virtual Function)
 *****************************************************************************/
-void RobotisManipulator::solveForwardDynamics(std::vector<double> joint_torque)
+void RobotisManipulator::solveForwardDynamics(std::map<Name, double> joint_torque)
 {
   if(dynamics_added_state_){
     dynamics_->solveForwardDynamics(&manipulator_, joint_torque);
@@ -265,7 +265,7 @@ void RobotisManipulator::solveForwardDynamics(std::vector<double> joint_torque)
   }
 }
 
-bool RobotisManipulator::solveInverseDynamics(std::vector<double>* goal_joint_value)
+bool RobotisManipulator::solveInverseDynamics(std::map<Name, double> *goal_joint_value)
 {
   if(dynamics_added_state_){
     return dynamics_->solveInverseDynamics(manipulator_, goal_joint_value);
@@ -1359,9 +1359,24 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   /////////////////////////////////////////////////////////////////
 
   if(dynamics_added_state_){
-    std::vector<double> joint_torque;
-    dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque);
-    robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
+    std::map<Name, double> joint_torque_map;
+    if(dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque_map))
+    {
+      auto names = trajectory_.getManipulator()->getAllActiveJointComponentName();
+      std::vector<double> joint_torque;
+      for(uint8_t i = 0; i < names.size(); i++)
+      {
+        if(joint_torque_map.find(names.at(i))!=joint_torque_map.end())
+          joint_torque.push_back(joint_torque_map.at(names.at(i)));
+        else
+          joint_torque.push_back(0.0);
+      }
+      robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
+    }
+    else
+    {
+      log::error("[getTrajectoryJointValue] fail to add goal effort.");
+    }
   }
 
   return joint_way_point_value;

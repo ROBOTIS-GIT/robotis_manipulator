@@ -87,9 +87,9 @@ public:
                double max_position_limit =M_PI, 
                double min_position_limit = -M_PI,
                double coefficient = 1.0,
-               double mass = 0.0,
-               Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-               Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+               double object_mass = 0.0,
+               Eigen::Matrix3d object_inertia_tensor = Eigen::Matrix3d::Identity(),
+               Eigen::Vector3d object_center_of_mass = Eigen::Vector3d::Zero());
 
   void addComponentChild(Name my_name, Name child_name);
   void printManipulatorSetting();
@@ -100,7 +100,6 @@ public:
   void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
   void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
   void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
-
 
   /*****************************************************************************
   ** Manipulator Function
@@ -128,8 +127,8 @@ public:
   /*****************************************************************************
   ** Dynamics Function (Including Virtual Function)
   *****************************************************************************/
-  void solveForwardDynamics(std::vector<double> joint_torque);
-  bool solveInverseDynamics(std::vector<double> *goal_joint_value);
+  void solveForwardDynamics(std::map<Name, double> joint_torque);
+  bool solveInverseDynamics(std::map<Name, double> *goal_joint_value);
   void setDynamicsOption(STRING param_name, const void* arg);
   void setDynamicsEnvironments(STRING param_name, const void* arg);
 
@@ -164,13 +163,11 @@ public:
   std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
   std::vector<JointValue> receiveAllToolActuatorValue();
 
-
   /*****************************************************************************
   ** Time Function
   *****************************************************************************/
   double getTrajectoryMoveTime();
   bool getMovingState();
-
 
   /*****************************************************************************
   ** Check Joint Limit Function
@@ -179,7 +176,6 @@ public:
   bool checkJointLimit(Name component_name, JointValue value);
   bool checkJointLimit(std::vector<Name> component_name, std::vector<double> position_vector);
   bool checkJointLimit(std::vector<Name> component_name, std::vector<JointValue> value_vector);
-
 
   /*****************************************************************************
   ** Trajectory Control Fuction

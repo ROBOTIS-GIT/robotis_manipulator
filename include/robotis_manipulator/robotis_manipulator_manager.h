@@ -50,8 +50,8 @@ public:
 
   virtual bool setOption(STRING param_name, const void *arg) = 0;
   virtual bool setEnvironments(STRING param_name, const void *arg) = 0;
-  virtual bool solveForwardDynamics(Manipulator *manipulator, std::vector<double> joint_torque) = 0;          //torque to joint value
-  virtual bool solveInverseDynamics(Manipulator manipulator, std::vector<double>* joint_torque) = 0;          //joint values to torque
+  virtual bool solveForwardDynamics(Manipulator *manipulator, std::map<Name, double> joint_torque) = 0;          //torque to joint value
+  virtual bool solveInverseDynamics(Manipulator manipulator, std::map<Name, double>* joint_torque) = 0;          //joint values to torque
 };
 
 
