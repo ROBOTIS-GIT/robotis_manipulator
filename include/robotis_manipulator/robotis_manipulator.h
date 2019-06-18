@@ -51,7 +51,8 @@ private:
   std::map<Name, ToolActuator *> tool_actuator_;
 
   bool trajectory_initialized_state_;
-  bool actuator_added_stete_;
+  bool joint_actuator_added_stete_;
+  bool tool_actuator_added_stete_;
   bool moving_state_;
   bool step_moving_state_;
 
