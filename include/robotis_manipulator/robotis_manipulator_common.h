@@ -144,8 +144,9 @@ typedef struct _JointConstant
 {
   int8_t id;
   Eigen::Vector3d axis;
-  double coefficient;       // joint angle over actuator angle
+  double coefficient;             // joint angle over actuator angle
   Limit position_limit;
+  double torque_coefficient;      // torque over current
 } JointConstant;
 
 typedef struct _World
@@ -230,7 +231,8 @@ public:
                 double coefficient = 1.0,
                 double mass = 0.0,
                 Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero(),
+                double torque_coefficient = 1.0);
 
   void addTool(Name my_name,
                Name parent_name,
@@ -242,7 +244,8 @@ public:
                double coefficient = 1.0,
                double mass = 0.0,
                Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-               Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+               Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero(),
+               double torque_coefficient = 1.0);
 
   void addComponentChild(Name my_name, Name child_name);
   void printManipulatorSetting();
@@ -251,6 +254,8 @@ public:
   /*****************************************************************************
   ** Set Function
   *****************************************************************************/
+  void setTorqueCoefficient(Name component_name, double torque_coefficient);
+
   void setWorldPose(Pose world_pose);
   void setWorldKinematicPose(KinematicPose world_kinematic_pose);
   void setWorldPosition(Eigen::Vector3d world_position);
@@ -312,6 +317,7 @@ public:
 
   int8_t getId(Name component_name);
   double getCoefficient(Name component_name);
+  double getTorqueCoefficient(Name component_name);
   Eigen::Vector3d getAxis(Name component_name);
   double getJointPosition(Name component_name);
   double getJointVelocity(Name component_name);

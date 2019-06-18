@@ -77,7 +77,8 @@ public:
                 double coefficient = 1.0,
                 double mass = 0.0,
                 Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
+                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero(),
+                double torque_coefficient = 1.0);
 
   void addTool(Name my_name,
                Name parent_name,
@@ -106,6 +107,8 @@ public:
   *****************************************************************************/
   Manipulator *getManipulator();
 
+  void setTorqueCoefficient(Name component_name, double torque_coefficient);
+
   JointValue getJointValue(Name joint_name);
   JointValue getToolValue(Name tool_name);
   std::vector<JointValue> getAllActiveJointValue();
@@ -128,7 +131,7 @@ public:
   ** Dynamics Function (Including Virtual Function)
   *****************************************************************************/
   void solveForwardDynamics(std::map<Name, double> joint_torque);
-  bool solveInverseDynamics(std::map<Name, double> *goal_joint_value);
+  bool solveInverseDynamics(std::map<Name, double> *joint_torque);
   void setDynamicsOption(STRING param_name, const void* arg);
   void setDynamicsEnvironments(STRING param_name, const void* arg);
 
