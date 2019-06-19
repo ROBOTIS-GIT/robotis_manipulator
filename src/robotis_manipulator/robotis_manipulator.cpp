@@ -27,7 +27,8 @@ using namespace robotis_manipulator;
 RobotisManipulator::RobotisManipulator()
 {
   moving_state_ = false;
-  actuator_added_stete_ = false;
+  joint_actuator_added_stete_ = false;
+  tool_actuator_added_stete_ = false;
   step_moving_state_ = false;
   trajectory_initialized_state_ = false;
   kinematics_added_state_=false;
@@ -124,7 +125,7 @@ void RobotisManipulator::addJointActuator(Name actuator_name, JointActuator *joi
   {
     manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(id_array.at(index)),actuator_name);
   }
-  actuator_added_stete_ = true;
+  joint_actuator_added_stete_ = false; = true;
 }
 
 void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_actuator, uint8_t id, const void *arg)
@@ -139,7 +140,7 @@ void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_
     //error
   }
   manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(id),actuator_name);
-  actuator_added_stete_ = true;
+  tool_actuator_added_stete_ = false; = true;
 }
 
 void RobotisManipulator::addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory)
@@ -307,7 +308,7 @@ void RobotisManipulator::setDynamicsEnvironments(STRING param_name, const void* 
 *****************************************************************************/
 void RobotisManipulator::setJointActuatorMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
-  if(actuator_added_stete_)
+  if(joint_actuator_added_stete_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -322,7 +323,7 @@ void RobotisManipulator::setJointActuatorMode(Name actuator_name, std::vector<ui
 
 void RobotisManipulator::setToolActuatorMode(Name actuator_name, const void *arg)
 {
-  if(actuator_added_stete_)
+  if(tool_actuator_added_stete_)
   {
     if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
     {

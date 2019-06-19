@@ -44,7 +44,8 @@ private:
   bool moving_state_;
   bool step_moving_state_;
 
-  bool actuator_added_stete_;
+  bool joint_actuator_added_stete_;
+  bool tool_actuator_added_stete_;
   bool kinematics_added_state_;
   bool dynamics_added_state_;
 
