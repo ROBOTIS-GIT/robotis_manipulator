@@ -402,6 +402,7 @@ JointWaypoint Trajectory::removeWaypointDynamicData(JointWaypoint value)
   {
     value.at(index).velocity = 0.0;
     value.at(index).acceleration = 0.0;
+    value.at(index).effort = 0.0;
   }
   return value;
 }
