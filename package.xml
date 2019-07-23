@@ -16,8 +16,9 @@
   <url type="emanual">http://emanual.robotis.com/docs/en/platform/openmanipulator</url>
   <url type="repository">https://github.com/ROBOTIS-GIT/robotis_manipulator</url>
   <url type="bugtracker">https://github.com/ROBOTIS-GIT/robotis_manipulator/issues</url>
-  <buildtool_depend>catkin</buildtool_depend>
-  <depend>roscpp</depend>
+  <depend>ament_cmake</depend>
+  <depend>rclcpp</depend>
   <depend>cmake_modules</depend>
   <depend>eigen</depend>
+  <export><build_type>ament_cmake</build_type></export>
 </package>
