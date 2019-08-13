@@ -93,7 +93,7 @@ public:
    * @param start
    * @param goal
    */
-  void makeJointTrajectory(double move_time,
+  bool makeJointTrajectory(double move_time,
             JointWaypoint start,
             JointWaypoint goal
             );
@@ -130,7 +130,7 @@ public:
    * @param start
    * @param goal
    */
-  void makeTaskTrajectory(double move_time,
+  bool makeTaskTrajectory(double move_time,
             TaskWaypoint start,
             TaskWaypoint goal
             );
@@ -341,27 +341,27 @@ public:
    * @param start_way_point
    * @param goal_way_point
    */
-  void makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
+  bool makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
   /**
    * @brief makeTaskTrajectory
    * @param start_way_point
    * @param goal_way_point
    */
-  void makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
+  bool makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
   /**
    * @brief makeCustomTrajectory
    * @param trajectory_name
    * @param start_way_point
    * @param arg
    */
-  void makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
+  bool makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
   /**
    * @brief makeCustomTrajectory
    * @param trajectory_name
    * @param start_way_point
    * @param arg
    */
-  void makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
+  bool makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
 
   // Tool
   /**
@@ -369,13 +369,13 @@ public:
    * @param tool_name
    * @param tool_goal_position
    */
-  void setToolGoalPosition(Name tool_name, double tool_goal_position);
+  bool setToolGoalPosition(Name tool_name, double tool_goal_position);
   /**
    * @brief setToolGoalValue
    * @param tool_name
    * @param tool_goal_value
    */
-  void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
+  bool setToolGoalValue(Name tool_name, JointValue tool_goal_value);
   /**
    * @brief getToolGoalPosition
    * @param tool_name

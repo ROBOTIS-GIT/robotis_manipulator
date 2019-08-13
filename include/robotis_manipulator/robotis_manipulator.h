@@ -480,21 +480,21 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectoryFromPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectoryFromPresentPosition(std::vector<double> delta_goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeJointTrajectory
    * @param goal_joint_position
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectory(std::vector<double> goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectory(std::vector<double> goal_joint_position, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeJointTrajectory
    * @param goal_joint_value
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectory(std::vector<JointValue> goal_joint_value, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectory(std::vector<JointValue> goal_joint_value, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeJointTrajectory
    * @param tool_name
@@ -502,7 +502,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectory(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectory(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeJointTrajectory
    * @param tool_name
@@ -510,7 +510,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectory(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectory(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeJointTrajectory
    * @param tool_name
@@ -518,7 +518,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeJointTrajectory(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeJointTrajectory(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectoryFromPresentPose
    * @param tool_name
@@ -526,7 +526,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectoryFromPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectoryFromPresentPose(Name tool_name, Eigen::Vector3d position_meter, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectoryFromPresentPose
    * @param tool_name
@@ -534,7 +534,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectoryFromPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectoryFromPresentPose(Name tool_name, Eigen::Matrix3d orientation_meter, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectoryFromPresentPose
    * @param tool_name
@@ -542,7 +542,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectoryFromPresentPose(Name tool_name, KinematicPose goal_pose_delta, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectoryFromPresentPose(Name tool_name, KinematicPose goal_pose_delta, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectory
    * @param tool_name
@@ -550,7 +550,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectory(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectory(Name tool_name, Eigen::Vector3d goal_position, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectory
    * @param tool_name
@@ -558,7 +558,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectory(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectory(Name tool_name, Eigen::Matrix3d goal_orientation, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeTaskTrajectory
    * @param tool_name
@@ -566,7 +566,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeTaskTrajectory(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeTaskTrajectory(Name tool_name, KinematicPose goal_pose, double move_time, std::vector<JointValue> present_joint_value = {});
 
   /**
    * @brief setCustomTrajectoryOption
@@ -582,7 +582,7 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeCustomTrajectory(Name trajectory_name, Name tool_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeCustomTrajectory(Name trajectory_name, Name tool_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeCustomTrajectory
    * @param trajectory_name
@@ -590,19 +590,19 @@ public:
    * @param move_time
    * @param present_joint_value
    */
-  void makeCustomTrajectory(Name trajectory_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
+  bool makeCustomTrajectory(Name trajectory_name, const void *arg, double move_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief sleepTrajectory
    * @param wait_time
    * @param present_joint_value
    */
-  void sleepTrajectory(double wait_time, std::vector<JointValue> present_joint_value = {});
+  bool sleepTrajectory(double wait_time, std::vector<JointValue> present_joint_value = {});
   /**
    * @brief makeToolTrajectory
    * @param tool_name
    * @param tool_goal_position
    */
-  void makeToolTrajectory(Name tool_name, double tool_goal_position);
+  bool makeToolTrajectory(Name tool_name, double tool_goal_position);
   /**
    * @brief getJointGoalValueFromTrajectory
    * @param present_time
