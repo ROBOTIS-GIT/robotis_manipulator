@@ -1523,6 +1523,18 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectoryTickT
   return {};
 }
 
+void RobotisManipulator::stopMoving()
+{
+  moving_state_ = false;
+  if(trajectory_initialized_state_)
+  {
+    auto joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    if(kinematics_added_state_)
+      trajectory_.updatePresentWaypoint(kinematics_);
+  }
+}
+
 std::vector<JointValue> RobotisManipulator::getToolGoalValue()
 {
   std::vector<JointValue> result_vector;

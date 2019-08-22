@@ -218,6 +218,7 @@ public:
   std::vector<JointValue> getToolGoalValue();
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
 
+  void stopMoving();
 };
 } // namespace ROBOTIS_MANIPULATOR
 
