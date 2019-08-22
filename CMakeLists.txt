@@ -4,7 +4,6 @@
 cmake_minimum_required(VERSION 3.5)
 project(robotis_manipulator)
 
-# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 14)
 endif()
@@ -14,41 +13,34 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 ################################################################################
-# Find ament packages and libraries for ament and system dependencies
+# Find and load build settings from external packages
 ################################################################################
+find_package(Eigen3 REQUIRED)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(cmake_modules REQUIRED)
-find_package(Eigen3 REQUIRED)
-
-################################################################################
-# Setup for python modules and scripts
-################################################################################
 
 ################################################################################
 # Declare ROS messages, services and actions
 ################################################################################
 
 ################################################################################
-## Declare ROS dynamic reconfigure parameters
-################################################################################
-
-################################################################################
-# Declare ament specific configuration to be passed to dependent projects
-################################################################################
-ament_export_dependencies(rclcpp)
-ament_export_dependencies(cmake_modules)
-ament_export_dependencies(Eigen3)
-
-################################################################################
 # Build
 ################################################################################
 include_directories(
-  include/${PROJECT_NAME}
+  include
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_library(robotis_manipulator
+set(dependencies_lib
+  "EIGEN3"
+  "cmake_modules"
+  "rclcpp"
+)
+
+set(LIB_NAME "robotis_manipulator")
+
+add_library(${LIB_NAME} SHARED
   src/robotis_manipulator/robotis_manipulator.cpp
   src/robotis_manipulator/robotis_manipulator_common.cpp
   src/robotis_manipulator/robotis_manipulator_log.cpp
@@ -57,22 +49,20 @@ add_library(robotis_manipulator
   src/robotis_manipulator/robotis_manipulator_math.cpp
 )
 
-ament_target_dependencies(robotis_manipulator rclcpp cmake_modules EIGEN3)
-target_link_libraries(robotis_manipulator ${rclcpp_LIBRARIES} ${cmake_modules_LIBRARIES} ${Eigen3_LIBRARIES})
+ament_target_dependencies(${LIB_NAME} ${dependencies_lib})
+target_link_libraries(${LIB_NAME} ${Eigen3_LIBRARIES})
 
 ################################################################################
 # Install
 ################################################################################
-install(
-  TARGETS robotis_manipulator
+install(TARGETS ${LIB_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
+  RUNTIME DESTINATION bin/${PROJECT_NAME}
 )
 
-install(
-  DIRECTORY include/${PROJECT_NAME}
-  DESTINATION include/${PROJECT_NAME}
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
 ################################################################################
@@ -82,6 +72,9 @@ install(
 ################################################################################
 # Macro for ament package
 ################################################################################
-ament_export_include_directories(include/${PROJECT_NAME})
-ament_export_libraries(robotis_manipulator)
+ament_export_include_directories(include)
+ament_export_dependencies(rclcpp)
+ament_export_dependencies(cmake_modules)
+ament_export_dependencies(Eigen3)
+ament_export_libraries(${LIB_NAME})
 ament_package()
