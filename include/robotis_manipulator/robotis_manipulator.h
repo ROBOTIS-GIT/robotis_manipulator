@@ -30,6 +30,10 @@
 namespace robotis_manipulator
 {
 
+#define DYNAMICS_ALL_SOVING 0
+#define DYNAMICS_GRAVITY_ONLY 1
+#define DYNAMICS_NOT_SOVING 2
+
 class RobotisManipulator
 {
 private:
@@ -51,7 +55,7 @@ private:
 
 private:
   void startMoving();
-  JointWaypoint getTrajectoryJointValue(double tick_time);
+  JointWaypoint getTrajectoryJointValue(double tick_time, int option=0);
 
 public:
   RobotisManipulator();
@@ -125,6 +129,7 @@ public:
   *****************************************************************************/
   Eigen::MatrixXd jacobian(Name tool_name);
   void solveForwardKinematics();
+  void solveForwardKinematics(std::vector<JointValue> *goal_joint_value);
   bool solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue> *goal_joint_value);
   void setKinematicsOption(const void* arg);
 
@@ -133,6 +138,7 @@ public:
   *****************************************************************************/
   void solveForwardDynamics(std::map<Name, double> joint_torque);
   bool solveInverseDynamics(std::map<Name, double> *joint_torque);
+  bool solveGravityTerm(std::map<Name, double> *joint_torque);
   void setDynamicsOption(STRING param_name, const void* arg);
   void setDynamicsEnvironments(STRING param_name, const void* arg);
 
@@ -208,7 +214,7 @@ public:
 
   void makeToolTrajectory(Name tool_name, double tool_goal_position);
 
-  std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
+  std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time, int option=DYNAMICS_ALL_SOVING);
   std::vector<JointValue> getToolGoalValue();
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
 

@@ -237,6 +237,19 @@ void RobotisManipulator::solveForwardKinematics()
   }
 }
 
+void RobotisManipulator::solveForwardKinematics(std::vector<JointValue> *goal_joint_value)
+{
+  if(kinematics_added_state_){
+    Manipulator temp_manipulator = manipulator_;
+    temp_manipulator.setAllActiveJointValue(*goal_joint_value);
+    kinematics_->solveForwardKinematics(&temp_manipulator);
+    *goal_joint_value = temp_manipulator.getAllActiveJointValue();
+  }
+  else{
+    log::warn("[solveForwardKinematics] Kinematics Class was not added.");
+  }
+}
+
 bool RobotisManipulator::solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue>* goal_joint_value)
 {
   if(kinematics_added_state_){
@@ -276,8 +289,22 @@ bool RobotisManipulator::solveInverseDynamics(std::map<Name, double> *joint_torq
 {
   if(dynamics_added_state_){
     return dynamics_->solveInverseDynamics(manipulator_, joint_torque);
-//    for(auto it = joint_torque->begin(); it != joint_torque->end(); it++)
-//      manipulator_.setJointEffort(it->first, joint_torque->at(it->first));
+  }
+  else{
+    log::warn("[solveInverseDynamics] Dynamics Class was not added.");
+    return false;
+  }
+}
+
+bool RobotisManipulator::solveGravityTerm(std::map<Name, double> *joint_torque)
+{
+  if(dynamics_added_state_){
+    Manipulator temp_manipulator = manipulator_;
+    std::vector<JointValue> present_joint_value = temp_manipulator.getAllActiveJointValue();
+    present_joint_value = trajectory_.removeWaypointDynamicData(present_joint_value);
+    temp_manipulator.setAllActiveJointValue(present_joint_value);
+    kinematics_->solveForwardKinematics(&temp_manipulator);
+    return dynamics_->solveInverseDynamics(temp_manipulator, joint_torque);
   }
   else{
     log::warn("[solveInverseDynamics] Dynamics Class was not added.");
@@ -1278,7 +1305,7 @@ void RobotisManipulator::makeToolTrajectory(Name tool_name, double tool_goal_pos
   }
 }
 
-JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)       //Private
+JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int option)       //Private
 {
   JointWaypoint joint_way_point_value;
 
@@ -1371,31 +1398,66 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)     
   }
   /////////////////////////////////////////////////////////////////
 
-  if(dynamics_added_state_){
+  if(dynamics_added_state_)
+  {
     std::map<Name, double> joint_torque_map;
-    if(dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque_map))
+    if(option == DYNAMICS_ALL_SOVING)
     {
-      auto names = trajectory_.getManipulator()->getAllActiveJointComponentName();
-      std::vector<double> joint_torque;
-      for(uint8_t i = 0; i < names.size(); i++)
+      if(dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque_map))
       {
-        if(joint_torque_map.find(names.at(i))!=joint_torque_map.end())
-          joint_torque.push_back(joint_torque_map.at(names.at(i)));
-        else
-          joint_torque.push_back(0.0);
+        auto names = trajectory_.getManipulator()->getAllActiveJointComponentName();
+        std::vector<double> joint_torque;
+        for(uint8_t i = 0; i < names.size(); i++)
+        {
+          if(joint_torque_map.find(names.at(i))!=joint_torque_map.end())
+            joint_torque.push_back(joint_torque_map.at(names.at(i)));
+          else
+            joint_torque.push_back(0.0);
+        }
+        robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
       }
-      robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
+      else
+      {
+        log::error("[getTrajectoryJointValue] fail to add goal effort.");
+      }
+    }
+    else if(option == DYNAMICS_GRAVITY_ONLY)
+    {
+      trajectory_.setPresentJointWaypoint(trajectory_.removeWaypointDynamicData(joint_way_point_value));
+      if(kinematics_added_state_){
+        trajectory_.updatePresentWaypoint(kinematics_);
+      }
+
+      if(dynamics_->solveInverseDynamics(*trajectory_.getManipulator(), &joint_torque_map))
+      {
+        auto names = trajectory_.getManipulator()->getAllActiveJointComponentName();
+        std::vector<double> joint_torque;
+        for(uint8_t i = 0; i < names.size(); i++)
+        {
+          if(joint_torque_map.find(names.at(i))!=joint_torque_map.end())
+            joint_torque.push_back(joint_torque_map.at(names.at(i)));
+          else
+            joint_torque.push_back(0.0);
+        }
+        // add effort data
+        robotis_manipulator::setEffortToValue(&joint_way_point_value, joint_torque);
+      }
     }
     else
     {
-      log::error("[getTrajectoryJointValue] fail to add goal effort.");
+      // not solve
+    }
+    //set present joint task value to trajectory manipulator
+    trajectory_.setPresentJointWaypoint(joint_way_point_value);
+    if(kinematics_added_state_){
+      trajectory_.updatePresentWaypoint(kinematics_);
     }
   }
 
   return joint_way_point_value;
 }
 
-std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(double present_time)
+std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(double present_time, int option)
 {
   trajectory_.setPresentTime(present_time);
 
@@ -1417,12 +1479,12 @@ std::vector<JointValue> RobotisManipulator::getJointGoalValueFromTrajectory(doub
     if(tick_time < trajectory_.getMoveTime())
     {
       moving_state_ = true;
-      joint_goal_way_point = getTrajectoryJointValue(tick_time);
+      joint_goal_way_point = getTrajectoryJointValue(tick_time, option);
     }
     else
     {
       moving_state_ = false;
-      joint_goal_way_point =  getTrajectoryJointValue(trajectory_.getMoveTime());
+      joint_goal_way_point =  getTrajectoryJointValue(trajectory_.getMoveTime(), option);
     }
     step_moving_state_ = true;
     return joint_goal_way_point;
