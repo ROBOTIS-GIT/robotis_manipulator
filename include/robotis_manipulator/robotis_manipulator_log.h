@@ -16,6 +16,12 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator_log.h
+ * @brief
+ * @details
+ */
+
 #ifndef ROBOTIS_MANIPULATOR_LOG_H
 #define ROBOTIS_MANIPULATOR_LOG_H
 
@@ -49,30 +55,144 @@
 namespace robotis_manipulator
 {
 namespace log{
-
+  /**
+   * @brief print
+   * @param str
+   * @param color
+   */
   void print(STRING str, STRING color = "DEFAULT");
+  /**
+   * @brief print
+   * @param str
+   * @param data
+   * @param decimal_point
+   * @param color
+   */
   void print(STRING str, double data, uint8_t decimal_point = 3, STRING color = "DEFAULT");
+  /**
+   * @brief print
+   * @param str
+   * @param color
+   */
   void print(const char* str, STRING color = "DEFAULT");
+  /**
+   * @brief print
+   * @param str
+   * @param data
+   * @param decimal_point
+   * @param color
+   */
   void print(const char* str, double data, uint8_t decimal_point = 3, STRING color = "DEFAULT");
 
+  /**
+   * @brief println
+   * @param str
+   * @param color
+   */
   void println(STRING str, STRING color = "DEFAULT");
+  /**
+   * @brief println
+   * @param str
+   * @param data
+   * @param decimal_point
+   * @param color
+   */
   void println(STRING str, double data, uint8_t decimal_point = 3, STRING color = "DEFAULT");
+  /**
+   * @brief println
+   * @param str
+   * @param color
+   */
   void println(const char* str, STRING color = "DEFAULT");
+  /**
+   * @brief println
+   * @param str
+   * @param data
+   * @param decimal_point
+   * @param color
+   */
   void println(const char* str, double data, uint8_t decimal_point = 3, STRING color = "DEFAULT");
 
+  /**
+   * @brief info
+   * @param str
+   */
   void info(STRING str);
+  /**
+   * @brief info
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void info(STRING str, double data, uint8_t decimal_point = 3);
+  /**
+   * @brief info
+   * @param str
+   */
   void info(const char* str);
+  /**
+   * @brief info
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void info(const char* str, double data, uint8_t decimal_point = 3);
+
+  /**
+   * @brief warn
+   * @param str
+   */
   void warn(STRING str);
+  /**
+   * @brief warn
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void warn(STRING str, double data, uint8_t decimal_point = 3);
+  /**
+   * @brief warn
+   * @param str
+   */
   void warn(const char* str);
+  /**
+   * @brief warn
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void warn(const char* str, double data, uint8_t decimal_point = 3);
+
+  /**
+   * @brief error
+   * @param str
+   */
   void error(STRING str);
+  /**
+   * @brief error
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void error(STRING str, double data, uint8_t decimal_point = 3);
+  /**
+   * @brief error
+   * @param str
+   */
   void error(const char* str);
+  /**
+   * @brief error
+   * @param str
+   * @param data
+   * @param decimal_point
+   */
   void error(const char* str, double data, uint8_t decimal_point = 3);
 
+  /**
+   * @brief print_vector
+   * @param vec
+   * @param decimal_point
+   */
   template <typename T> void print_vector(std::vector<T> &vec, uint8_t decimal_point = 3)
   {
   #if defined(__OPENCR__)
@@ -98,6 +218,11 @@ namespace log{
   #endif
   }
 
+  /**
+   * @brief print_vector
+   * @param vec
+   * @param decimal_point
+   */
   template <typename vector> void print_vector(vector &vec, uint8_t decimal_point = 3)
   {
   #if defined(__OPENCR__)
@@ -123,6 +248,11 @@ namespace log{
   #endif
   }
 
+  /**
+   * @brief print_matrix
+   * @param m
+   * @param decimal_point
+   */
   template <typename matrix> void print_matrix(matrix &m, uint8_t decimal_point = 3)
   {
   #if defined(__OPENCR__)

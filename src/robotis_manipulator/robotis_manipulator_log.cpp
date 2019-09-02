@@ -16,6 +16,13 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
+/**
+ * @file robotis_manipulator_log.cpp
+ * @brief
+ * @details
+ */
+
+
 #include "../../include/robotis_manipulator/robotis_manipulator_log.h"
 
 void robotis_manipulator::log::print(STRING str, STRING color)
