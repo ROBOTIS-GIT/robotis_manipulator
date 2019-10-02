@@ -127,6 +127,7 @@ public:
   /*****************************************************************************
   ** Kinematics Function (Including Virtual Function)
   *****************************************************************************/
+  Kinematics *getKinematics();
   Eigen::MatrixXd jacobian(Name tool_name);
   void solveForwardKinematics();
   void solveForwardKinematics(std::vector<JointValue> *goal_joint_value);
@@ -136,6 +137,7 @@ public:
   /*****************************************************************************
   ** Dynamics Function (Including Virtual Function)
   *****************************************************************************/
+  Dynamics *getDynamics();
   void solveForwardDynamics(std::map<Name, double> joint_torque);
   bool solveInverseDynamics(std::map<Name, double> *joint_torque);
   bool solveGravityTerm(std::map<Name, double> *joint_torque);
@@ -145,6 +147,8 @@ public:
   /*****************************************************************************
   ** Actuator Function (Including Virtual Function)
   *****************************************************************************/
+  JointActuator *getJointActuator(Name actuator_name);
+  ToolActuator *getToolActuator(Name actuator_name);
   void setJointActuatorMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
   void setToolActuatorMode(Name actuator_name, const void *arg);
   std::vector<uint8_t> getJointActuatorId(Name actuator_name);

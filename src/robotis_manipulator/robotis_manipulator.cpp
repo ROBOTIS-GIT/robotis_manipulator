@@ -212,6 +212,11 @@ Pose RobotisManipulator::getPose(Name component_name)
   return manipulator_.getComponentPoseFromWorld(component_name);
 }
 
+Kinematics *RobotisManipulator::getKinematics()
+{
+  return kinematics_;
+}
+
 
 /*****************************************************************************
 ** Kinematics Function (Including Virtual Function)
@@ -269,6 +274,11 @@ void RobotisManipulator::setKinematicsOption(const void* arg)
   else{
     log::warn("[setKinematicsOption] Kinematics Class was not added.");
   }
+}
+
+Dynamics *RobotisManipulator::getDynamics()
+{
+ return dynamics_;
 }
 
 
@@ -330,6 +340,16 @@ void RobotisManipulator::setDynamicsEnvironments(STRING param_name, const void* 
   else{
     log::warn("[setDynamicsEnvironments] Dynamics Class was not added.");
   }
+}
+
+JointActuator *RobotisManipulator::getJointActuator(Name actuator_name)
+{
+  return joint_actuator_.at(actuator_name);
+}
+
+ToolActuator *RobotisManipulator::getToolActuator(Name actuator_name)
+{
+  return tool_actuator_.at(actuator_name);
 }
 
 /*****************************************************************************
