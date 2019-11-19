@@ -1256,6 +1256,8 @@ bool RobotisManipulator::makeToolTrajectory(Name tool_name, double tool_goal_pos
   {
     return trajectory_.setToolGoalValue(tool_name, tool_value);
   }
+  else
+    return false;
 }
 
 JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time)       //Private
