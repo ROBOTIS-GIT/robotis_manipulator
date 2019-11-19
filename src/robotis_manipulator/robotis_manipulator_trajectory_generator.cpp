@@ -483,12 +483,14 @@ bool Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_w
 bool Trajectory::setToolGoalPosition(Name tool_name, double tool_goal_position)
 {
   manipulator_.setJointPosition(tool_name, tool_goal_position);
+  return true;
 }
 
 
 bool Trajectory::setToolGoalValue(Name tool_name, JointValue tool_goal_value)
 {
   manipulator_.setJointValue(tool_name, tool_goal_value);
+  return true;
 }
 
 double Trajectory::getToolGoalPosition(Name tool_name)
