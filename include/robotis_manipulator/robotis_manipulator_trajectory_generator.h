@@ -142,7 +142,7 @@ public:
   Name getPresentControlToolName();
 
   // First Waypoint
-  void initTrajectoryWaypoint(Manipulator actual_manipulator, Kinematics *kinematics=NULL);
+  void initTrajectoryWaypoint(Manipulator actual_manipulator, Kinematics *kinematics=nullptr);
 
   // Present Waypoint
   void updatePresentWaypoint(Kinematics* kinematics); //forward kinematics,dynamics
