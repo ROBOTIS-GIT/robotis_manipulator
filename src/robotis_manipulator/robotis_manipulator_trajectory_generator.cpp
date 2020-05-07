@@ -67,7 +67,7 @@ JointTrajectory::JointTrajectory()
 
 JointTrajectory::~JointTrajectory() {}
 
-void JointTrajectory::makeJointTrajectory(double move_time, JointWaypoint start,
+bool JointTrajectory::makeJointTrajectory(double move_time, JointWaypoint start,
                            JointWaypoint goal)
 {
   coefficient_size_ = start.size();
@@ -80,6 +80,7 @@ void JointTrajectory::makeJointTrajectory(double move_time, JointWaypoint start,
 
     minimum_jerk_coefficient_.col(index) = minimum_jerk_trajectory_generator_.getCoefficient();
   }
+  return true;
 }
 
 JointWaypoint JointTrajectory::getJointWaypoint(double tick)
@@ -128,7 +129,7 @@ TaskTrajectory::TaskTrajectory()
 }
 TaskTrajectory::~TaskTrajectory() {}
 
-void TaskTrajectory::makeTaskTrajectory(double move_time, TaskWaypoint start,
+bool TaskTrajectory::makeTaskTrajectory(double move_time, TaskWaypoint start,
                            TaskWaypoint goal)
 {
   std::vector<Point> start_way_point;
@@ -431,48 +432,58 @@ bool Trajectory::checkTrajectoryType(TrajectoryType trajectory_type)
     return false;
 }
 
-void Trajectory::makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point)
+bool Trajectory::makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point)
 {
-  joint_.makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
+  return joint_.makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
-void Trajectory::makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point)
+bool Trajectory::makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point)
 {
-  task_.makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
+  return task_.makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, goal_way_point);
 }
 
-void Trajectory::makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg)
+bool Trajectory::makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg)
 {
   if(cus_joint_.find(trajectory_name) != cus_joint_.end())
   {
     present_custom_trajectory_name_ = trajectory_name;
     cus_joint_.at(trajectory_name)->makeJointTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
+    return true;
   }
   else
+  {
     log::error("[makeCustomTrajectory] Wrong way point type.");
+    return false;
+  }
 }
 
-void Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg)
+bool Trajectory::makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg)
 {
   if(cus_task_.find(trajectory_name) != cus_task_.end())
   {
     present_custom_trajectory_name_ = trajectory_name;
     cus_task_.at(trajectory_name)->makeTaskTrajectory(trajectory_time_.total_move_time, start_way_point, arg);
+    return true;
   }
   else
+  {
     log::error("[makeCustomTrajectory] Wrong way point type.");
+    return false;
+  }
 }
 
 //tool
-void Trajectory::setToolGoalPosition(Name tool_name, double tool_goal_position)
+bool Trajectory::setToolGoalPosition(Name tool_name, double tool_goal_position)
 {
   manipulator_.setJointPosition(tool_name, tool_goal_position);
+  return true;
 }
 
 
-void Trajectory::setToolGoalValue(Name tool_name, JointValue tool_goal_value)
+bool Trajectory::setToolGoalValue(Name tool_name, JointValue tool_goal_value)
 {
   manipulator_.setJointValue(tool_name, tool_goal_value);
+  return true;
 }
 
 double Trajectory::getToolGoalPosition(Name tool_name)

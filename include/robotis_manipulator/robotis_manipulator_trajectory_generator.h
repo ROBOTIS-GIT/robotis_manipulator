@@ -65,7 +65,7 @@ public:
   JointTrajectory();
   virtual ~JointTrajectory();
 
-  void makeJointTrajectory(double move_time,
+  bool makeJointTrajectory(double move_time,
             JointWaypoint start,
             JointWaypoint goal
             );
@@ -84,7 +84,7 @@ public:
   TaskTrajectory();
   virtual ~TaskTrajectory();
 
-  void makeTaskTrajectory(double move_time,
+  bool makeTaskTrajectory(double move_time,
             TaskWaypoint start,
             TaskWaypoint goal
             );
@@ -157,14 +157,14 @@ public:
   // Trajectory
   void setTrajectoryType(TrajectoryType trajectory_type);
   bool checkTrajectoryType(TrajectoryType trajectory_type);
-  void makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
-  void makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
-  void makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
-  void makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
+  bool makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
+  bool makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
+  bool makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
+  bool makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
 
   // Tool
-  void setToolGoalPosition(Name tool_name, double tool_goal_position);
-  void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
+  bool setToolGoalPosition(Name tool_name, double tool_goal_position);
+  bool setToolGoalValue(Name tool_name, JointValue tool_goal_value);
   double getToolGoalPosition(Name tool_name);
   JointValue getToolGoalValue(Name tool_name);
 };
