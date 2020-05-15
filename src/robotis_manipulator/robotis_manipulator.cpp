@@ -123,7 +123,7 @@ void RobotisManipulator::addJointActuator(Name actuator_name, JointActuator *joi
   }
   for(uint32_t index = 0; index < id_array.size(); index++)
   {
-    manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(id_array.at(index)),actuator_name);
+    manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(static_cast<int8_t>(id_array.at(index))),actuator_name);
   }
   joint_actuator_added_stete_ = true;
 }
@@ -139,7 +139,7 @@ void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_
   {
     //error
   }
-  manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(id),actuator_name);
+  manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(static_cast<int8_t>(id)), actuator_name);
   tool_actuator_added_stete_ = true;
 }
 
@@ -574,7 +574,7 @@ bool RobotisManipulator::sendJointActuatorValue(Name joint_component_name, Joint
 
     std::vector<uint8_t> id;
     std::vector<JointValue> value_vector;
-    id.push_back(manipulator_.getId(joint_component_name));
+    id.push_back(static_cast<uint8_t>(manipulator_.getId(joint_component_name)));
     value_vector.push_back(value);
 
     //send to actuator
@@ -585,7 +585,6 @@ bool RobotisManipulator::sendJointActuatorValue(Name joint_component_name, Joint
     manipulator_.setJointValue(joint_component_name, value);
     return true;
   }
-  return false;
 }
 
 bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<JointValue> value_vector)
@@ -634,7 +633,6 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
       manipulator_.setJointValue(joint_component_name.at(index), value_vector.at(index));
     return true;
   }
-  return false;
 }
 
 bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value_vector)
@@ -643,7 +641,7 @@ bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value
   {
     std::map<Name, Component>::iterator it;
     std::vector<int8_t> joint_id;
-    int index = 0;
+    size_t index = 0;
     for (it = manipulator_.getIteratorBegin(); it != manipulator_.getIteratorEnd(); it++)
     {
       if(manipulator_.checkComponentType(it->first, ACTIVE_JOINT_COMPONENT))
@@ -694,7 +692,7 @@ JointValue RobotisManipulator::receiveJointActuatorValue(Name joint_component_na
     std::vector<uint8_t> actuator_id;
     std::vector<JointValue> result;
 
-    actuator_id.push_back(manipulator_.getId(joint_component_name));
+    actuator_id.push_back(static_cast<uint8_t>(manipulator_.getId(joint_component_name)));
 
     result = joint_actuator_.at(manipulator_.getComponentActuatorName(joint_component_name))->receiveJointActuatorValue(actuator_id);
 
@@ -825,7 +823,6 @@ bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, JointVa
     manipulator_.setJointValue(tool_component_name, value);
     return true;
   }
-  return false;
 }
 
 bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector)
@@ -851,7 +848,6 @@ bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_co
       manipulator_.setJointValue(tool_component_name.at(index), value_vector.at(index));
     return true;
   }
-  return false;
 }
 
 bool RobotisManipulator::sendAllToolActuatorValue(std::vector<JointValue> value_vector)
@@ -1037,7 +1033,7 @@ bool RobotisManipulator::makeJointTrajectoryFromPresentPosition(std::vector<doub
 
   JointWaypoint present_way_point = trajectory_.getPresentJointWaypoint();
   std::vector<double> goal_joint_position;
-  for(int i = 0; i < trajectory_.getManipulator()->getDOF(); i ++)
+  for(size_t i = 0; i < static_cast<size_t>(trajectory_.getManipulator()->getDOF()); i ++)
     goal_joint_position.push_back(present_way_point.at(i).position + delta_goal_joint_position.at(i));
 
   return makeJointTrajectory(goal_joint_position, move_time);
@@ -1264,15 +1260,28 @@ bool RobotisManipulator::makeTaskTrajectory(Name tool_name, KinematicPose goal_p
   goal_task_way_point.kinematic = goal_pose;
   goal_task_way_point = trajectory_.removeWaypointDynamicData(goal_task_way_point);
 
-  if(getMovingState())
+  Pose temp_goal_pose;
+  temp_goal_pose.kinematic = goal_pose;
+  temp_goal_pose = trajectory_.removeWaypointDynamicData(temp_goal_pose);
+  std::vector<JointValue> goal_joint_angle;
+  if(kinematics_->solveInverseKinematics(trajectory_.getManipulator(), tool_name, temp_goal_pose, &goal_joint_angle))
   {
-    moving_state_=false;
-    while(!step_moving_state_) ;
+    if(getMovingState())
+    {
+      moving_state_=false;
+      while(!step_moving_state_) ;
+    }
+
+    if(!trajectory_.makeTaskTrajectory(present_task_way_point, goal_task_way_point))
+      return false;
+    startMoving();
+    return true;
   }
-  if(!trajectory_.makeTaskTrajectory(present_task_way_point, goal_task_way_point))
+  else
+  {
+    log::error("[TASK_TRAJECTORY] Fail to solve IK");
     return false;
-  startMoving();
-  return true;
+  }
 }
 
 void RobotisManipulator::setCustomTrajectoryOption(Name trajectory_name, const void* arg)
