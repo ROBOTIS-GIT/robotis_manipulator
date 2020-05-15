@@ -198,6 +198,7 @@ bool TaskTrajectory::makeTaskTrajectory(double move_time, TaskWaypoint start,
 
     minimum_jerk_coefficient_.col(index) = minimum_jerk_trajectory_generator_.getCoefficient();
   }
+  return true;
 }
 
 TaskWaypoint TaskTrajectory::getTaskWaypoint(double tick)
@@ -367,7 +368,7 @@ void Trajectory::initTrajectoryWaypoint(Manipulator actual_manipulator, Kinemati
   joint_way_point_vector = getManipulator()->getAllActiveJointValue();
 
   setPresentJointWaypoint(joint_way_point_vector);
-  if(kinematics != NULL)
+  if(kinematics != nullptr)
     updatePresentWaypoint(kinematics);
 }
 
