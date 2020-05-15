@@ -16,13 +16,6 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-/**
- * @file robotis_manipulator_math.cpp
- * @brief
- * @details
- */
-
-
 #include "../../include/robotis_manipulator/robotis_manipulator_math.h"
 
 /*****************************************************************************
@@ -400,4 +393,15 @@ Eigen::VectorXd robotis_manipulator::math::poseDifference(Eigen::Vector3d desire
       orientation_difference(0), orientation_difference(1), orientation_difference(2);
 
   return pose_difference;
+}
+
+Eigen::VectorXd robotis_manipulator::math::dynamicPoseDifference(Eigen::Vector3d desired_linear_velocity, Eigen::Vector3d present_linear_velocity, Eigen::Vector3d desired_angular_velocity, Eigen::Vector3d present_angular_velocity)
+{
+  Eigen::Vector3d linear_difference = desired_linear_velocity - present_linear_velocity;
+  Eigen::Vector3d angular_difference = desired_angular_velocity - present_angular_velocity;
+  Eigen::VectorXd dynamic_pose_difference(6);
+  dynamic_pose_difference << linear_difference(0), linear_difference(1), linear_difference(2),
+      angular_difference(0), angular_difference(1), angular_difference(2);
+
+  return dynamic_pose_difference;
 }

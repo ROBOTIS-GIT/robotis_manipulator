@@ -16,13 +16,6 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-/**
- * @file robotis_manipulator_trajectory_generator.cpp
- * @brief
- * @details
- */
-
-
 #include "../../include/robotis_manipulator/robotis_manipulator_trajectory_generator.h"
 
 using namespace robotis_manipulator;
@@ -375,7 +368,8 @@ void Trajectory::initTrajectoryWaypoint(Manipulator actual_manipulator, Kinemati
   joint_way_point_vector = getManipulator()->getAllActiveJointValue();
 
   setPresentJointWaypoint(joint_way_point_vector);
-  updatePresentWaypoint(kinematics);
+  if(kinematics != nullptr)
+    updatePresentWaypoint(kinematics);
 }
 
 void Trajectory::updatePresentWaypoint(Kinematics *kinematics)

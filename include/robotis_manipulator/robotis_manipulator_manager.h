@@ -16,12 +16,6 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-/**
- * @file robotis_manipulator_manager.h
- * @brief
- * @details
- */
-
 #ifndef ROBOTIS_MANIPULATOR_MANAGER_H_
 #define ROBOTIS_MANIPULATOR_MANAGER_H_
 
@@ -35,46 +29,32 @@
 
 namespace robotis_manipulator
 {
-/**
- * @brief The Kinematics class
- */
+
 class Kinematics
 {
 public:
   Kinematics() {}
   virtual ~Kinematics() {}
 
-  /**
-   * @brief setOption
-   * @param arg
-   */
   virtual void setOption(const void *arg) = 0;
-  /**
-   * @brief jacobian
-   * @param manipulator
-   * @param tool_name
-   * @return
-   */
   virtual Eigen::MatrixXd jacobian(Manipulator *manipulator, Name tool_name) = 0;
-  /**
-   * @brief solveForwardKinematics
-   * @param manipulator
-   */
-  virtual void solveForwardKinematics(Manipulator *manipulator) = 0;
-  /**
-   * @brief solveInverseKinematics
-   * @param manipulator
-   * @param tool_name
-   * @param target_pose
-   * @param goal_joint_position
-   * @return
-   */
-  virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;
+  virtual void solveForwardKinematics(Manipulator *manipulator) = 0;                                                                                   //Every joint value to every component pose
+  virtual bool solveInverseKinematics(Manipulator *manipulator, Name tool_name, Pose target_pose, std::vector<JointValue>* goal_joint_position) = 0;    //An component pose to every joint value
 };
 
-/**
- * @brief The JointActuator class
- */
+class Dynamics
+{
+public:
+  Dynamics() {}
+  virtual ~Dynamics() {}
+
+  virtual bool setOption(STRING param_name, const void *arg) = 0;
+  virtual bool setEnvironments(STRING param_name, const void *arg) = 0;
+  virtual bool solveForwardDynamics(Manipulator *manipulator, std::map<Name, double> joint_torque) = 0;          //torque to joint value
+  virtual bool solveInverseDynamics(Manipulator manipulator, std::map<Name, double>* joint_torque) = 0;          //joint values to torque
+};
+
+
 class JointActuator
 {
 public:
@@ -83,186 +63,62 @@ public:
   JointActuator() : enabled_state_(false) {}
   virtual ~JointActuator() {}
 
-  /**
-   * @brief init
-   * @param actuator_id
-   * @param arg
-   */
   virtual void init(std::vector<uint8_t> actuator_id, const void *arg) = 0;
-  /**
-   * @brief setMode
-   * @param actuator_id
-   * @param arg
-   */
   virtual void setMode(std::vector<uint8_t> actuator_id, const void *arg) = 0;
-  /**
-   * @brief getId
-   * @return
-   */
   virtual std::vector<uint8_t> getId() = 0;
 
-  /**
-   * @brief enable
-   */
   virtual void enable() = 0;
-  /**
-   * @brief disable
-   */
   virtual void disable() = 0;
 
-  /**
-   * @brief sendJointActuatorValue
-   * @param actuator_id
-   * @param value_vector
-   * @return
-   */
   virtual bool sendJointActuatorValue(std::vector<uint8_t> actuator_id, std::vector<ActuatorValue> value_vector) = 0;
-  /**
-   * @brief receiveJointActuatorValue
-   * @param actuator_id
-   * @return
-   */
   virtual std::vector<ActuatorValue> receiveJointActuatorValue(std::vector<uint8_t> actuator_id) = 0;
 
-  /**
-   * @brief findId
-   * @param actuator_id
-   * @return
-   */
   bool findId(uint8_t actuator_id);
-  /**
-   * @brief getEnabledState
-   * @return
-   */
   bool getEnabledState();
 };
 
-/**
- * @brief The ToolActuator class
- */
 class ToolActuator
 {
 public:
-  /**
-   * @brief enabled_state_
-   */
   bool enabled_state_;
 
-  /**
-   * @brief ToolActuator
-   */
   ToolActuator():enabled_state_(false){}
-  /**
-   * @brief ~ToolActuator
-   */
   virtual ~ToolActuator() {}
 
-  /**
-   * @brief init
-   * @param actuator_id
-   * @param arg
-   */
   virtual void init(uint8_t actuator_id, const void *arg) = 0;
-  /**
-   * @brief setMode
-   * @param arg
-   */
   virtual void setMode(const void *arg) = 0;
-  /**
-   * @brief getId
-   * @return
-   */
   virtual uint8_t getId() = 0;
 
-  /**
-   * @brief enable
-   */
   virtual void enable() = 0;
-  /**
-   * @brief disable
-   */
   virtual void disable() = 0;
 
-  /**
-   * @brief sendToolActuatorValue
-   * @param value
-   * @return
-   */
   virtual bool sendToolActuatorValue(ActuatorValue value) = 0;
-  /**
-   * @brief receiveToolActuatorValue
-   * @return
-   */
   virtual ActuatorValue receiveToolActuatorValue() = 0;
 
-  /**
-   * @brief findId
-   * @param actuator_id
-   * @return
-   */
   bool findId(uint8_t actuator_id);
-  /**
-   * @brief getEnabledState
-   * @return
-   */
   bool getEnabledState();
 };
 
-/**
- * @brief The CustomJointTrajectory class
- */
+
 class CustomJointTrajectory
 {
 public:
   CustomJointTrajectory() {}
   virtual ~CustomJointTrajectory() {}
 
-  /**
-   * @brief makeJointTrajectory
-   * @param move_time
-   * @param start
-   * @param arg
-   */
-  virtual void makeJointTrajectory(double move_time, JointWaypoint start, const void *arg) = 0;
-  /**
-   * @brief setOption
-   * @param arg
-   */
+  virtual void makeJointTrajectory(double move_time, JointWaypoint start, const void *arg) = 0; 
   virtual void setOption(const void *arg) = 0;
-  /**
-   * @brief getJointWaypoint
-   * @param tick
-   * @return
-   */
   virtual JointWaypoint getJointWaypoint(double tick) = 0;
 };
 
-/**
- * @brief The CustomTaskTrajectory class
- */
 class CustomTaskTrajectory
 {
 public:
   CustomTaskTrajectory() {}
   virtual ~CustomTaskTrajectory() {}
 
-  /**
-   * @brief makeTaskTrajectory
-   * @param move_time
-   * @param start
-   * @param arg
-   */
   virtual void makeTaskTrajectory(double move_time, TaskWaypoint start, const void *arg) = 0; 
-  /**
-   * @brief setOption
-   * @param arg
-   */
   virtual void setOption(const void *arg) = 0;
-  /**
-   * @brief getTaskWaypoint
-   * @param tick
-   * @return
-   */
   virtual TaskWaypoint getTaskWaypoint(double tick) = 0;
 };
 

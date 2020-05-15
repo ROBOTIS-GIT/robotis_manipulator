@@ -16,12 +16,6 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-/**
- * @file robotis_manipulator.h
- * @brief
- * @details
- */
-
 #ifndef ROBOTIS_MANIPULATOR_H_
 #define ROBOTIS_MANIPULATOR_H_
 
@@ -32,41 +26,36 @@
 #include "robotis_manipulator_log.h"
 
 #include <algorithm>
-/**
- * @namespace robotis_manipulator
- * @brief main namespace
- */
+
 namespace robotis_manipulator
 {
-/**
- * @brief The RobotisManipulator class
- */
+
+#define DYNAMICS_ALL_SOVING 0
+#define DYNAMICS_GRAVITY_ONLY 1
+#define DYNAMICS_NOT_SOVING 2
+
 class RobotisManipulator
 {
 private:
   Manipulator manipulator_;
   Trajectory trajectory_;
   Kinematics *kinematics_;
+  Dynamics *dynamics_;
   std::map<Name, JointActuator *> joint_actuator_;
   std::map<Name, ToolActuator *> tool_actuator_;
 
   bool trajectory_initialized_state_;
-  bool joint_actuator_added_stete_;
-  bool tool_actuator_added_stete_;
   bool moving_state_;
   bool step_moving_state_;
 
+  bool joint_actuator_added_stete_;
+  bool tool_actuator_added_stete_;
+  bool kinematics_added_state_;
+  bool dynamics_added_state_;
+
 private:
-  /**
-   * @brief startMoving
-   */
   void startMoving();
-  /**
-   * @brief getTrajectoryJointValue
-   * @param tick_time
-   * @return
-   */
-  JointWaypoint getTrajectoryJointValue(double tick_time);
+  JointWaypoint getTrajectoryJointValue(double tick_time, int option=0);
 
 public:
   RobotisManipulator();
@@ -76,33 +65,11 @@ public:
   /*****************************************************************************
   ** Initialize Function
   *****************************************************************************/
-  /**
-   * @brief addWorld
-   * @param world_name
-   * @param child_name
-   * @param world_position
-   * @param world_orientation
-   */
   void addWorld(Name world_name,
                 Name child_name,
                 Eigen::Vector3d world_position = Eigen::Vector3d::Zero(),
                 Eigen::Matrix3d world_orientation = Eigen::Matrix3d::Identity());
-  /**
-   * @brief addJoint
-   * @param my_name
-   * @param parent_name
-   * @param child_name
-   * @param relative_position
-   * @param relative_orientation
-   * @param axis_of_rotation
-   * @param joint_actuator_id
-   * @param max_position_limit
-   * @param min_position_limit
-   * @param coefficient
-   * @param mass
-   * @param inertia_tensor
-   * @param center_of_mass
-   */
+
   void addJoint(Name my_name,
                 Name parent_name,
                 Name child_name,
@@ -115,21 +82,9 @@ public:
                 double coefficient = 1.0,
                 double mass = 0.0,
                 Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
-  /**
-   * @brief addTool
-   * @param my_name
-   * @param parent_name
-   * @param relative_position
-   * @param relative_orientation
-   * @param tool_id
-   * @param max_position_limit
-   * @param min_position_limit
-   * @param coefficient
-   * @param mass
-   * @param inertia_tensor
-   * @param center_of_mass
-   */
+                Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero(),
+                double torque_coefficient = 1.0);
+
   void addTool(Name my_name,
                Name parent_name,
                Eigen::Vector3d relative_position,
@@ -138,341 +93,107 @@ public:
                double max_position_limit =M_PI, 
                double min_position_limit = -M_PI,
                double coefficient = 1.0,
-               double mass = 0.0,
-               Eigen::Matrix3d inertia_tensor = Eigen::Matrix3d::Identity(),
-               Eigen::Vector3d center_of_mass = Eigen::Vector3d::Zero());
-  /**
-   * @brief addComponentChild
-   * @param my_name
-   * @param child_name
-   */
-  void addComponentChild(Name my_name, Name child_name);
-  /**
-   * @brief printManipulatorSetting
-   */
-  void printManipulatorSetting();
-  /**
-   * @brief addKinematics
-   * @param kinematics
-   */
-  void addKinematics(Kinematics *kinematics);
-  /**
-   * @brief addJointActuator
-   * @param actuator_name
-   * @param joint_actuator
-   * @param id_array
-   * @param arg
-   */
-  void addJointActuator(Name actuator_name, JointActuator *joint_actuator, std::vector<uint8_t> id_array, const void *arg);
-  /**
-   * @brief addToolActuator
-   * @param tool_name
-   * @param tool_actuator
-   * @param id
-   * @param arg
-   */
-  void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
-  /**
-   * @brief addCustomTrajectory
-   * @param trajectory_name
-   * @param custom_trajectory
-   */
-  void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
-  /**
-   * @brief addCustomTrajectory
-   * @param trajectory_name
-   * @param custom_trajectory
-   */
-  void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
+               double object_mass = 0.0,
+               Eigen::Matrix3d object_inertia_tensor = Eigen::Matrix3d::Identity(),
+               Eigen::Vector3d object_center_of_mass = Eigen::Vector3d::Zero());
 
+  void addComponentChild(Name my_name, Name child_name);
+  void printManipulatorSetting();
+
+  void addKinematics(Kinematics *kinematics);
+  void addDynamics(Dynamics *dynamics);
+  void addJointActuator(Name actuator_name, JointActuator *joint_actuator, std::vector<uint8_t> id_array, const void *arg);
+  void addToolActuator(Name tool_name, ToolActuator *tool_actuator, uint8_t id, const void *arg);
+  void addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory);
+  void addCustomTrajectory(Name trajectory_name, CustomTaskTrajectory *custom_trajectory);
 
   /*****************************************************************************
   ** Manipulator Function
   *****************************************************************************/
-  /**
-   * @brief getManipulator
-   * @return
-   */
   Manipulator *getManipulator();
-  /**
-   * @brief getJointValue
-   * @param joint_name
-   * @return
-   */
-  JointValue getJointValue(Name joint_name);
-  /**
-   * @brief getToolValue
-   * @param tool_name
-   * @return
-   */
-  JointValue getToolValue(Name tool_name);
-  /**
-   * @brief getAllActiveJointValue
-   * @return
-   */
-  std::vector<JointValue> getAllActiveJointValue();
-  /**
-   * @brief getAllJointValue
-   * @return
-   */
-  std::vector<JointValue> getAllJointValue();
-  /**
-   * @brief getAllToolPosition
-   * @return
-   */
-  std::vector<double> getAllToolPosition();
-  /**
-   * @brief getAllToolValue
-   * @return
-   */
-  std::vector<JointValue> getAllToolValue();
-  /**
-   * @brief getKinematicPose
-   * @param component_name
-   * @return
-   */
-  KinematicPose getKinematicPose(Name component_name);
-  /**
-   * @brief getDynamicPose
-   * @param component_name
-   * @return
-   */
-  DynamicPose getDynamicPose(Name component_name);
-  /**
-   * @brief getPose
-   * @param component_name
-   * @return
-   */
-  Pose getPose(Name component_name);
 
+  void setTorqueCoefficient(Name component_name, double torque_coefficient);
+
+  JointValue getJointValue(Name joint_name);
+  JointValue getToolValue(Name tool_name);
+  std::vector<JointValue> getAllActiveJointValue();
+  std::vector<JointValue> getAllJointValue();
+  std::vector<double> getAllToolPosition();
+  std::vector<JointValue> getAllToolValue();
+  KinematicPose getKinematicPose(Name component_name);
+  DynamicPose getDynamicPose(Name component_name);
+  Pose getPose(Name component_name);
 
   /*****************************************************************************
   ** Kinematics Function (Including Virtual Function)
   *****************************************************************************/
-  /**
-   * @brief jacobian
-   * @param tool_name
-   * @return
-   */
+  Kinematics *getKinematics();
   Eigen::MatrixXd jacobian(Name tool_name);
-  /**
-   * @brief solveForwardKinematics
-   */
   void solveForwardKinematics();
-  /**
-   * @brief solveInverseKinematics
-   * @param tool_name
-   * @param goal_pose
-   * @param goal_joint_value
-   * @return
-   */
+  void solveForwardKinematics(std::vector<JointValue> *goal_joint_value);
   bool solveInverseKinematics(Name tool_name, Pose goal_pose, std::vector<JointValue> *goal_joint_value);
-  /**
-   * @brief setKinematicsOption
-   * @param arg
-   */
   void setKinematicsOption(const void* arg);
 
+  /*****************************************************************************
+  ** Dynamics Function (Including Virtual Function)
+  *****************************************************************************/
+  Dynamics *getDynamics();
+  void solveForwardDynamics(std::map<Name, double> joint_torque);
+  bool solveInverseDynamics(std::map<Name, double> *joint_torque);
+  bool solveGravityTerm(std::map<Name, double> *joint_torque);
+  void setDynamicsOption(STRING param_name, const void* arg);
+  void setDynamicsEnvironments(STRING param_name, const void* arg);
 
   /*****************************************************************************
   ** Actuator Function (Including Virtual Function)
   *****************************************************************************/
-  /**
-   * @brief setJointActuatorMode
-   * @param actuator_name
-   * @param id_array
-   * @param arg
-   */
+  JointActuator *getJointActuator(Name actuator_name);
+  ToolActuator *getToolActuator(Name actuator_name);
   void setJointActuatorMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg);
-  /**
-   * @brief setToolActuatorMode
-   * @param actuator_name
-   * @param arg
-   */
   void setToolActuatorMode(Name actuator_name, const void *arg);
-  /**
-   * @brief getJointActuatorId
-   * @param actuator_name
-   * @return
-   */
   std::vector<uint8_t> getJointActuatorId(Name actuator_name);
-  /**
-   * @brief getToolActuatorId
-   * @param actuator_name
-   * @return
-   */
   uint8_t getToolActuatorId(Name actuator_name);
-  /**
-   * @brief enableActuator
-   * @param actuator_name
-   */
   void enableActuator(Name actuator_name);
-  /**
-   * @brief disableActuator
-   * @param actuator_name
-   */
   void disableActuator(Name actuator_name);
-  /**
-   * @brief enableAllJointActuator
-   */
   void enableAllJointActuator();
-  /**
-   * @brief disableAllJointActuator
-   */
   void disableAllJointActuator();
-  /**
-   * @brief enableAllToolActuator
-   */
   void enableAllToolActuator();
-  /**
-   * @brief disableAllToolActuator
-   */
   void disableAllToolActuator();
-  /**
-   * @brief enableAllActuator
-   */
   void enableAllActuator();
-  /**
-   * @brief disableAllActuator
-   */
   void disableAllActuator();
-  /**
-   * @brief getActuatorEnabledState
-   * @param actuator_name
-   * @return
-   */
   bool getActuatorEnabledState(Name actuator_name);
-  /**
-   * @brief sendJointActuatorValue
-   * @param joint_component_name
-   * @param value
-   * @return
-   */
-  bool sendJointActuatorValue(Name joint_component_name, JointValue value);
-  /**
-   * @brief sendMultipleJointActuatorValue
-   * @param joint_component_name
-   * @param value_vector
-   * @return
-   */
-  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<JointValue> value_vector);
-  /**
-   * @brief sendAllJointActuatorValue
-   * @param value_vector
-   * @return
-   */
-  bool sendAllJointActuatorValue(std::vector<JointValue> value_vector);
-  /**
-   * @brief receiveJointActuatorValue
-   * @param joint_component_name
-   * @return
-   */
-  JointValue receiveJointActuatorValue(Name joint_component_name);
-  /**
-   * @brief receiveMultipleJointActuatorValue
-   * @param joint_component_name
-   * @return
-   */
-  std::vector<JointValue> receiveMultipleJointActuatorValue(std::vector<Name> joint_component_name);
-  /**
-   * @brief receiveAllJointActuatorValue
-   * @return
-   */
-  std::vector<JointValue> receiveAllJointActuatorValue();
-  /**
-   * @brief sendToolActuatorValue
-   * @param tool_component_name
-   * @param value
-   * @return
-   */
-  bool sendToolActuatorValue(Name tool_component_name, JointValue value);
-  /**
-   * @brief sendMultipleToolActuatorValue
-   * @param tool_component_name
-   * @param value_vector
-   * @return
-   */
-  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector);
-  /**
-   * @brief sendAllToolActuatorValue
-   * @param value_vector
-   * @return
-   */
-  bool sendAllToolActuatorValue(std::vector<JointValue> value_vector);
-  /**
-   * @brief receiveToolActuatorValue
-   * @param tool_component_name
-   * @return
-   */
-  JointValue receiveToolActuatorValue(Name tool_component_name);
-  /**
-   * @brief receiveMultipleToolActuatorValue
-   * @param tool_component_name
-   * @return
-   */
-  std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
-  /**
-   * @brief receiveAllToolActuatorValue
-   * @return
-   */
-  std::vector<JointValue> receiveAllToolActuatorValue();
 
+  bool sendJointActuatorValue(Name joint_component_name, JointValue value);
+  bool sendMultipleJointActuatorValue(std::vector<Name> joint_component_name, std::vector<JointValue> value_vector);
+  bool sendAllJointActuatorValue(std::vector<JointValue> value_vector);
+  JointValue receiveJointActuatorValue(Name joint_component_name);
+  std::vector<JointValue> receiveMultipleJointActuatorValue(std::vector<Name> joint_component_name);
+  std::vector<JointValue> receiveAllJointActuatorValue();
+
+  bool sendToolActuatorValue(Name tool_component_name, JointValue value);
+  bool sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector);
+  bool sendAllToolActuatorValue(std::vector<JointValue> value_vector);
+  JointValue receiveToolActuatorValue(Name tool_component_name);
+  std::vector<JointValue> receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name);
+  std::vector<JointValue> receiveAllToolActuatorValue();
 
   /*****************************************************************************
   ** Time Function
   *****************************************************************************/
-  /**
-   * @brief getTrajectoryMoveTime
-   * @return
-   */
   double getTrajectoryMoveTime();
-  /**
-   * @brief getMovingState
-   * @return
-   */
   bool getMovingState();
-
 
   /*****************************************************************************
   ** Check Joint Limit Function
   *****************************************************************************/
-  /**
-   * @brief checkJointLimit
-   * @param component_name
-   * @param position
-   * @return
-   */
   bool checkJointLimit(Name component_name, double position);
-  /**
-   * @brief checkJointLimit
-   * @param component_name
-   * @param value
-   * @return
-   */
   bool checkJointLimit(Name component_name, JointValue value);
-  /**
-   * @brief checkJointLimit
-   * @param component_name
-   * @param position_vector
-   * @return
-   */
   bool checkJointLimit(std::vector<Name> component_name, std::vector<double> position_vector);
-  /**
-   * @brief checkJointLimit
-   * @param component_name
-   * @param value_vector
-   * @return
-   */
   bool checkJointLimit(std::vector<Name> component_name, std::vector<JointValue> value_vector);
-
 
   /*****************************************************************************
   ** Trajectory Control Fuction
   *****************************************************************************/
-  /**
-   * @brief getTrajectory
-   * @return
-   */
   Trajectory *getTrajectory();
   /**
    * @brief makeJointTrajectoryFromPresentPosition
@@ -608,18 +329,15 @@ public:
    * @param present_time
    * @return
    */
-  std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time);
+  std::vector<JointValue> getJointGoalValueFromTrajectory(double present_time, int option=DYNAMICS_ALL_SOVING);
   /**
    * @brief getToolGoalValue
    * @return
    */
   std::vector<JointValue> getToolGoalValue();
-  /**
-   * @brief getJointGoalValueFromTrajectoryTickTime
-   * @param tick_time
-   * @return
-   */
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
+
+  void stopMoving();
 };
 } // namespace ROBOTIS_MANIPULATOR
 

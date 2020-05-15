@@ -16,16 +16,35 @@
 
 /* Authors: Darby Lim, Hye-Jong KIM, Ryan Shim, Yong-Ho Na */
 
-/**
- * @file robotis_manipulator_common.cpp
- * @brief
- * @details
- */
-
-
 #include "../../include/robotis_manipulator/robotis_manipulator_common.h"
 
 using namespace robotis_manipulator;
+
+bool robotis_manipulator::setEffortToValue(std::vector<JointValue> *value, std::vector<double> effort)
+{
+  if(value->size()==effort.size()){
+    for(int i=0; i<value->size(); i++){
+      value->at(i).effort=effort.at(i);
+    }
+    return true;
+  }
+  else{
+    return false;
+  }
+}
+
+bool robotis_manipulator::setPositionToValue(std::vector<JointValue> *value, std::vector<double> position)
+{
+  if(value->size()==position.size()){
+    for(int i=0; i<value->size(); i++){
+      value->at(i).position=position.at(i);
+    }
+    return true;
+  }
+  else{
+    return false;
+  }
+}
 
 Manipulator::Manipulator():dof_(0){}
 
@@ -59,7 +78,8 @@ void Manipulator::addJoint(Name my_name,
                            double coefficient,
                            double mass,
                            Eigen::Matrix3d inertia_tensor,
-                           Eigen::Vector3d center_of_mass)
+                           Eigen::Vector3d center_of_mass,
+                           double torque_coefficient)
 {
   Component temp_component;
   if (joint_actuator_id != -1)
@@ -84,6 +104,7 @@ void Manipulator::addJoint(Name my_name,
   temp_component.joint_constant.axis = axis_of_rotation;
   temp_component.joint_constant.position_limit.maximum = max_position_limit;
   temp_component.joint_constant.position_limit.minimum = min_position_limit;
+  temp_component.joint_constant.torque_coefficient = torque_coefficient;
 
   temp_component.pose_from_world.kinematic.position = Eigen::Vector3d::Zero();
   temp_component.pose_from_world.kinematic.orientation = Eigen::Matrix3d::Identity();
@@ -109,7 +130,8 @@ void Manipulator::addTool(Name my_name,
                           double coefficient,
                           double mass,
                           Eigen::Matrix3d inertia_tensor,
-                          Eigen::Vector3d center_of_mass)
+                          Eigen::Vector3d center_of_mass,
+                          double torque_coefficient)
 {
   Component temp_component;
 
@@ -126,6 +148,7 @@ void Manipulator::addTool(Name my_name,
   temp_component.joint_constant.axis = Eigen::Vector3d::Zero();
   temp_component.joint_constant.position_limit.maximum = max_position_limit;
   temp_component.joint_constant.position_limit.minimum = min_position_limit;
+  temp_component.joint_constant.torque_coefficient = torque_coefficient;
 
   temp_component.pose_from_world.kinematic.position = Eigen::Vector3d::Zero();
   temp_component.pose_from_world.kinematic.orientation = Eigen::Matrix3d::Identity();
@@ -244,6 +267,11 @@ void Manipulator::printManipulatorSetting()
 /*****************************************************************************
 ** Set Function
 *****************************************************************************/
+void Manipulator::setTorqueCoefficient(Name component_name, double torque_coefficient)
+{
+  component_.at(component_name).joint_constant.torque_coefficient = torque_coefficient;
+}
+
 void Manipulator::setWorldPose(Pose world_pose)
 {
   world_.pose = world_pose;
@@ -609,6 +637,11 @@ int8_t Manipulator::getId(Name component_name)
 double Manipulator::getCoefficient(Name component_name)
 {
   return component_.at(component_name).joint_constant.coefficient;
+}
+
+double Manipulator::getTorqueCoefficient(Name component_name)
+{
+  return component_.at(component_name).joint_constant.torque_coefficient;
 }
 
 Eigen::Vector3d Manipulator::getAxis(Name component_name)
