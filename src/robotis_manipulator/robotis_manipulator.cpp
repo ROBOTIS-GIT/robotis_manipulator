@@ -27,6 +27,7 @@ using namespace robotis_manipulator;
 RobotisManipulator::RobotisManipulator()
 {
   moving_state_ = false;
+  moving_fail_flag_ = false;
   joint_actuator_added_stete_ = false;
   tool_actuator_added_stete_ = false;
   step_moving_state_ = false;
@@ -949,6 +950,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllToolActuatorValue()
 void RobotisManipulator::startMoving()      //Private
 {
   moving_state_ = true;
+  moving_fail_flag_ = false;
   trajectory_.setStartTimeToPresentTime();
 }
 
@@ -960,6 +962,16 @@ double RobotisManipulator::getTrajectoryMoveTime()
 bool RobotisManipulator::getMovingState()
 {
   return moving_state_;
+}
+
+bool RobotisManipulator::getMovingFailState()
+{
+  return moving_fail_flag_;
+}
+
+void RobotisManipulator::resetMovingFailState()
+{
+  moving_fail_flag_ = false;
 }
 
 
@@ -1392,6 +1404,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
     if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+      moving_fail_flag_ = true;
       moving_state_ = false;
     }
     //set present joint task value to trajectory manipulator
@@ -1414,6 +1427,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
       {
         joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
         task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
+        moving_fail_flag_ = true;
         moving_state_ = false;
       }
     }
@@ -1422,6 +1436,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
       task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
       log::error("[TASK_TRAJECTORY] fail to solve IK");
+      moving_fail_flag_ = true;
       moving_state_ = false;
     }
     //set present joint task value to trajectory manipulator
@@ -1438,6 +1453,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
     if(!checkJointLimit(trajectory_.getManipulator()->getAllActiveJointComponentName(), joint_way_point_value))
     {
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
+      moving_fail_flag_ = true;
       moving_state_ = false;
     }
     //set present joint task value to trajectory manipulator
@@ -1457,6 +1473,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
       {
         joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
         task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
+        moving_fail_flag_ = true;
         moving_state_ = false;
       }
     }
@@ -1465,6 +1482,7 @@ JointWaypoint RobotisManipulator::getTrajectoryJointValue(double tick_time, int 
       joint_way_point_value = trajectory_.removeWaypointDynamicData(trajectory_.getPresentJointWaypoint());
       task_way_point = trajectory_.removeWaypointDynamicData(trajectory_.getPresentTaskWaypoint(trajectory_.getPresentControlToolName()));
       log::error("[CUSTOM_TASK_TRAJECTORY] fail to solve IK");
+      moving_fail_flag_ = true;
       moving_state_ = false;
     }
     //set present joint task value to trajectory manipulator

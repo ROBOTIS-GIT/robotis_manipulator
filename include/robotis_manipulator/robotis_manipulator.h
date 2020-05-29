@@ -46,6 +46,7 @@ private:
 
   bool trajectory_initialized_state_;
   bool moving_state_;
+  bool moving_fail_flag_;
   bool step_moving_state_;
 
   bool joint_actuator_added_stete_;
@@ -338,6 +339,8 @@ public:
   std::vector<JointValue> getJointGoalValueFromTrajectoryTickTime(double tick_time);
 
   void stopMoving();
+  bool getMovingFailState();
+  void resetMovingFailState();
 };
 } // namespace ROBOTIS_MANIPULATOR
 
