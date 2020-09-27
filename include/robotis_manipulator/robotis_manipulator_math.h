@@ -94,6 +94,8 @@ Eigen::Vector3d positionDifference(Eigen::Vector3d desired_position, Eigen::Vect
 Eigen::Vector3d orientationDifference(Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
 Eigen::VectorXd poseDifference(Eigen::Vector3d desired_position, Eigen::Vector3d present_position,
                         Eigen::Matrix3d desired_orientation, Eigen::Matrix3d present_orientation);
+Eigen::VectorXd dynamicPoseDifference(Eigen::Vector3d desired_linear_velocity, Eigen::Vector3d present_linear_velocity,
+                                      Eigen::Vector3d desired_angular_velocity, Eigen::Vector3d present_angular_velocity);
 
 } // math
 } // namespace robotis_manipulator
