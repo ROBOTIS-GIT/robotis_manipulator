@@ -65,7 +65,13 @@ public:
   JointTrajectory();
   virtual ~JointTrajectory();
 
-  void makeJointTrajectory(double move_time,
+  /**
+   * @brief makeJointTrajectory
+   * @param move_time
+   * @param start
+   * @param goal
+   */
+  bool makeJointTrajectory(double move_time,
             JointWaypoint start,
             JointWaypoint goal
             );
@@ -84,7 +90,13 @@ public:
   TaskTrajectory();
   virtual ~TaskTrajectory();
 
-  void makeTaskTrajectory(double move_time,
+  /**
+   * @brief makeTaskTrajectory
+   * @param move_time
+   * @param start
+   * @param goal
+   */
+  bool makeTaskTrajectory(double move_time,
             TaskWaypoint start,
             TaskWaypoint goal
             );
@@ -142,7 +154,7 @@ public:
   Name getPresentControlToolName();
 
   // First Waypoint
-  void initTrajectoryWaypoint(Manipulator actual_manipulator, Kinematics *kinematics);
+  void initTrajectoryWaypoint(Manipulator actual_manipulator, Kinematics *kinematics=nullptr);
 
   // Present Waypoint
   void updatePresentWaypoint(Kinematics* kinematics); //forward kinematics,dynamics
@@ -157,14 +169,51 @@ public:
   // Trajectory
   void setTrajectoryType(TrajectoryType trajectory_type);
   bool checkTrajectoryType(TrajectoryType trajectory_type);
-  void makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
-  void makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
-  void makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
-  void makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
+  /**
+   * @brief makeJointTrajectory
+   * @param start_way_point
+   * @param goal_way_point
+   */
+  bool makeJointTrajectory(JointWaypoint start_way_point, JointWaypoint goal_way_point);
+  /**
+   * @brief makeTaskTrajectory
+   * @param start_way_point
+   * @param goal_way_point
+   */
+  bool makeTaskTrajectory(TaskWaypoint start_way_point, TaskWaypoint goal_way_point);
+  /**
+   * @brief makeCustomTrajectory
+   * @param trajectory_name
+   * @param start_way_point
+   * @param arg
+   */
+  bool makeCustomTrajectory(Name trajectory_name, JointWaypoint start_way_point, const void *arg);
+  /**
+   * @brief makeCustomTrajectory
+   * @param trajectory_name
+   * @param start_way_point
+   * @param arg
+   */
+  bool makeCustomTrajectory(Name trajectory_name, TaskWaypoint start_way_point, const void *arg);
 
   // Tool
-  void setToolGoalPosition(Name tool_name, double tool_goal_position);
-  void setToolGoalValue(Name tool_name, JointValue tool_goal_value);
+  /**
+   * @brief setToolGoalPosition
+   * @param tool_name
+   * @param tool_goal_position
+   */
+  bool setToolGoalPosition(Name tool_name, double tool_goal_position);
+  /**
+   * @brief setToolGoalValue
+   * @param tool_name
+   * @param tool_goal_value
+   */
+  bool setToolGoalValue(Name tool_name, JointValue tool_goal_value);
+  /**
+   * @brief getToolGoalPosition
+   * @param tool_name
+   * @return
+   */
   double getToolGoalPosition(Name tool_name);
   JointValue getToolGoalValue(Name tool_name);
 };
