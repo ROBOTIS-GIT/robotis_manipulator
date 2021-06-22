@@ -2,6 +2,11 @@
 Changelog for package robotis_manipulator
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.1.1 (2021-06-22)
+------------------
+* supports Noetic
+* Contributors: Will Son
+
 1.1.0 (2020-09-27)
 ------------------
 * supports Doxygen
