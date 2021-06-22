@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0"?>
 <package format="2">
   <name>robotis_manipulator</name>
-  <version>1.1.0</version>
+  <version>1.1.1</version>
   <description>
     This package contains the manipulation API and functions for controlling the manipulator.
   </description>
@@ -10,7 +10,6 @@
   <author email="thlim@robotis.com">Darby Lim</author>
   <author email="yhna@robotis.com">Yong-Ho Na</author>
   <author email="jhshim@robotis.com">Ryan Shim</author>
-  <maintainer email="hjkim@robotis.com">Hye-Jong KIM</maintainer>
   <maintainer email="willson@robotis.com">Will Son</maintainer>
   <url type="website">http://wiki.ros.org/robotis_manipulator</url>
   <url type="emanual">http://emanual.robotis.com/docs/en/platform/openmanipulator</url>
