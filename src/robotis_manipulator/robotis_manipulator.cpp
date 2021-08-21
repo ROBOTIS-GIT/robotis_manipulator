@@ -28,8 +28,8 @@ RobotisManipulator::RobotisManipulator()
 {
   moving_state_ = false;
   moving_fail_flag_ = false;
-  joint_actuator_added_stete_ = false;
-  tool_actuator_added_stete_ = false;
+  joint_actuator_added_state_ = false;
+  tool_actuator_added_state_ = false;
   step_moving_state_ = false;
   trajectory_initialized_state_ = false;
   kinematics_added_state_=false;
@@ -126,7 +126,7 @@ void RobotisManipulator::addJointActuator(Name actuator_name, JointActuator *joi
   {
     manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(static_cast<int8_t>(id_array.at(index))),actuator_name);
   }
-  joint_actuator_added_stete_ = true;
+  joint_actuator_added_state_ = true;
 }
 
 void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_actuator, uint8_t id, const void *arg)
@@ -141,7 +141,7 @@ void RobotisManipulator::addToolActuator(Name actuator_name, ToolActuator *tool_
     //error
   }
   manipulator_.setComponentActuatorName(manipulator_.findComponentNameUsingId(static_cast<int8_t>(id)), actuator_name);
-  tool_actuator_added_stete_ = true;
+  tool_actuator_added_state_ = true;
 }
 
 void RobotisManipulator::addCustomTrajectory(Name trajectory_name, CustomJointTrajectory *custom_trajectory)
@@ -358,7 +358,7 @@ ToolActuator *RobotisManipulator::getToolActuator(Name actuator_name)
 *****************************************************************************/
 void RobotisManipulator::setJointActuatorMode(Name actuator_name, std::vector<uint8_t> id_array, const void *arg)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -373,7 +373,7 @@ void RobotisManipulator::setJointActuatorMode(Name actuator_name, std::vector<ui
 
 void RobotisManipulator::setToolActuatorMode(Name actuator_name, const void *arg)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
     {
@@ -388,7 +388,7 @@ void RobotisManipulator::setToolActuatorMode(Name actuator_name, const void *arg
 
 std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -404,7 +404,7 @@ std::vector<uint8_t> RobotisManipulator::getJointActuatorId(Name actuator_name)
 
 uint8_t RobotisManipulator::getToolActuatorId(Name actuator_name)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     if(tool_actuator_.find(actuator_name) != tool_actuator_.end())
     {
@@ -420,7 +420,7 @@ uint8_t RobotisManipulator::getToolActuatorId(Name actuator_name)
 
 void RobotisManipulator::enableActuator(Name actuator_name)
 {
-  if(joint_actuator_added_stete_ || tool_actuator_added_stete_)
+  if(joint_actuator_added_state_ || tool_actuator_added_state_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -440,7 +440,7 @@ void RobotisManipulator::enableActuator(Name actuator_name)
 
 void RobotisManipulator::disableActuator(Name actuator_name)
 {
-  if(joint_actuator_added_stete_ || tool_actuator_added_stete_)
+  if(joint_actuator_added_state_ || tool_actuator_added_state_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -459,7 +459,7 @@ void RobotisManipulator::disableActuator(Name actuator_name)
 
 void RobotisManipulator::enableAllJointActuator()
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
@@ -472,7 +472,7 @@ void RobotisManipulator::enableAllJointActuator()
 
 void RobotisManipulator::disableAllJointActuator()
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
@@ -484,7 +484,7 @@ void RobotisManipulator::disableAllJointActuator()
 
 void RobotisManipulator::enableAllToolActuator()
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
@@ -497,7 +497,7 @@ void RobotisManipulator::enableAllToolActuator()
 
 void RobotisManipulator::disableAllToolActuator()
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     std::map<Name, ToolActuator *>::iterator it_tool_actuator;
     for(it_tool_actuator = tool_actuator_.begin(); it_tool_actuator != tool_actuator_.end(); it_tool_actuator++)
@@ -509,7 +509,7 @@ void RobotisManipulator::disableAllToolActuator()
 
 void RobotisManipulator::enableAllActuator()
 {
-  if(joint_actuator_added_stete_ || tool_actuator_added_stete_)
+  if(joint_actuator_added_state_ || tool_actuator_added_state_)
   {
     std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
@@ -527,7 +527,7 @@ void RobotisManipulator::enableAllActuator()
 
 void RobotisManipulator::disableAllActuator()
 {
-  if(joint_actuator_added_stete_ || tool_actuator_added_stete_)
+  if(joint_actuator_added_state_ || tool_actuator_added_state_)
   {
     std::map<Name, JointActuator *>::iterator it_joint_actuator;
     for(it_joint_actuator = joint_actuator_.begin(); it_joint_actuator != joint_actuator_.end(); it_joint_actuator++)
@@ -544,7 +544,7 @@ void RobotisManipulator::disableAllActuator()
 
 bool RobotisManipulator::getActuatorEnabledState(Name actuator_name)
 {
-  if(joint_actuator_added_stete_ || tool_actuator_added_stete_)
+  if(joint_actuator_added_state_ || tool_actuator_added_state_)
   {
     if(joint_actuator_.find(actuator_name) != joint_actuator_.end())
     {
@@ -564,7 +564,7 @@ bool RobotisManipulator::getActuatorEnabledState(Name actuator_name)
 
 bool RobotisManipulator::sendJointActuatorValue(Name joint_component_name, JointValue value)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     double coefficient = manipulator_.getCoefficient(joint_component_name);
     double torque_coefficient = manipulator_.getTorqueCoefficient(joint_component_name);
@@ -593,7 +593,7 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
   if(joint_component_name.size() != value_vector.size())
     return false; //error;
 
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::vector<int8_t> joint_id;
     for(uint32_t index = 0; index < value_vector.size(); index++)
@@ -638,7 +638,7 @@ bool RobotisManipulator::sendMultipleJointActuatorValue(std::vector<Name> joint_
 
 bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value_vector)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::map<Name, Component>::iterator it;
     std::vector<int8_t> joint_id;
@@ -688,7 +688,7 @@ bool RobotisManipulator::sendAllJointActuatorValue(std::vector<JointValue> value
 
 JointValue RobotisManipulator::receiveJointActuatorValue(Name joint_component_name)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::vector<uint8_t> actuator_id;
     std::vector<JointValue> result;
@@ -712,7 +712,7 @@ JointValue RobotisManipulator::receiveJointActuatorValue(Name joint_component_na
 
 std::vector<JointValue> RobotisManipulator::receiveMultipleJointActuatorValue(std::vector<Name> joint_component_name)
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::vector<JointValue> get_value_vector;
     std::vector<uint8_t> get_actuator_id;
@@ -759,7 +759,7 @@ std::vector<JointValue> RobotisManipulator::receiveMultipleJointActuatorValue(st
 
 std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
 {
-  if(joint_actuator_added_stete_)
+  if(joint_actuator_added_state_)
   {
     std::vector<JointValue> get_value_vector;
     std::vector<uint8_t> get_actuator_id;
@@ -806,7 +806,7 @@ std::vector<JointValue> RobotisManipulator::receiveAllJointActuatorValue()
 
 bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, JointValue value)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     double coefficient;
     coefficient = manipulator_.getCoefficient(tool_component_name);
@@ -828,7 +828,7 @@ bool RobotisManipulator::sendToolActuatorValue(Name tool_component_name, JointVa
 
 bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_component_name, std::vector<JointValue> value_vector)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     for (uint32_t index = 0; index < tool_component_name.size(); index++)
     {
@@ -853,7 +853,7 @@ bool RobotisManipulator::sendMultipleToolActuatorValue(std::vector<Name> tool_co
 
 bool RobotisManipulator::sendAllToolActuatorValue(std::vector<JointValue> value_vector)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     std::vector<Name> tool_component_name;
     tool_component_name = manipulator_.getAllToolComponentName();
@@ -879,7 +879,7 @@ bool RobotisManipulator::sendAllToolActuatorValue(std::vector<JointValue> value_
 
 JointValue RobotisManipulator::receiveToolActuatorValue(Name tool_component_name)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     JointValue result;
     result = tool_actuator_.at(manipulator_.getComponentActuatorName(tool_component_name))->receiveToolActuatorValue();
@@ -897,7 +897,7 @@ JointValue RobotisManipulator::receiveToolActuatorValue(Name tool_component_name
 
 std::vector<JointValue> RobotisManipulator::receiveMultipleToolActuatorValue(std::vector<Name> tool_component_name)
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     std::vector<JointValue> result_vector;
     ActuatorValue result;
@@ -920,7 +920,7 @@ std::vector<JointValue> RobotisManipulator::receiveMultipleToolActuatorValue(std
 
 std::vector<JointValue> RobotisManipulator::receiveAllToolActuatorValue()
 {
-  if(tool_actuator_added_stete_)
+  if(tool_actuator_added_state_)
   {
     std::vector<Name> tool_component_name;
     tool_component_name = manipulator_.getAllToolComponentName();
